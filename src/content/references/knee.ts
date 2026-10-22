@@ -1,6 +1,260 @@
-/** Références — genou. Chaque entrée est vérifiée (skill verify-reference). */
+/**
+ * Références — genou.
+ * Chaque entrée a été vérifiée sur PubMed (voir REFERENCES_CHECK.md et le skill verify-reference).
+ */
 import { defineReference } from '@/domain/schema';
 
 export default [
-  // defineReference({ ... }),
+  // --- Syndrome fémoro-patellaire -------------------------------------------
+  defineReference({
+    id: 'willy-2019',
+    authors: ['Willy RW', 'Hoglund LT', 'Barton CJ', 'Bolgla LA', 'Scalzitti DA', 'Logerstedt DS', 'Lynch AD', 'Snyder-Mackler L', 'McDonough CM'],
+    year: 2019,
+    title: 'Patellofemoral Pain',
+    journal: 'J Orthop Sports Phys Ther',
+    doi: '10.2519/jospt.2019.0302',
+    pmid: '31475628',
+    type: 'cpg',
+    // Le résumé PubMed ne détaille pas les préconisations : elles ont été confirmées
+    // sur des synthèses publiées de la recommandation (Am Fam Physician 2020, synthèse clinique).
+    verification: { status: 'verified', checkedAt: '2026-10-22', via: 'pubmed', abstractChecked: true },
+  }),
+  defineReference({
+    id: 'nascimento-2018',
+    authors: ['Nascimento LR', 'Teixeira-Salmela LF', 'Souza RB', 'Resende RA'],
+    year: 2018,
+    title:
+      'Hip and Knee Strengthening Is More Effective Than Knee Strengthening Alone for Reducing Pain and Improving Activity in Individuals With Patellofemoral Pain: A Systematic Review With Meta-analysis',
+    journal: 'J Orthop Sports Phys Ther',
+    doi: '10.2519/jospt.2018.7365',
+    pmid: '29034800',
+    type: 'meta-analysis',
+    verification: { status: 'verified', checkedAt: '2026-10-22', via: 'pubmed', abstractChecked: true },
+  }),
+  defineReference({
+    id: 'lack-2015',
+    authors: ['Lack S', 'Barton C', 'Sohan O', 'Crossley K', 'Morrissey D'],
+    year: 2015,
+    title: 'Proximal muscle rehabilitation is effective for patellofemoral pain: a systematic review with meta-analysis',
+    journal: 'Br J Sports Med',
+    doi: '10.1136/bjsports-2015-094723',
+    pmid: '26175019',
+    type: 'meta-analysis',
+    verification: { status: 'verified', checkedAt: '2026-10-22', via: 'pubmed', abstractChecked: true },
+  }),
+  defineReference({
+    id: 'willy-2011',
+    authors: ['Willy RW', 'Davis IS'],
+    year: 2011,
+    title: 'The effect of a hip-strengthening program on mechanics during running and during a single-leg squat',
+    journal: 'J Orthop Sports Phys Ther',
+    doi: '10.2519/jospt.2011.3470',
+    pmid: '21765220',
+    type: 'rct',
+    verification: { status: 'verified', checkedAt: '2026-10-22', via: 'pubmed', abstractChecked: true },
+  }),
+  defineReference({
+    id: 'lenhart-2014',
+    authors: ['Lenhart RL', 'Thelen DG', 'Wille CM', 'Chumanov ES', 'Heiderscheit BC'],
+    year: 2014,
+    title: 'Increasing running step rate reduces patellofemoral joint forces',
+    journal: 'Med Sci Sports Exerc',
+    doi: '10.1249/MSS.0b013e3182a78c3a',
+    pmid: '23917470',
+    type: 'cross-sectional',
+    verification: { status: 'verified', checkedAt: '2026-10-22', via: 'pubmed', abstractChecked: true },
+  }),
+
+  // --- Tendinopathie rotulienne ---------------------------------------------
+  defineReference({
+    id: 'kongsgaard-2009',
+    authors: ['Kongsgaard M', 'Kovanen V', 'Aagaard P', 'Doessing S', 'Hansen P', 'Laursen AH', 'Kaldau NC', 'Kjaer M', 'Magnusson SP'],
+    year: 2009,
+    title: 'Corticosteroid injections, eccentric decline squat training and heavy slow resistance training in patellar tendinopathy',
+    journal: 'Scand J Med Sci Sports',
+    doi: '10.1111/j.1600-0838.2009.00949.x',
+    pmid: '19793213',
+    type: 'rct',
+    verification: { status: 'verified', checkedAt: '2026-10-22', via: 'pubmed', abstractChecked: true },
+  }),
+  defineReference({
+    id: 'breda-2021',
+    authors: ['Breda SJ', 'Oei EHG', 'Zwerver J', 'Visser E', 'Waarsing E', 'Krestin GP', 'de Vos RJ'],
+    year: 2021,
+    title:
+      'Effectiveness of progressive tendon-loading exercise therapy in patients with patellar tendinopathy: a randomised clinical trial',
+    journal: 'Br J Sports Med',
+    doi: '10.1136/bjsports-2020-103403',
+    pmid: '33219115',
+    type: 'rct',
+    verification: { status: 'verified', checkedAt: '2026-10-22', via: 'pubmed', abstractChecked: true },
+  }),
+  defineReference({
+    id: 'rio-2015',
+    authors: ['Rio E', 'Kidgell D', 'Purdam C', 'Gaida J', 'Moseley GL', 'Pearce AJ', 'Cook J'],
+    year: 2015,
+    title: 'Isometric exercise induces analgesia and reduces inhibition in patellar tendinopathy',
+    journal: 'Br J Sports Med',
+    doi: '10.1136/bjsports-2014-094386',
+    pmid: '25979840',
+    type: 'rct',
+    verification: { status: 'verified', checkedAt: '2026-10-22', via: 'pubmed', abstractChecked: true },
+  }),
+  defineReference({
+    id: 'van-ark-2016',
+    authors: ['van Ark M', 'Cook JL', 'Docking SI', 'Zwerver J', 'Gaida JE', 'van den Akker-Scheek I', 'Rio E'],
+    year: 2016,
+    title:
+      'Do isometric and isotonic exercise programs reduce pain in athletes with patellar tendinopathy in-season? A randomised clinical trial',
+    journal: 'J Sci Med Sport',
+    doi: '10.1016/j.jsams.2015.11.006',
+    pmid: '26707957',
+    type: 'rct',
+    verification: { status: 'verified', checkedAt: '2026-10-22', via: 'pubmed', abstractChecked: true },
+  }),
+  defineReference({
+    id: 'young-2005',
+    authors: ['Young MA', 'Cook JL', 'Purdam CR', 'Kiss ZS', 'Alfredson H'],
+    year: 2005,
+    title:
+      'Eccentric decline squat protocol offers superior results at 12 months compared with traditional eccentric protocol for patellar tendinopathy in volleyball players',
+    journal: 'Br J Sports Med',
+    doi: '10.1136/bjsm.2003.010587',
+    pmid: '15665207',
+    type: 'rct',
+    verification: { status: 'verified', checkedAt: '2026-10-22', via: 'pubmed', abstractChecked: true },
+  }),
+  defineReference({
+    id: 'lim-2018',
+    authors: ['Lim HY', 'Wong SH'],
+    year: 2018,
+    title:
+      'Effects of isometric, eccentric, or heavy slow resistance exercises on pain and function in individuals with patellar tendinopathy: A systematic review',
+    journal: 'Physiother Res Int',
+    doi: '10.1002/pri.1721',
+    pmid: '29972281',
+    type: 'systematic-review',
+    verification: { status: 'verified', checkedAt: '2026-10-22', via: 'pubmed', abstractChecked: true },
+  }),
+  defineReference({
+    id: 'malliaras-2015',
+    authors: ['Malliaras P', 'Cook J', 'Purdam C', 'Rio E'],
+    year: 2015,
+    title: 'Patellar Tendinopathy: Clinical Diagnosis, Load Management, and Advice for Challenging Case Presentations',
+    journal: 'J Orthop Sports Phys Ther',
+    doi: '10.2519/jospt.2015.5987',
+    pmid: '26390269',
+    type: 'narrative-review',
+    verification: { status: 'verified', checkedAt: '2026-10-22', via: 'pubmed', abstractChecked: true },
+  }),
+
+  // --- Bandelette ilio-tibiale ----------------------------------------------
+  defineReference({
+    id: 'sanchez-alvarado-2024',
+    authors: ['Sanchez-Alvarado A', 'Bokil C', 'Cassel M', 'Engel T'],
+    year: 2024,
+    title:
+      'Effects of conservative treatment strategies for iliotibial band syndrome on pain and function in runners: a systematic review',
+    journal: 'Front Sports Act Living',
+    doi: '10.3389/fspor.2024.1386456',
+    pmid: '39247485',
+    type: 'systematic-review',
+    verification: { status: 'verified', checkedAt: '2026-10-22', via: 'pubmed', abstractChecked: true },
+  }),
+  defineReference({
+    id: 'fredericson-2000',
+    authors: ['Fredericson M', 'Cookingham CL', 'Chaudhari AM', 'Dowdell BC', 'Oestreicher N', 'Sahrmann SA'],
+    year: 2000,
+    title: 'Hip abductor weakness in distance runners with iliotibial band syndrome',
+    journal: 'Clin J Sport Med',
+    doi: '10.1097/00042752-200007000-00004',
+    pmid: '10959926',
+    type: 'case-series',
+    verification: { status: 'verified', checkedAt: '2026-10-22', via: 'pubmed', abstractChecked: true },
+  }),
+  defineReference({
+    id: 'foch-2023',
+    authors: ['Foch E', 'Brindle RA', 'Pohl MB'],
+    year: 2023,
+    title:
+      'Lower extremity kinematics during running and hip abductor strength in iliotibial band syndrome: A systematic review and meta-analysis',
+    journal: 'Gait Posture',
+    doi: '10.1016/j.gaitpost.2023.02.001',
+    pmid: '36758425',
+    type: 'meta-analysis',
+    verification: { status: 'verified', checkedAt: '2026-10-22', via: 'pubmed', abstractChecked: true },
+  }),
+
+  // --- Patte d’oie --------------------------------------------------------------
+  defineReference({
+    id: 'tani-2026',
+    authors: ['Tani B', 'Haddad A', 'Gleeson G', 'Prempeh AGA', 'Kress DJ', 'Jildeh TR'],
+    year: 2026,
+    title:
+      'Pes Anserine Bursitis: An Underrecognized Cause of Medial Knee Pain - A Review of Diagnosis, Associated Conditions, and Evidence-Based Management',
+    journal: 'Orthop Res Rev',
+    doi: '10.2147/ORR.S643100',
+    pmid: '42894573',
+    type: 'narrative-review',
+    verification: { status: 'verified', checkedAt: '2026-10-22', via: 'pubmed', abstractChecked: true },
+  }),
+
+  // --- Genou du cycliste --------------------------------------------------------
+  defineReference({
+    id: 'clarsen-2010',
+    authors: ['Clarsen B', 'Krosshaug T', 'Bahr R'],
+    year: 2010,
+    title: 'Overuse injuries in professional road cyclists',
+    journal: 'Am J Sports Med',
+    doi: '10.1177/0363546510376816',
+    pmid: '20847225',
+    type: 'cross-sectional',
+    verification: { status: 'verified', checkedAt: '2026-10-22', via: 'pubmed', abstractChecked: true },
+  }),
+  defineReference({
+    id: 'johnston-2017',
+    authors: ['Johnston TE', 'Baskins TA', 'Koppel RV', 'Oliver SA', 'Stieber DJ', 'Hoglund LT'],
+    year: 2017,
+    title:
+      'The influence of extrinsic factors on knee biomechanics during cycling: a systematic review of the literature',
+    journal: 'Int J Sports Phys Ther',
+    doi: '10.26603/ijspt20171023',
+    pmid: '29234554',
+    type: 'systematic-review',
+    verification: { status: 'verified', checkedAt: '2026-10-22', via: 'pubmed', abstractChecked: true },
+  }),
+  defineReference({
+    id: 'bini-2011',
+    authors: ['Bini R', 'Hume PA', 'Croft JL'],
+    year: 2011,
+    title: 'Effects of bicycle saddle height on knee injury risk and cycling performance',
+    journal: 'Sports Med',
+    doi: '10.2165/11588740-000000000-00000',
+    pmid: '21615188',
+    type: 'narrative-review',
+    verification: { status: 'verified', checkedAt: '2026-10-22', via: 'pubmed', abstractChecked: true },
+  }),
+  defineReference({
+    id: 'bini-2022',
+    authors: ['Bini R', 'Priego-Quesada J'],
+    year: 2022,
+    title:
+      'Methods to determine saddle height in cycling and implications of changes in saddle height in performance and injury risk: A systematic review',
+    journal: 'J Sports Sci',
+    doi: '10.1080/02640414.2021.1994727',
+    pmid: '34706617',
+    type: 'systematic-review',
+    verification: { status: 'verified', checkedAt: '2026-10-22', via: 'pubmed', abstractChecked: true },
+  }),
+  defineReference({
+    id: 'viau-2025',
+    authors: ['Viau A', 'Tremblay C', 'Coutu G', 'Desmeules F', 'Lafrance S'],
+    year: 2025,
+    title: 'Impact of physiotherapy-led bike fitting on the evolution of knee pain in recreational cyclists: the PBF study',
+    journal: 'Physiother Theory Pract',
+    doi: '10.1080/09593985.2025.2468908',
+    pmid: '39982032',
+    type: 'case-series',
+    verification: { status: 'verified', checkedAt: '2026-10-22', via: 'pubmed', abstractChecked: true },
+  }),
 ] satisfies ReturnType<typeof defineReference>[];

@@ -53,6 +53,14 @@ export default definePathology({
           startLevel: 1,
           dosage: { sets: 3, reps: [10, 15], tempo: '3-0-3', restSec: 60, perSide: false, intensity: symptomGuided(), frequency: freq.everyOtherDay },
         },
+        { exerciseId: 'seated-soleus-isometric', priority: 3, startLevel: 1 },
+      ],
+      avoid: [
+        { exerciseId: 'pogo-hops', reason: { fr: 'Les rebonds rapides chargent fortement un tendon encore irritable.', en: 'Fast bouncing heavily loads a still-irritable tendon.' } },
+        { exerciseId: 'jump-rope', reason: { fr: 'Les rebonds rapides chargent fortement un tendon encore irritable.', en: 'Fast bouncing heavily loads a still-irritable tendon.' } },
+        { exerciseId: 'line-hops', reason: { fr: 'Sauts à reporter à la phase de reprise.', en: 'Hops are postponed to the return phase.' } },
+        { exerciseId: 'calf-raise-explosive', reason: { fr: 'La charge rapide vient après la reconstruction de la force.', en: 'Fast loading comes after strength has been rebuilt.' } },
+        { exerciseId: 'calf-wall-stretch', reason: { fr: 'Les étirements appuyés peuvent irriter le tendon ; la mise en charge est prioritaire.', en: 'Strong stretches can irritate the tendon; loading comes first.' } },
       ],
       nextPhaseCriteria: [
         { fr: 'La raideur matinale diminue d’une semaine à l’autre.', en: 'Morning stiffness decreases week after week.' },
@@ -104,6 +112,17 @@ export default definePathology({
       exercises: [
         { exerciseId: 'calf-raise-straight-knee', priority: 1, startLevel: 4 },
         { exerciseId: 'calf-raise-bent-knee', priority: 1, startLevel: 3 },
+        {
+          exerciseId: 'pogo-hops',
+          priority: 2,
+          startLevel: 1,
+          note: {
+            fr: 'Commencez par de petits rebonds sur deux pieds ; progressez seulement si le tendon n’est pas plus raide le lendemain matin.',
+            en: 'Start with small two-foot bounces; progress only if the tendon is no stiffer the next morning.',
+          },
+        },
+        { exerciseId: 'hop-stabilization', priority: 2, startLevel: 1 },
+        { exerciseId: 'calf-raise-explosive', priority: 3, startLevel: 1 },
       ],
       nextPhaseCriteria: [],
       loadAdvice: {

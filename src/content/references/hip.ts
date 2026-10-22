@@ -1,6 +1,231 @@
 /** Références — hanche (fessiers, rotateurs, fléchisseurs). Chaque entrée est vérifiée (skill verify-reference). */
 import { defineReference } from '@/domain/schema';
 
+const verified = { status: 'verified', checkedAt: '2026-10-22', via: 'pubmed', abstractChecked: true } as const;
+
 export default [
-  // defineReference({ ... }),
+  // --- Tendinopathie glutéale ------------------------------------------------
+  defineReference({
+    id: 'mellor-2018',
+    authors: ['Mellor R', 'Bennell K', 'Grimaldi A', 'Nicolson P', 'Kasza J', 'Hodges P', 'Wajswelner H', 'Vicenzino B'],
+    year: 2018,
+    title:
+      'Education plus exercise versus corticosteroid injection use versus a wait and see approach on global outcome and pain from gluteal tendinopathy: prospective, single blinded, randomised clinical trial',
+    journal: 'BMJ',
+    doi: '10.1136/bmj.k1662',
+    pmid: '29720374',
+    type: 'rct',
+    verification: verified,
+  }),
+  defineReference({
+    id: 'kjeldsen-2024',
+    authors: ['Kjeldsen T', 'Hvidt KJ', 'Bohn MB', 'Mygind-Klavsen B', 'Lind M', 'Semciw AI', 'Mechlenburg I'],
+    year: 2024,
+    title:
+      'Exercise compared to a control condition or other conservative treatment options in patients with Greater Trochanteric Pain Syndrome: a systematic review and meta-analysis of randomized controlled trials',
+    journal: 'Physiotherapy',
+    doi: '10.1016/j.physio.2024.01.001',
+    pmid: '38295551',
+    type: 'meta-analysis',
+    verification: verified,
+  }),
+  defineReference({
+    id: 'ganderton-2018',
+    authors: ['Ganderton C', 'Semciw A', 'Cook J', 'Moreira E', 'Pizzari T'],
+    year: 2018,
+    title:
+      'Gluteal Loading Versus Sham Exercises to Improve Pain and Dysfunction in Postmenopausal Women with Greater Trochanteric Pain Syndrome: A Randomized Controlled Trial',
+    journal: 'J Womens Health (Larchmt)',
+    doi: '10.1089/jwh.2017.6729',
+    pmid: '29715073',
+    type: 'rct',
+    verification: verified,
+  }),
+  defineReference({
+    id: 'grimaldi-2015',
+    authors: ['Grimaldi A', 'Mellor R', 'Hodges P', 'Bennell K', 'Wajswelner H', 'Vicenzino B'],
+    year: 2015,
+    title: 'Gluteal Tendinopathy: A Review of Mechanisms, Assessment and Management',
+    journal: 'Sports Med',
+    doi: '10.1007/s40279-015-0336-5',
+    pmid: '25969366',
+    type: 'narrative-review',
+    verification: verified,
+  }),
+
+  // --- Activation des fessiers (EMG) et hip thrust ----------------------------
+  defineReference({
+    id: 'distefano-2009',
+    authors: ['Distefano LJ', 'Blackburn JT', 'Marshall SW', 'Padua DA'],
+    year: 2009,
+    title: 'Gluteal muscle activation during common therapeutic exercises',
+    journal: 'J Orthop Sports Phys Ther',
+    doi: '10.2519/jospt.2009.2796',
+    pmid: '19574661',
+    type: 'cross-sectional',
+    verification: verified,
+  }),
+  defineReference({
+    id: 'boren-2011',
+    authors: ['Boren K', 'Conrey C', 'Le Coguic J', 'Paprocki L', 'Voight M', 'Robinson TK'],
+    year: 2011,
+    title: 'Electromyographic analysis of gluteus medius and gluteus maximus during rehabilitation exercises',
+    journal: 'Int J Sports Phys Ther',
+    pmid: '22034614',
+    type: 'cross-sectional',
+    verification: verified,
+  }),
+  defineReference({
+    id: 'selkowitz-2013',
+    authors: ['Selkowitz DM', 'Beneck GJ', 'Powers CM'],
+    year: 2013,
+    title:
+      'Which exercises target the gluteal muscles while minimizing activation of the tensor fascia lata? Electromyographic assessment using fine-wire electrodes',
+    journal: 'J Orthop Sports Phys Ther',
+    doi: '10.2519/jospt.2013.4116',
+    pmid: '23160432',
+    type: 'cross-sectional',
+    verification: verified,
+  }),
+  defineReference({
+    id: 'bolgla-2005',
+    authors: ['Bolgla LA', 'Uhl TL'],
+    year: 2005,
+    title: 'Electromyographic analysis of hip rehabilitation exercises in a group of healthy subjects',
+    journal: 'J Orthop Sports Phys Ther',
+    doi: '10.2519/jospt.2005.35.8.487',
+    pmid: '16187509',
+    type: 'cross-sectional',
+    verification: verified,
+  }),
+  defineReference({
+    id: 'contreras-2017',
+    authors: ['Contreras B', 'Vigotsky AD', 'Schoenfeld BJ', 'Beardsley C', 'McMaster DT', 'Reyneke JH', 'Cronin JB'],
+    year: 2017,
+    title:
+      'Effects of a Six-Week Hip Thrust vs. Front Squat Resistance Training Program on Performance in Adolescent Males: A Randomized Controlled Trial',
+    journal: 'J Strength Cond Res',
+    doi: '10.1519/JSC.0000000000001510',
+    pmid: '27253835',
+    type: 'rct',
+    verification: verified,
+  }),
+  defineReference({
+    id: 'neto-2019',
+    authors: ['Neto WK', 'Vieira TL', 'Gama EF'],
+    year: 2019,
+    title: 'Barbell Hip Thrust, Muscular Activation and Performance: A Systematic Review',
+    journal: 'J Sports Sci Med',
+    pmid: '31191088',
+    type: 'systematic-review',
+    verification: verified,
+  }),
+  defineReference({
+    id: 'landauer-2026',
+    authors: ['Landauer S', 'Schwirtz A', 'Paternoster FK'],
+    year: 2026,
+    title:
+      'A 10-week randomized controlled hip-strengthening intervention in healthy, well-trained runners: longitudinal and cross-sectional analyses of frontal-plane running biomechanics across running speeds',
+    journal: 'BMC Sports Sci Med Rehabil',
+    doi: '10.1186/s13102-026-02148-z',
+    pmid: '42850658',
+    type: 'rct',
+    verification: verified,
+  }),
+
+  // --- Fléchisseurs de hanche, douleur antérieure de hanche --------------------
+  defineReference({
+    id: 'winters-2004',
+    authors: ['Winters MV', 'Blake CG', 'Trost JS', 'Marcello-Brinker TB', 'Lowe LM', 'Garber MB', 'Wainner RS'],
+    year: 2004,
+    title:
+      'Passive versus active stretching of hip flexor muscles in subjects with limited hip extension: a randomized clinical trial',
+    journal: 'Phys Ther',
+    pmid: '15330693',
+    type: 'rct',
+    verification: verified,
+  }),
+  defineReference({
+    // Auteurs tels qu'indexés par PubMed et Crossref (prénoms et noms semblent inversés à la source).
+    id: 'frans-jozef-2026',
+    authors: ['Frans-Jozef V', 'Abner S', 'Stijn R', 'Annick T', 'Kristoff C'],
+    year: 2026,
+    title: 'Clinical Diagnosis and Treatment of Iliopsoas-Related Groin Pain: A Systematic Review',
+    journal: 'J Clin Med',
+    doi: '10.3390/jcm15155912',
+    pmid: '42590015',
+    type: 'systematic-review',
+    verification: verified,
+  }),
+  defineReference({
+    id: 'holmich-2026',
+    authors: [
+      'Hölmich P', 'Weir A', 'Papadopoulou T', 'Papavasiliou A', 'Thorborg K', 'Canata GL', 'Villa FD', 'Laver L',
+      'Marin-Peña O', 'Paajanen H', 'Badhe N', 'Ahmad SS', 'Aydingöz Ü', 'Hanff D', 'Ayeni O', 'Thoreux P',
+      'Beaufils P', 'Khanduja V',
+    ],
+    year: 2026,
+    title:
+      'Hip and groin pain in physically active adults with a focus on terminology, clinical examination and imaging: A formal ESSKA-EHPA-ESMA Consensus',
+    journal: 'Knee Surg Sports Traumatol Arthrosc',
+    doi: '10.1002/ksa.70565',
+    pmid: '42704670',
+    type: 'consensus',
+    verification: verified,
+  }),
+  defineReference({
+    id: 'kemp-2020',
+    authors: [
+      'Kemp JL', 'Risberg MA', 'Mosler A', 'Harris-Hayes M', 'Serner A', 'Moksnes H', 'Bloom N', 'Crossley KM',
+      'Gojanovic B', 'Hunt MA', 'Ishøi L', 'Mathieu N', 'Mayes S', 'Scholes MJ', 'Gimpel M', 'Friedman D',
+      'Ageberg E', 'Agricola R', 'Casartelli NC', 'Diamond LE', 'Dijkstra HP', 'Di Stasi S', 'Drew M', 'Freke M',
+      'Griffin D', 'Heerey J', 'Hölmich P', 'Impellizzeri FM', 'Jones DM', 'Kassarjian A', 'Khan KM', 'King MG',
+      'Lawrenson PR', 'Leunig M', 'Lewis CL', 'Warholm KM', 'Reiman MP', 'Semciw A', 'Thorborg K', 'van Klij P',
+      'Wörner T', 'Bizzini M',
+    ],
+    year: 2020,
+    title:
+      'Physiotherapist-led treatment for young to middle-aged active adults with hip-related pain: consensus recommendations from the International Hip-related Pain Research Network, Zurich 2018',
+    journal: 'Br J Sports Med',
+    doi: '10.1136/bjsports-2019-101458',
+    pmid: '31732651',
+    type: 'consensus',
+    verification: verified,
+  }),
+
+  // --- Syndrome du piriforme / syndrome fessier profond -------------------------
+  defineReference({
+    id: 'hopayian-2018',
+    authors: ['Hopayian K', 'Danielyan A'],
+    year: 2018,
+    title: 'Four symptoms define the piriformis syndrome: an updated systematic review of its clinical features',
+    journal: 'Eur J Orthop Surg Traumatol',
+    doi: '10.1007/s00590-017-2031-8',
+    pmid: '28836092',
+    type: 'systematic-review',
+    verification: verified,
+  }),
+  defineReference({
+    id: 'kizaki-2020',
+    authors: ['Kizaki K', 'Uchida S', 'Shanmugaraj A', 'Aquino CC', 'Duong A', 'Simunovic N', 'Martin HD', 'Ayeni OR'],
+    year: 2020,
+    title:
+      'Deep gluteal syndrome is defined as a non-discogenic sciatic nerve disorder with entrapment in the deep gluteal space: a systematic review',
+    journal: 'Knee Surg Sports Traumatol Arthrosc',
+    doi: '10.1007/s00167-020-05966-x',
+    pmid: '32246173',
+    type: 'systematic-review',
+    verification: verified,
+  }),
+  defineReference({
+    id: 'hernando-2015',
+    authors: ['Hernando MF', 'Cerezal L', 'Pérez-Carro L', 'Abascal F', 'Canga A'],
+    year: 2015,
+    title: 'Deep gluteal syndrome: anatomy, imaging, and management of sciatic nerve entrapments in the subgluteal space',
+    journal: 'Skeletal Radiol',
+    doi: '10.1007/s00256-015-2124-6',
+    pmid: '25739706',
+    type: 'narrative-review',
+    verification: verified,
+  }),
 ] satisfies ReturnType<typeof defineReference>[];

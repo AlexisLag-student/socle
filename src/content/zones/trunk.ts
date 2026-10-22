@@ -2,9 +2,10 @@
 import type { ZoneBundle } from '../zone';
 import references from '../references/trunk';
 import exercises from '../exercises/trunk';
+import lowBackPain from '../pathologies/low-back-pain';
 
 export default {
   references: [...references],
   exercises: [...exercises],
-  pathologies: [],
+  pathologies: [lowBackPain],
 } satisfies ZoneBundle;
