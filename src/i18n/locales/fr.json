@@ -1,0 +1,101 @@
+{
+  "app": {
+    "name": "Socle",
+    "tagline": "Le renforcement musculaire des coureurs et des cyclistes, fondé sur les preuves."
+  },
+  "nav": {
+    "home": "Accueil",
+    "program": "Programme",
+    "library": "Bibliothèque",
+    "history": "Historique",
+    "settings": "Réglages",
+    "bibliography": "Bibliographie",
+    "pro": "Praticien",
+    "disclaimer": "Avertissement médical",
+    "back": "Retour",
+    "skipToContent": "Aller au contenu"
+  },
+  "disclaimer": {
+    "title": "Avertissement médical",
+    "body": "Socle propose des exercices à titre informatif. L’application ne pose pas de diagnostic et ne remplace pas l’avis d’un médecin ou d’un kinésithérapeute.",
+    "stop": "En cas de douleur qui augmente, qui persiste ou qui apparaît au repos, arrêtez les exercices et consultez un professionnel de santé.",
+    "accept": "J’ai compris, continuer",
+    "accepted": "Avertissement accepté"
+  },
+  "sports": { "run": "Course à pied", "bike": "Vélo", "both": "Les deux" },
+  "objectives": {
+    "prevention": "Prévention des blessures",
+    "performance": "Performance",
+    "return": "Reprise après blessure",
+    "pain": "Traiter une douleur actuelle"
+  },
+  "perfGoals": {
+    "strength": "Force",
+    "power": "Puissance",
+    "running-economy": "Économie de course",
+    "sprint-fv": "Sprint et force-vélocité à vélo"
+  },
+  "phases": {
+    "irritable": "Douleur récente / irritable",
+    "rebuild": "Reconstruction",
+    "return-to-sport": "Retour au sport"
+  },
+  "phaseHelp": {
+    "irritable": "La douleur est récente ou se réveille facilement : on calme et on entretient sans provoquer.",
+    "rebuild": "La douleur est stable : on recharge progressivement pour retrouver de la force.",
+    "return-to-sport": "La force est revenue : on prépare les impacts, la vitesse et le volume d’entraînement."
+  },
+  "qualities": {
+    "strength": "Force",
+    "endurance": "Endurance musculaire",
+    "control": "Contrôle moteur",
+    "power": "Puissance",
+    "mobility": "Mobilité",
+    "tendon-stiffness": "Raideur du tendon",
+    "isometric": "Isométrie"
+  },
+  "evidence": {
+    "label": "Niveau de preuve",
+    "strong": "Preuve forte",
+    "moderate": "Preuve modérée",
+    "low": "Preuve faible",
+    "expert": "Consensus d’experts",
+    "help": {
+      "strong": "Méta-analyses, revues systématiques, plusieurs essais randomisés concordants ou recommandations de pratique clinique.",
+      "moderate": "Au moins un essai randomisé de bonne qualité.",
+      "low": "Études de cohorte, séries de cas ou petits essais.",
+      "expert": "Pratique clinique courante, sans preuve directe."
+    }
+  },
+  "muscles": {
+    "legendPrimary": "Muscles principaux",
+    "legendSecondary": "Muscles secondaires",
+    "legendDeep": "Muscle profond (pointillés)",
+    "legendOther": "Autres muscles",
+    "front": "Face",
+    "back": "Dos",
+    "altPrimary": "Muscles principaux : {{list}}.",
+    "altSecondary": "Muscles secondaires : {{list}}.",
+    "altFigure": "Schéma musculaire de l’exercice {{name}}."
+  },
+  "common": {
+    "loading": "Chargement…",
+    "close": "Fermer",
+    "cancel": "Annuler",
+    "save": "Enregistrer",
+    "delete": "Supprimer",
+    "edit": "Modifier",
+    "next": "Suivant",
+    "previous": "Précédent",
+    "yes": "Oui",
+    "no": "Non",
+    "seconds": "{{count}} s",
+    "minutes": "{{count}} min",
+    "perSide": "par côté"
+  },
+  "pwa": {
+    "updateAvailable": "Une nouvelle version de Socle est disponible.",
+    "reload": "Mettre à jour",
+    "offlineReady": "Socle fonctionne maintenant hors ligne."
+  }
+}

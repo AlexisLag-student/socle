@@ -19,5 +19,6 @@
     "jsx": "react-jsx",
     "paths": { "@/*": ["./src/*"] }
   },
-  "include": ["vite.config.ts", "playwright.config.ts", "scripts", "e2e"]
+  "include": ["vite.config.ts", "playwright.config.ts", "scripts", "e2e", "src"],
+  "exclude": ["src/**/*.tsx", "src/**/*.test.ts"]
 }

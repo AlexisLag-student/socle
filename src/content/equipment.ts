@@ -1,0 +1,43 @@
+import type { BodyArea, Equipment } from '@/domain/schema';
+
+export const equipment: Equipment[] = [
+  { id: 'bodyweight', name: { fr: 'Poids du corps', en: 'Bodyweight' },
+    hint: { fr: 'Toujours disponible : un mur, une chaise, le sol.', en: 'Always available: a wall, a chair, the floor.' } },
+  { id: 'band', name: { fr: 'Mini-band / élastique', en: 'Mini-band / resistance band' },
+    hint: { fr: 'Boucle élastique ou bande de résistance.', en: 'Loop band or long resistance band.' } },
+  { id: 'dumbbells', name: { fr: 'Haltères ou kettlebell', en: 'Dumbbells or kettlebell' },
+    hint: { fr: 'Charges libres tenues en main.', en: 'Free weights held in the hands.' } },
+  { id: 'barbell', name: { fr: 'Barre et disques', en: 'Barbell and plates' },
+    hint: { fr: 'Pour les charges lourdes (squat, soulevé de terre).', en: 'For heavy loads (squat, deadlift).' } },
+  { id: 'step', name: { fr: 'Marche, step ou banc', en: 'Step, box or bench' },
+    hint: { fr: 'Une marche d’escalier suffit.', en: 'A stair step is enough.' } },
+  { id: 'gym', name: { fr: 'Salle de musculation', en: 'Gym machines' },
+    hint: { fr: 'Presse à cuisses, leg curl, leg extension, mollets assis, poulie…', en: 'Leg press, leg curl, leg extension, seated calf machine, cable…' } },
+  { id: 'swiss-ball', name: { fr: 'Swiss ball', en: 'Swiss ball' },
+    hint: { fr: 'Gros ballon de gymnastique.', en: 'Large exercise ball.' } },
+  { id: 'suspension', name: { fr: 'TRX / sangles de suspension', en: 'TRX / suspension straps' },
+    hint: { fr: 'Sangles accrochées à une porte ou une barre.', en: 'Straps anchored to a door or bar.' } },
+];
+
+export const bodyAreas: BodyArea[] = [
+  { id: 'forefoot', view: 'front', name: { fr: 'Avant-pied', en: 'Forefoot' } },
+  { id: 'heel-plantar', view: 'back', name: { fr: 'Talon / plante du pied', en: 'Heel / sole of the foot' } },
+  { id: 'ankle-medial', view: 'front', name: { fr: 'Cheville, côté interne', en: 'Inner ankle' } },
+  { id: 'ankle-lateral', view: 'front', name: { fr: 'Cheville, côté externe', en: 'Outer ankle' } },
+  { id: 'achilles', view: 'back', name: { fr: 'Tendon d’Achille', en: 'Achilles tendon' } },
+  { id: 'calf', view: 'back', name: { fr: 'Mollet', en: 'Calf' } },
+  { id: 'shin-medial', view: 'front', name: { fr: 'Tibia, bord interne', en: 'Inner shin' } },
+  { id: 'knee-anterior', view: 'front', name: { fr: 'Devant du genou', en: 'Front of the knee' } },
+  { id: 'knee-medial', view: 'front', name: { fr: 'Genou, côté interne', en: 'Inner knee' } },
+  { id: 'knee-lateral', view: 'front', name: { fr: 'Genou, côté externe', en: 'Outer knee' } },
+  { id: 'thigh-posterior', view: 'back', name: { fr: 'Arrière de la cuisse', en: 'Back of the thigh' } },
+  { id: 'ischial', view: 'back', name: { fr: 'Pli de la fesse (ischion)', en: 'Sit bone (ischium)' } },
+  { id: 'hip-lateral', view: 'front', name: { fr: 'Côté de la hanche', en: 'Side of the hip' } },
+  { id: 'hip-anterior', view: 'front', name: { fr: 'Devant de la hanche', en: 'Front of the hip' } },
+  { id: 'groin', view: 'front', name: { fr: 'Aine', en: 'Groin' } },
+  { id: 'buttock', view: 'back', name: { fr: 'Fesse', en: 'Buttock' } },
+  { id: 'lower-back', view: 'back', name: { fr: 'Bas du dos', en: 'Lower back' } },
+  { id: 'neck', view: 'back', name: { fr: 'Nuque', en: 'Neck' } },
+  { id: 'shoulders-trapezius', view: 'back', name: { fr: 'Épaules / trapèzes', en: 'Shoulders / upper traps' } },
+  { id: 'hands-wrists', view: 'front', name: { fr: 'Mains / poignets', en: 'Hands / wrists' } },
+];

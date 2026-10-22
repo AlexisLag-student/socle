@@ -3,3 +3,4 @@ dev-dist
 node_modules
 playwright-report
 test-results
+.claude/skills/**/template.ts

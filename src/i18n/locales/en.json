@@ -1,0 +1,101 @@
+{
+  "app": {
+    "name": "Socle",
+    "tagline": "Evidence-based strength training for runners and cyclists."
+  },
+  "nav": {
+    "home": "Home",
+    "program": "Program",
+    "library": "Library",
+    "history": "History",
+    "settings": "Settings",
+    "bibliography": "Bibliography",
+    "pro": "Practitioner",
+    "disclaimer": "Medical disclaimer",
+    "back": "Back",
+    "skipToContent": "Skip to content"
+  },
+  "disclaimer": {
+    "title": "Medical disclaimer",
+    "body": "Socle suggests exercises for information purposes only. The app does not diagnose and does not replace the advice of a doctor or physiotherapist.",
+    "stop": "If pain increases, persists or appears at rest, stop the exercises and see a health professional.",
+    "accept": "I understand, continue",
+    "accepted": "Disclaimer accepted"
+  },
+  "sports": { "run": "Running", "bike": "Cycling", "both": "Both" },
+  "objectives": {
+    "prevention": "Injury prevention",
+    "performance": "Performance",
+    "return": "Return after injury",
+    "pain": "Manage current pain"
+  },
+  "perfGoals": {
+    "strength": "Strength",
+    "power": "Power",
+    "running-economy": "Running economy",
+    "sprint-fv": "Sprint and force-velocity on the bike"
+  },
+  "phases": {
+    "irritable": "Recent / irritable pain",
+    "rebuild": "Rebuilding",
+    "return-to-sport": "Return to sport"
+  },
+  "phaseHelp": {
+    "irritable": "Pain is recent or easily flared: we settle it down and keep moving without provoking it.",
+    "rebuild": "Pain is stable: we progressively reload to regain strength.",
+    "return-to-sport": "Strength is back: we prepare for impact, speed and training volume."
+  },
+  "qualities": {
+    "strength": "Strength",
+    "endurance": "Muscular endurance",
+    "control": "Motor control",
+    "power": "Power",
+    "mobility": "Mobility",
+    "tendon-stiffness": "Tendon stiffness",
+    "isometric": "Isometric"
+  },
+  "evidence": {
+    "label": "Level of evidence",
+    "strong": "Strong evidence",
+    "moderate": "Moderate evidence",
+    "low": "Limited evidence",
+    "expert": "Expert consensus",
+    "help": {
+      "strong": "Meta-analyses, systematic reviews, several consistent randomised trials or clinical practice guidelines.",
+      "moderate": "At least one good-quality randomised trial.",
+      "low": "Cohort studies, case series or small trials.",
+      "expert": "Common clinical practice without direct evidence."
+    }
+  },
+  "muscles": {
+    "legendPrimary": "Primary muscles",
+    "legendSecondary": "Secondary muscles",
+    "legendDeep": "Deep muscle (dashed)",
+    "legendOther": "Other muscles",
+    "front": "Front",
+    "back": "Back",
+    "altPrimary": "Primary muscles: {{list}}.",
+    "altSecondary": "Secondary muscles: {{list}}.",
+    "altFigure": "Muscle diagram for {{name}}."
+  },
+  "common": {
+    "loading": "Loading…",
+    "close": "Close",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "next": "Next",
+    "previous": "Previous",
+    "yes": "Yes",
+    "no": "No",
+    "seconds": "{{count}} s",
+    "minutes": "{{count}} min",
+    "perSide": "per side"
+  },
+  "pwa": {
+    "updateAvailable": "A new version of Socle is available.",
+    "reload": "Update",
+    "offlineReady": "Socle now works offline."
+  }
+}
