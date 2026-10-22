@@ -1,0 +1,6 @@
+/**
+ * Liens de partage v1 FIGÉS. Ne jamais modifier ces chaînes : elles garantissent qu'un lien
+ * envoyé par un praticien reste lisible après toutes les mises à jour de l'app.
+ */
+export const V1_ACHILLES =
+  '1.N4IgLiBcIEoJdwCYFcDGBDMBLA9gOwAIBBVACywBsKBTAwFAICBnagW3Sz1oEYQAaEdFBABhdACMO1MAQAiyAA74wvAgGsOcRljCk4AJ3TzqyMNT4g8QmTmQ1kegmBwV9cWloLUqtPdUamCFhxEV2oAOmJ5IxoALwBaIKwmJIBz9CZATAJ0AHNsgwA3WgBCcwB3KABmfkQoLgB2AE4KgAZWtrb+RigAbVBVISJzLB7ukAwKADM4rEYcFik9LFQ40mca-jFggE9S6ixs0gheACZeAFZeZt4AFguANiuQPi5+Inz0PGkKdNQbPWY+M0ALq8UbjKYGGbUOL+SEHMBxVScMzVZAsMRiLwUPjXG6gu68AAcIKuXGOjwqcWacQqz34fFGFBw6HWIDJamyICB3IAvrw+kIAELmbHQABSfwILmy1D0QxGY3QkzikOYcUxn0RyPMzEw1EQCXQZEkfCqVW6XFJxxJvAaFKpNMB9MuvKBPKAA';

@@ -37,11 +37,11 @@ export class SocleDB extends Dexie {
 
 export const db = new SocleDB();
 
-export async function getReminders(): Promise<Reminders | null> {
-  const row = await db.kv.get('reminders');
+export async function getReminders(d: SocleDB = db): Promise<Reminders | null> {
+  const row = await d.kv.get('reminders');
   return (row?.value as Reminders | undefined) ?? null;
 }
 
-export async function setReminders(value: Reminders): Promise<void> {
-  await db.kv.put({ key: 'reminders', value });
+export async function setReminders(value: Reminders, d: SocleDB = db): Promise<void> {
+  await d.kv.put({ key: 'reminders', value });
 }
