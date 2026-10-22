@@ -247,6 +247,8 @@ export const PhaseExerciseSchema = z.strictObject({
   priority: z.union([z.literal(1), z.literal(2), z.literal(3)]),
   /** Niveau de progression conseillé au départ dans cette phase. */
   startLevel: z.number().int().min(1).max(5).optional(),
+  /** Niveau maximal autorisé dans cette phase (ex. pas d'amplitude sous la marche pour l'Achille insertionnelle). */
+  maxLevel: z.number().int().min(1).max(5).optional(),
   /** Dosage spécifique à la phase (ex. protocole publié), prioritaire sur celui du niveau. */
   dosage: DosageSchema.optional(),
   note: LocalizedSchema.optional(),

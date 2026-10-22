@@ -41,6 +41,8 @@ export const ProgramItemSchema = z.object({
   level: z.number().int().min(1).max(5),
   dosage: DosageSchema,
   note: z.string().max(1000).optional(),
+  /** Plafond de niveau imposé par la phase de la pathologie (la progression ne le dépasse pas). */
+  maxLevel: z.number().int().min(1).max(5).optional(),
   reason: ItemReasonSchema,
 });
 export type ProgramItem = z.infer<typeof ProgramItemSchema>;

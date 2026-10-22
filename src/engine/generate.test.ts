@@ -183,3 +183,19 @@ describe('structure des séances', () => {
     for (let i = 2; i < groups.length; i++) expect(groups[i] === groups[i - 1] && groups[i] === groups[i - 2]).toBe(false);
   });
 });
+
+describe('plafond de niveau par phase', () => {
+  it('ne dépasse pas le niveau maximal de la phase, même avec un niveau acquis plus élevé', () => {
+    const c = fixtureContent();
+    const ph = c.pathologies[0]!.phases[1]!;
+    (ph.exercises[0] as { maxLevel?: number }).maxLevel = 2;
+    const r = generateProgram(
+      { ...base, pathologies: [{ id: 'knee-pain', phase: 'rebuild' }], equipment: ['dumbbells'] },
+      c,
+      new Map([['rehab-load', { level: 3 }]]),
+    );
+    const item = r.sessions[0]!.items.find((i) => i.exerciseId === 'rehab-load')!;
+    expect(item.level).toBe(2);
+    expect(item.maxLevel).toBe(2);
+  });
+});

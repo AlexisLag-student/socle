@@ -6,6 +6,7 @@
  * Fonctions pures, testées.
  */
 import type { Feedback } from '@/domain/ids';
+import type { Dosage } from '@/domain/schema';
 import type { ExerciseState, Suggestion } from '@/domain/user';
 
 /** Nombre de retours conservés par exercice. */
@@ -85,4 +86,20 @@ export function roundLoad(kg: number): number {
 
 export function initialState(exerciseId: string, level: number, now: number, variantId?: string): ExerciseState {
   return { exerciseId, level, variantId, feedback: [], updatedAt: now };
+}
+
+/** Ajuste le dosage pour les propositions qui ne changent pas de niveau. */
+export function adjustDosage(kind: Suggestion['kind'], d: Dosage): Dosage {
+  switch (kind) {
+    case 'reps-up':
+      return d.holdSec
+        ? { ...d, holdSec: Math.min(600, d.holdSec + 10) }
+        : d.reps
+          ? { ...d, reps: [Math.min(50, d.reps[0] + 2), Math.min(50, d.reps[1] + 2)] }
+          : d;
+    case 'volume-down':
+      return d.sets > 1 ? { ...d, sets: d.sets - 1 } : d.holdSec ? { ...d, holdSec: Math.max(5, d.holdSec - 10) } : d;
+    default:
+      return d;
+  }
 }

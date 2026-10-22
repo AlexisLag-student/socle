@@ -190,6 +190,8 @@ export function validateContent(
           errors.push(
             `${label} › phase ${ph.phase} › « ${pe.exerciseId} » : startLevel ${pe.startLevel} > ${ex.levels.length} niveaux`,
           );
+        if (pe.maxLevel && (pe.maxLevel > ex.levels.length || (pe.startLevel ?? 1) > pe.maxLevel))
+          errors.push(`${label} › phase ${ph.phase} › « ${pe.exerciseId} » : maxLevel incohérent`);
         if (!ex.sports.some((s) => p.sports.includes(s)))
           warnings.push(`${label} › « ${pe.exerciseId} » ne concerne aucun des sports de la pathologie`);
       }

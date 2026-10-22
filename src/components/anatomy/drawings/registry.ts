@@ -26,7 +26,7 @@ export const zooms: Record<ZoomRegion, ZoomDef> = {
   'foot-sole': { drawing: 'sole', box: { x: 26, y: 6, w: 76, h: 228 } },
   'pelvis-front': { drawing: 'front', box: { x: 54, y: 136, w: 92, h: 116 } },
   'pelvis-back': { drawing: 'back', box: { x: 54, y: 146, w: 92, h: 116 } },
-  'trunk-front': { drawing: 'front', box: { x: 50, y: 52, w: 100, h: 140 } },
+  'trunk-front': { drawing: 'front', box: { x: 50, y: 36, w: 100, h: 156 } },
   'trunk-back': { drawing: 'back', box: { x: 50, y: 52, w: 100, h: 140 } },
   'shoulders-neck': { drawing: 'back', box: { x: 42, y: 30, w: 116, h: 92 } },
   'forearm-hand': { drawing: 'front', box: { x: 30, y: 124, w: 34, h: 120 } },

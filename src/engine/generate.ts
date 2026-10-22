@@ -65,6 +65,8 @@ interface Candidate {
   priority: number;
   reason: ItemReason;
   startLevel?: number;
+  /** Plafond de niveau imposé par la phase de la pathologie. */
+  maxLevel?: number;
   phaseDosage?: Dosage;
   /** Exercice essentiel d'une pathologie : présent dans chaque séance. */
   mandatory: boolean;
@@ -136,6 +138,7 @@ export function collectCandidates(
         priority: pe.priority,
         reason: { kind: 'pathology', ref: p.id },
         startLevel: pe.startLevel ?? DEFAULT_LEVEL_BY_PHASE[finalPhase],
+        ...(pe.maxLevel ? { maxLevel: pe.maxLevel } : {}),
         phaseDosage: pe.dosage,
         mandatory: pe.priority === 1,
         match: 0,
@@ -199,7 +202,7 @@ function toItem(
   const ex = c.exercise;
   const variant = pickVariant(ex, eq, state?.variantId);
   if (!variant) return undefined;
-  const levels = availableLevels(ex, variant, eq);
+  const levels = availableLevels(ex, variant, eq).filter((l) => !c.maxLevel || l <= c.maxLevel);
   const wanted = state?.level ?? c.startLevel ?? 1;
   const level = clampLevel(wanted, levels);
   if (level === undefined) return undefined;
@@ -212,6 +215,7 @@ function toItem(
     level,
     dosage: usePhaseDosage ? c.phaseDosage! : levelDef.dosage,
     reason: c.reason,
+    ...(c.maxLevel ? { maxLevel: c.maxLevel } : {}),
   };
 }
 

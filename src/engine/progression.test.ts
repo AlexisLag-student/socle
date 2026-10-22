@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import type { Feedback } from '@/domain/ids';
 import type { ExerciseState } from '@/domain/user';
-import { initialState, recordFeedback, resolveSuggestion, roundLoad, suggest } from './progression';
+import { adjustDosage, initialState, recordFeedback, resolveSuggestion, roundLoad, suggest } from './progression';
 
 const ctx = { availableLevels: [1, 2, 3, 4], loadable: false };
 const st = (level: number, feedback: Feedback[], loadKg?: number) => ({ level, feedback, loadKg });
@@ -71,4 +71,12 @@ describe('cycle complet : retour → proposition → décision', () => {
 it('arrondit les charges', () => {
   expect(roundLoad(7.3)).toBe(7.5);
   expect(roundLoad(42.4)).toBe(42);
+});
+
+describe('adjustDosage', () => {
+  const base = { sets: 3, reps: [10, 12] as [number, number], restSec: 60, perSide: false, intensity: { kind: 'rir' as const, value: { fr: '2', en: '2' } } };
+  it('plus de répétitions', () => expect(adjustDosage('reps-up', base).reps).toEqual([12, 14]));
+  it('plus de temps de maintien', () => expect(adjustDosage('reps-up', { ...base, reps: undefined, holdSec: 30 }).holdSec).toBe(40));
+  it('moins de volume', () => expect(adjustDosage('volume-down', base).sets).toBe(2));
+  it('inchangé pour un changement de niveau', () => expect(adjustDosage('level-up', base)).toBe(base));
 });
