@@ -1,7 +1,160 @@
+/*
+ * Design tokens de Socle.
+ * Clair par défaut ; sombre selon le système (sauf choix manuel « clair ») ou forcé par data-theme="dark".
+ */
 :root {
   color-scheme: light;
   --font-sans: 'Inter Variable', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-  --bg: #f6f8fa;
+  --font-num: 'Inter Variable', system-ui, sans-serif;
+
+  --bg: #f4f6f8;
   --surface: #ffffff;
-  --text: #10212e;
+  --surface-2: #eef2f5;
+  --border: #dbe2e8;
+  --border-strong: #b9c4ce;
+  --text: #10212d;
+  --text-muted: #51606d;
+  --text-faint: #6f7d89;
+
+  --brand: #0f5f5a;
+  --brand-strong: #0a4743;
+  --brand-soft: #e1f0ee;
+  --on-brand: #ffffff;
+
+  --accent: #d92d20;
+  --success: #17703a;
+  --success-soft: #e3f4e8;
+  --warning: #8a5a00;
+  --warning-soft: #fdf2d6;
+  --danger: #b42318;
+  --danger-soft: #fde7e5;
+
+  /* Schémas musculaires */
+  --m-primary: #d92d20;
+  --m-secondary: #f3a1ae;
+  --m-neutral: #d3dae1;
+  --m-base: #edf1f4;
+  --m-detail: #98a5b1;
+  --m-sep: #ffffff;
+  --m-locator: #0f5f5a;
+  --area-hover: rgba(15, 95, 90, 0.18);
+  --area-selected: rgba(217, 45, 32, 0.45);
+
+  /* Niveaux de preuve */
+  --ev-strong: #17703a;
+  --ev-strong-soft: #e1f3e7;
+  --ev-moderate: #1f5fa8;
+  --ev-moderate-soft: #e3eefb;
+  --ev-low: #8a5a00;
+  --ev-low-soft: #fbf0d5;
+  --ev-expert: #5d4b8a;
+  --ev-expert-soft: #ece8f6;
+
+  --radius-sm: 8px;
+  --radius: 14px;
+  --radius-lg: 20px;
+  --shadow-1: 0 1px 2px rgba(16, 33, 45, 0.06), 0 1px 3px rgba(16, 33, 45, 0.08);
+  --shadow-2: 0 6px 24px rgba(16, 33, 45, 0.1);
+  --focus: 0 0 0 3px rgba(15, 95, 90, 0.45);
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+
+  --tap: 48px;
+  --content-max: 760px;
+  --header-h: 56px;
+  --nav-h: 64px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    color-scheme: dark;
+    --bg: #0c1317;
+    --surface: #131c22;
+    --surface-2: #1a252d;
+    --border: #273540;
+    --border-strong: #3a4a57;
+    --text: #e5edf2;
+    --text-muted: #a2b2bf;
+    --text-faint: #8597a5;
+    --brand: #43b9ad;
+    --brand-strong: #6ad1c6;
+    --brand-soft: #12332f;
+    --on-brand: #04201d;
+    --accent: #ff6b5e;
+    --success: #5cc985;
+    --success-soft: #133222;
+    --warning: #e8b54a;
+    --warning-soft: #33280f;
+    --danger: #ff7a6e;
+    --danger-soft: #3a1714;
+    --m-primary: #ff5f52;
+    --m-secondary: #c97a88;
+    --m-neutral: #34424d;
+    --m-base: #212c35;
+    --m-detail: #5d6c79;
+    --m-sep: #131c22;
+    --m-locator: #43b9ad;
+    --area-hover: rgba(67, 185, 173, 0.22);
+    --area-selected: rgba(255, 95, 82, 0.5);
+    --ev-strong: #5cc985;
+    --ev-strong-soft: #143023;
+    --ev-moderate: #79aef0;
+    --ev-moderate-soft: #15263b;
+    --ev-low: #e8b54a;
+    --ev-low-soft: #33280f;
+    --ev-expert: #b5a3ea;
+    --ev-expert-soft: #261f3b;
+    --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.4);
+    --shadow-2: 0 8px 28px rgba(0, 0, 0, 0.45);
+    --focus: 0 0 0 3px rgba(67, 185, 173, 0.6);
+  }
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --bg: #0c1317;
+  --surface: #131c22;
+  --surface-2: #1a252d;
+  --border: #273540;
+  --border-strong: #3a4a57;
+  --text: #e5edf2;
+  --text-muted: #a2b2bf;
+  --text-faint: #8597a5;
+  --brand: #43b9ad;
+  --brand-strong: #6ad1c6;
+  --brand-soft: #12332f;
+  --on-brand: #04201d;
+  --accent: #ff6b5e;
+  --success: #5cc985;
+  --success-soft: #133222;
+  --warning: #e8b54a;
+  --warning-soft: #33280f;
+  --danger: #ff7a6e;
+  --danger-soft: #3a1714;
+  --m-primary: #ff5f52;
+  --m-secondary: #c97a88;
+  --m-neutral: #34424d;
+  --m-base: #212c35;
+  --m-detail: #5d6c79;
+  --m-sep: #131c22;
+  --m-locator: #43b9ad;
+  --area-hover: rgba(67, 185, 173, 0.22);
+  --area-selected: rgba(255, 95, 82, 0.5);
+  --ev-strong: #5cc985;
+  --ev-strong-soft: #143023;
+  --ev-moderate: #79aef0;
+  --ev-moderate-soft: #15263b;
+  --ev-low: #e8b54a;
+  --ev-low-soft: #33280f;
+  --ev-expert: #b5a3ea;
+  --ev-expert-soft: #261f3b;
+  --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-2: 0 8px 28px rgba(0, 0, 0, 0.45);
+  --focus: 0 0 0 3px rgba(67, 185, 173, 0.6);
 }

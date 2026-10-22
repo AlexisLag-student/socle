@@ -22,7 +22,11 @@
     "accept": "J’ai compris, continuer",
     "accepted": "Avertissement accepté"
   },
-  "sports": { "run": "Course à pied", "bike": "Vélo", "both": "Les deux" },
+  "sports": {
+    "run": "Course à pied",
+    "bike": "Vélo",
+    "both": "Les deux"
+  },
   "objectives": {
     "prevention": "Prévention des blessures",
     "performance": "Performance",
@@ -76,7 +80,8 @@
     "back": "Dos",
     "altPrimary": "Muscles principaux : {{list}}.",
     "altSecondary": "Muscles secondaires : {{list}}.",
-    "altFigure": "Schéma musculaire de l’exercice {{name}}."
+    "altFigure": "Schéma musculaire de l’exercice {{name}}.",
+    "legend": "Légende du schéma"
   },
   "common": {
     "loading": "Chargement…",
@@ -97,5 +102,21 @@
     "updateAvailable": "Une nouvelle version de Socle est disponible.",
     "reload": "Mettre à jour",
     "offlineReady": "Socle fonctionne maintenant hors ligne."
+  },
+  "zooms": {
+    "leg-front": "Jambe, face",
+    "leg-back": "Jambe, dos",
+    "foot-sole": "Plante du pied",
+    "pelvis-front": "Bassin et hanches, face",
+    "pelvis-back": "Bassin et fessiers, dos",
+    "trunk-front": "Tronc, face",
+    "trunk-back": "Dos",
+    "shoulders-neck": "Épaules et nuque",
+    "forearm-hand": "Avant-bras et main"
+  },
+  "bodyMap": {
+    "label": "Carte du corps : touchez les zones douloureuses",
+    "front": "Silhouette de face, zones cliquables",
+    "back": "Silhouette de dos, zones cliquables"
   }
 }

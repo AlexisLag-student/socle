@@ -110,6 +110,11 @@ export function validateContent(content: ContentBundle, drawn?: DrawnMuscles): V
   parse(PathologySchema, content.pathologies, 'pathologie', (p) => p.id);
 
   // --- 2. Registres complets --------------------------------------------------
+  if (drawn) {
+    for (const id of MUSCLE_IDS)
+      if (!drawn.front?.has(id) && !drawn.back?.has(id) && !drawn.sole?.has(id))
+        errors.push(`muscle › « ${id} » n'est dessiné sur aucune vue`);
+  }
   const registered = new Set(content.muscles.map((m) => m.id));
   for (const id of MUSCLE_IDS)
     if (!registered.has(id)) errors.push(`muscle › « ${id} » absent du registre src/content/muscles.ts`);
@@ -140,8 +145,8 @@ export function validateContent(content: ContentBundle, drawn?: DrawnMuscles): V
     if (drawn) {
       const all = [...ex.muscles.primary, ...ex.muscles.secondary];
       for (const m of all) {
-        if (!drawn.front?.has(m) && !drawn.back?.has(m))
-          errors.push(`${label} › muscle « ${m} » dessiné ni sur la silhouette de face ni de dos`);
+        if (!drawn.front?.has(m) && !drawn.back?.has(m) && !drawn.sole?.has(m))
+          errors.push(`${label} › muscle « ${m} » dessiné sur aucune vue (face, dos, plante du pied)`);
       }
       const zoom = drawn[ex.zoom];
       if (!zoom) errors.push(`${label} › zoom « ${ex.zoom} » sans dessin`);

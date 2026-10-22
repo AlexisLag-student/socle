@@ -22,7 +22,11 @@
     "accept": "I understand, continue",
     "accepted": "Disclaimer accepted"
   },
-  "sports": { "run": "Running", "bike": "Cycling", "both": "Both" },
+  "sports": {
+    "run": "Running",
+    "bike": "Cycling",
+    "both": "Both"
+  },
   "objectives": {
     "prevention": "Injury prevention",
     "performance": "Performance",
@@ -76,7 +80,8 @@
     "back": "Back",
     "altPrimary": "Primary muscles: {{list}}.",
     "altSecondary": "Secondary muscles: {{list}}.",
-    "altFigure": "Muscle diagram for {{name}}."
+    "altFigure": "Muscle diagram for {{name}}.",
+    "legend": "Diagram legend"
   },
   "common": {
     "loading": "Loading…",
@@ -97,5 +102,21 @@
     "updateAvailable": "A new version of Socle is available.",
     "reload": "Update",
     "offlineReady": "Socle now works offline."
+  },
+  "zooms": {
+    "leg-front": "Leg, front",
+    "leg-back": "Leg, back",
+    "foot-sole": "Sole of the foot",
+    "pelvis-front": "Pelvis and hips, front",
+    "pelvis-back": "Pelvis and glutes, back",
+    "trunk-front": "Trunk, front",
+    "trunk-back": "Back",
+    "shoulders-neck": "Shoulders and neck",
+    "forearm-hand": "Forearm and hand"
+  },
+  "bodyMap": {
+    "label": "Body map: tap the painful areas",
+    "front": "Front view, clickable areas",
+    "back": "Back view, clickable areas"
   }
 }
