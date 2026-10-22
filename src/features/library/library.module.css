@@ -1,0 +1,231 @@
+.layout {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.search {
+  position: relative;
+}
+
+.search input {
+  padding-left: 42px;
+  border-radius: 999px;
+}
+
+.searchIcon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+  pointer-events: none;
+}
+
+.filters {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0 var(--space-4);
+}
+
+.filters summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: var(--tap);
+  cursor: pointer;
+  font-weight: 650;
+}
+
+.count {
+  background: var(--brand);
+  color: var(--on-brand);
+  border-radius: 999px;
+  font-size: 0.75rem;
+  padding: 0 8px;
+}
+
+.filterGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: var(--space-3);
+  padding-bottom: var(--space-3);
+}
+
+.reset {
+  background: none;
+  border: 0;
+  color: var(--brand);
+  font-weight: 600;
+  padding: 0 0 var(--space-3);
+}
+
+.list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: var(--space-2);
+}
+
+@media (min-width: 900px) {
+  .list {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius);
+  background: var(--surface);
+  border: 1px solid var(--border);
+}
+
+.itemText {
+  flex: 1;
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.itemTitle {
+  font-weight: 650;
+  color: var(--text);
+  text-decoration: none;
+}
+
+a.itemTitle:hover {
+  color: var(--brand);
+}
+
+.itemMeta {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tags {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-faint);
+}
+
+/* --- Fiche exercice --- */
+.detail {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.levels {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: var(--space-2);
+}
+
+.level {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  border-radius: var(--radius);
+  background: var(--surface);
+  border: 1px solid var(--border);
+}
+
+.levelCurrent {
+  border-color: var(--brand);
+  box-shadow: inset 4px 0 0 var(--brand);
+}
+
+.levelNum {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--surface-2);
+  font-weight: 750;
+}
+
+.level p {
+  margin: 0 0 4px;
+}
+
+.mastery {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.prose ul {
+  padding-left: 1.2rem;
+  margin: 0;
+}
+
+.prose li + li {
+  margin-top: 4px;
+}
+
+.refs {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: var(--space-3);
+}
+
+.ref {
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  display: grid;
+  gap: 4px;
+}
+
+.refCitation {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.refLinks {
+  display: flex;
+  gap: var(--space-3);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.variants {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.variant {
+  padding: var(--space-3);
+  border-radius: var(--radius);
+  background: var(--surface-2);
+}
+
+.variant strong {
+  display: block;
+}
+
+.actionsBar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+}

@@ -5,7 +5,8 @@ const merge = (a, b) => {
   for (const [k, v] of Object.entries(b)) a[k] = v && typeof v === 'object' && !Array.isArray(v) ? merge(a[k] ?? {}, v) : v;
   return a;
 };
-for (const [lang, arg] of [['fr', process.argv[2]], ['en', process.argv[3]]]) {
+for (const [lang, arg0] of [["fr", process.argv[2]], ["en", process.argv[3]]]) {
+  const arg = arg0.endsWith(".json") ? readFileSync(arg0, "utf8") : arg0;
   const f = `src/i18n/locales/${lang}.json`;
   const data = merge(JSON.parse(readFileSync(f, 'utf8')), JSON.parse(arg));
   writeFileSync(f, JSON.stringify(data, null, 2) + '\n');

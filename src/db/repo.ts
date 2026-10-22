@@ -12,7 +12,8 @@ import {
   type SessionLog,
 } from '@/domain/user';
 import { ENGINE_VERSION, generateProgram, type EngineContent, type GenerationResult } from '@/engine/generate';
-import { initialState, recordFeedback, resolveSuggestion, type ProgressionContext } from '@/engine/progression';
+import { adjustDosage, initialState, recordFeedback, resolveSuggestion, type ProgressionContext } from '@/engine/progression';
+import type { Exercise } from '@/domain/schema';
 import { db, getReminders, type SocleDB } from './db';
 
 const uid = () =>
@@ -187,4 +188,51 @@ export async function importBackup(json: unknown, d: SocleDB = db): Promise<Back
 
 export async function clearAll(d: SocleDB = db): Promise<void> {
   await Promise.all([d.profile.clear(), d.programs.clear(), d.logs.clear(), d.exerciseStates.clear(), d.kv.clear()]);
+}
+
+/**
+ * Applique la décision de l'utilisateur sur une proposition de progression, et répercute
+ * le changement (niveau ou dosage) sur les programmes actifs qui contiennent l'exercice.
+ */
+export async function decideAndApply(
+  exerciseId: string,
+  accepted: boolean,
+  lookup: (id: string) => Exercise | undefined,
+  d: SocleDB = db,
+): Promise<void> {
+  const before = await d.exerciseStates.get(exerciseId);
+  const suggestion = before?.pending;
+  await decideSuggestion(exerciseId, accepted, d);
+  if (!accepted || !suggestion) return;
+  const ex = lookup(exerciseId);
+  const active = await getActiveProgram(d);
+  if (!active || !ex) return;
+  const sessions = active.sessions.map((s) => ({
+    ...s,
+    items: s.items.map((it) => {
+      if (it.exerciseId !== exerciseId) return it;
+      if (suggestion.toLevel !== it.level) {
+        const lvl = ex.levels.find((l) => l.level === suggestion.toLevel);
+        return lvl ? { ...it, level: lvl.level, dosage: lvl.dosage } : it;
+      }
+      return { ...it, dosage: adjustDosage(suggestion.kind, it.dosage) };
+    }),
+  }));
+  await saveProgram({ ...active, sessions }, d);
+}
+
+/** Ajoute un exercice à une séance d'un programme (bibliothèque → programme ou brouillon praticien). */
+export async function addItemToProgram(
+  programId: string,
+  sessionKey: Program['sessions'][number]['key'],
+  item: Program['sessions'][number]['items'][number],
+  d: SocleDB = db,
+): Promise<void> {
+  const p = await d.programs.get(programId);
+  if (!p) return;
+  const has = p.sessions.some((s) => s.key === sessionKey);
+  const sessions = has
+    ? p.sessions.map((s) => (s.key === sessionKey ? { ...s, items: [...s.items, item] } : s))
+    : [...p.sessions, { key: sessionKey, items: [item] }];
+  await saveProgram({ ...p, sessions }, d);
 }

@@ -1,0 +1,202 @@
+.intro {
+  background: linear-gradient(160deg, var(--brand-soft), var(--surface) 70%);
+}
+
+.steps {
+  margin: 0 0 var(--space-3);
+  padding-left: 1.3rem;
+  display: grid;
+  gap: 6px;
+}
+
+.drafts {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: var(--space-2);
+}
+
+.draft {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius);
+  background: var(--surface);
+  border: 1px solid var(--border);
+}
+
+.draft > div:first-child {
+  display: grid;
+}
+
+.editorPage {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.previewLink {
+  font-weight: 600;
+  min-height: var(--tap);
+  display: inline-flex;
+  align-items: center;
+  padding: 0 var(--space-2);
+}
+
+.meta {
+  display: grid;
+  gap: var(--space-3);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+}
+
+@media (min-width: 760px) {
+  .meta {
+    grid-template-columns: 1fr 1fr;
+  }
+  .meta > :last-child {
+    grid-column: 1 / -1;
+  }
+}
+
+.tabs {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  margin-top: var(--space-3);
+}
+
+.tabs button {
+  min-height: var(--tap);
+  padding: 0 var(--space-4);
+  border-radius: var(--radius) var(--radius) 0 0;
+  border: 1px solid var(--border);
+  border-bottom: 0;
+  background: var(--surface-2);
+  font-weight: 650;
+  white-space: nowrap;
+}
+
+.tabs button[aria-selected='true'] {
+  background: var(--surface);
+  color: var(--brand-strong);
+  box-shadow: inset 0 3px 0 var(--brand);
+}
+
+.tabCount {
+  display: inline-block;
+  min-width: 22px;
+  padding: 0 6px;
+  border-radius: 99px;
+  background: var(--surface-2);
+  font-size: 0.78rem;
+}
+
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 0 var(--radius-lg) var(--radius-lg) var(--radius-lg);
+  padding: var(--space-4);
+  display: grid;
+  gap: var(--space-3);
+  margin-top: -13px;
+}
+
+.items {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-2);
+}
+
+.item {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg);
+}
+
+.dragging {
+  opacity: 0.5;
+}
+
+.itemHead {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2);
+}
+
+.grip {
+  cursor: grab;
+  color: var(--text-faint);
+  padding: 0 4px;
+  letter-spacing: -2px;
+}
+
+.itemTitle {
+  display: grid;
+  text-align: left;
+  background: none;
+  border: 0;
+  padding: 4px;
+  min-height: var(--tap);
+  min-width: 0;
+}
+
+.itemTitle span {
+  font-size: 0.82rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.itemActions {
+  display: flex;
+  gap: 2px;
+}
+
+.editor {
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4) var(--space-4);
+  border-top: 1px solid var(--border);
+}
+
+.editorGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: var(--space-3);
+}
+
+.pair {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.qr {
+  width: min(240px, 70vw);
+  justify-self: center;
+  background: #fff;
+  padding: 8px;
+  border-radius: var(--radius);
+}
+
+.qr svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* --- Import --- */
+.importCard {
+  display: grid;
+  gap: var(--space-3);
+}

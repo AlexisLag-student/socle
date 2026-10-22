@@ -1,0 +1,43 @@
+.filters {
+  display: grid;
+  gap: var(--space-3);
+  margin-bottom: var(--space-3);
+}
+
+@media (min-width: 640px) {
+  .filters {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.list {
+  margin: 0;
+  padding-left: 1.4rem;
+  display: grid;
+  gap: var(--space-3);
+}
+
+.item {
+  padding: var(--space-2) 0 var(--space-3);
+  border-bottom: 1px solid var(--border);
+  display: grid;
+  gap: 6px;
+}
+
+.citation {
+  line-height: 1.45;
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  align-items: center;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.used {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}

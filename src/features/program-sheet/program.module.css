@@ -1,0 +1,93 @@
+.page {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-4);
+  margin: 0;
+  font-size: 0.92rem;
+}
+
+.notes {
+  background: var(--warning-soft);
+  border-radius: var(--radius);
+  padding: var(--space-3) var(--space-4);
+  white-space: pre-wrap;
+}
+
+.notes h2 {
+  font-size: 0.95rem;
+  margin-bottom: var(--space-1);
+}
+
+.notes p {
+  margin: 0;
+}
+
+.suggestions {
+  background: var(--brand-soft);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  display: grid;
+  gap: var(--space-3);
+}
+
+.suggestions h2 {
+  font-size: 1rem;
+  margin: 0;
+}
+
+.suggestion p {
+  margin: 0 0 var(--space-2);
+}
+
+.session {
+  margin-top: var(--space-5);
+  display: grid;
+  gap: var(--space-3);
+}
+
+.sessionHead {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.sessionHead h2 {
+  margin: 0 0 4px;
+}
+
+.items {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.printFooter {
+  display: none;
+}
+
+@media print {
+  .noPrint {
+    display: none !important;
+  }
+  .session {
+    break-before: auto;
+  }
+  .items {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .printFooter {
+    display: block;
+    font-size: 9pt;
+    color: #555;
+    border-top: 1px solid #ccc;
+    padding-top: 6px;
+    margin-top: 12px;
+  }
+}

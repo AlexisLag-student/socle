@@ -1,0 +1,142 @@
+.welcome {
+  display: grid;
+  gap: var(--space-5);
+}
+
+.hero {
+  text-align: center;
+  display: grid;
+  justify-items: center;
+  gap: var(--space-2);
+  padding: var(--space-4) 0 0;
+}
+
+.hero h1 {
+  font-size: 1.9rem;
+  margin: var(--space-2) 0 0;
+}
+
+.hero p {
+  color: var(--text-muted);
+  max-width: 34ch;
+  margin: 0;
+}
+
+.heroLogo {
+  width: 64px;
+  height: 64px;
+}
+
+.modes {
+  display: grid;
+  gap: var(--space-3);
+}
+
+@media (min-width: 640px) {
+  .modes {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.mode {
+  display: grid;
+  gap: var(--space-2);
+  padding: var(--space-5);
+}
+
+.mode strong {
+  font-size: 1.15rem;
+}
+
+.modeIcon {
+  display: inline-flex;
+  gap: 6px;
+  width: fit-content;
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: var(--brand-soft);
+  color: var(--brand);
+}
+
+.modeCta {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 650;
+  color: var(--brand);
+  margin-top: var(--space-2);
+}
+
+.explore {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-4);
+}
+
+.explore a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+  text-decoration: none;
+  min-height: var(--tap);
+}
+
+.greeting {
+  margin-bottom: 0;
+}
+
+.next {
+  display: grid;
+  gap: var(--space-2);
+  padding: var(--space-5);
+  background: linear-gradient(160deg, var(--brand-soft), var(--surface) 70%);
+}
+
+.kicker {
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--brand);
+}
+
+.nextTitle {
+  font-size: 1.6rem;
+  margin: 0;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3);
+}
+
+.stats > div {
+  display: grid;
+  gap: 2px;
+}
+
+.statValue {
+  font-size: 1.9rem;
+  font-weight: 750;
+  font-variant-numeric: tabular-nums;
+}
+
+.statValue small {
+  font-size: 1rem;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.statLabel {
+  color: var(--text-muted);
+  font-size: 0.875rem;
+}
+
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}

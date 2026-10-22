@@ -1,0 +1,154 @@
+.wrap {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.progress {
+  display: grid;
+  grid-auto-flow: column;
+  gap: 6px;
+}
+
+.progress span {
+  height: 5px;
+  border-radius: 99px;
+  background: var(--border);
+}
+
+.progress span.done {
+  background: var(--brand);
+}
+
+.stepCount {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin: var(--space-2) 0 0;
+}
+
+.title {
+  margin: 0;
+  outline: none;
+}
+
+.subtitle {
+  color: var(--text-muted);
+}
+
+.body {
+  margin: var(--space-3) 0 var(--space-5);
+}
+
+.h2 {
+  font-size: 1rem;
+  margin: var(--space-2) 0 0;
+}
+
+.region {
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  margin: var(--space-4) 0 0;
+}
+
+.allList summary {
+  cursor: pointer;
+  font-weight: 650;
+  min-height: var(--tap);
+  display: flex;
+  align-items: center;
+}
+
+.pathology {
+  display: grid;
+  gap: 4px;
+}
+
+.caveat {
+  display: flex;
+  gap: 6px;
+  align-items: flex-start;
+  font-size: 0.85rem;
+  color: var(--warning);
+  margin: 0 var(--space-2);
+}
+
+.phaseSet {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  margin: 0;
+  display: grid;
+  gap: var(--space-3);
+  background: var(--surface);
+}
+
+.phaseSet legend {
+  font-weight: 700;
+  padding: 0 var(--space-2);
+}
+
+.confirm {
+  display: flex;
+  gap: var(--space-3);
+  align-items: flex-start;
+  padding: var(--space-3);
+  border-radius: var(--radius);
+  background: var(--warning-soft);
+  font-weight: 550;
+}
+
+.confirm input {
+  width: 22px;
+  height: 22px;
+  margin-top: 2px;
+  accent-color: var(--brand);
+}
+
+.summary {
+  display: grid;
+  gap: var(--space-1) var(--space-4);
+  margin: 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+}
+
+.summary dt {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-top: var(--space-2);
+}
+
+.summary dd {
+  margin: 0;
+}
+
+.nav {
+  position: sticky;
+  bottom: calc(var(--nav-h) + env(safe-area-inset-bottom) + 8px);
+  display: flex;
+  gap: var(--space-3);
+  justify-content: space-between;
+  padding: var(--space-3) 0;
+  background: linear-gradient(transparent, var(--bg) 30%);
+}
+
+.nav > :last-child {
+  margin-left: auto;
+}
+
+.keep {
+  text-align: center;
+  font-size: 0.85rem;
+}
+
+@media (min-width: 900px) {
+  .nav {
+    bottom: 0;
+  }
+}
