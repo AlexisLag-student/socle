@@ -1,4 +1,4 @@
-// Gabarit de pathologie : copier dans src/content/pathologies/<id>.ts puis l'importer dans src/content/index.ts.
+// Gabarit de pathologie : copier dans src/content/pathologies/<id>.ts puis l'importer dans src/content/zones/<zone>.ts.
 import { definePathology } from '@/domain/schema';
 import { freq, symptomGuided } from '../helpers';
 

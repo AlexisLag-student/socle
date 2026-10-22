@@ -12,7 +12,7 @@ Schéma : `src/domain/schema.ts` → `PathologySchema`.
 ## 1. Avant d'écrire
 
 - Vérifier qu'elle n'existe pas : `ls src/content/pathologies`.
-- Un fichier par pathologie : `src/content/pathologies/<id>.ts`, `export default definePathology({...})`, puis **import dans `src/content/index.ts`** (tableau `pathologies`).
+- Un fichier par pathologie : `src/content/pathologies/<id>.ts`, `export default definePathology({...})`, puis **import dans le fichier de zone `src/content/zones/<zone>.ts`** (tableau `pathologies`).
 - Id kebab-case anglais, définitif (ex. `patellofemoral-pain`, `gluteal-tendinopathy`).
 
 ## 2. Langage : informer sans diagnostiquer

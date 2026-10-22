@@ -89,7 +89,16 @@ export function checkEvidence(
   return errors;
 }
 
-export function validateContent(content: ContentBundle, drawn?: DrawnMuscles): ValidationResult {
+export interface ValidateOptions {
+  /** Exercices réservés mais pas encore écrits (mode rédaction) : simple avertissement s'ils manquent. */
+  planned?: ReadonlySet<string>;
+}
+
+export function validateContent(
+  content: ContentBundle,
+  drawn?: DrawnMuscles,
+  options: ValidateOptions = {},
+): ValidationResult {
   const errors: string[] = [];
   const warnings: string[] = [];
 
@@ -172,7 +181,9 @@ export function validateContent(content: ContentBundle, drawn?: DrawnMuscles): V
         usedByPathology.add(pe.exerciseId);
         const ex = exercises.get(pe.exerciseId);
         if (!ex) {
-          errors.push(`${label} › phase ${ph.phase} › exercice inconnu « ${pe.exerciseId} »`);
+          if (options.planned?.has(pe.exerciseId))
+            warnings.push(`${label} › phase ${ph.phase} › exercice réservé pas encore écrit « ${pe.exerciseId} »`);
+          else errors.push(`${label} › phase ${ph.phase} › exercice inconnu « ${pe.exerciseId} »`);
           continue;
         }
         if (pe.startLevel && pe.startLevel > ex.levels.length)
@@ -183,7 +194,7 @@ export function validateContent(content: ContentBundle, drawn?: DrawnMuscles): V
           warnings.push(`${label} › « ${pe.exerciseId} » ne concerne aucun des sports de la pathologie`);
       }
       for (const a of ph.avoid ?? []) {
-        if (!exercises.has(a.exerciseId))
+        if (!exercises.has(a.exerciseId) && !options.planned?.has(a.exerciseId))
           errors.push(`${label} › phase ${ph.phase} › exercice à éviter inconnu « ${a.exerciseId} »`);
         if (ph.exercises.some((e) => e.exerciseId === a.exerciseId))
           errors.push(`${label} › phase ${ph.phase} › « ${a.exerciseId} » à la fois prescrit et à éviter`);

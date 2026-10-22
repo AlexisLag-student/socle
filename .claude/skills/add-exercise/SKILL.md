@@ -12,7 +12,7 @@ Schéma (source de vérité) : `src/domain/schema.ts` → `ExerciseSchema`.
 ## 1. Avant d'écrire
 
 - **Doublon ?** `grep -rn "family: '" src/content/exercises` et `grep -rni "<nom>" src/content/exercises`. Si une variante de matériel ou un niveau de progression d'un exercice existant suffit, **modifiez l'existant** au lieu de créer un exercice.
-- **Fichier** : `src/content/exercises/<groupe>.ts`. Groupes : `foot-ankle`, `calf`, `knee-quads`, `hamstrings`, `hip`, `adductors`, `trunk`, `upper-body`, `plyometrics`, `mobility`. Un nouveau fichier doit être importé dans `src/content/index.ts`.
+- **Fichier** : `src/content/exercises/<groupe>.ts`. Fichiers existants : `calf`, `foot-ankle`, `knee`, `hip`, `hamstrings-adductors`, `trunk`, `upper-body`, `performance`. Un nouveau fichier doit être importé dans le fichier de zone `src/content/zones/<zone>.ts`.
 - **Id** (kebab-case, anglais, **définitif** : les liens de partage en dépendent) : `split-squat`, `copenhagen-adductor`… Pour renommer un exercice publié, ajoutez l'ancien id dans `src/content/aliases.ts`.
 - **family** : le geste de base. Deux exercices de même famille ne se retrouvent jamais dans la même séance (ex. `calf-raise-straight`).
 
@@ -70,3 +70,7 @@ npm test                        # validation + moteur
 npm run refs:check -- --id <ref-id>   # pour chaque nouvelle référence
 ```
 La validation échoue si : un champ manque, une traduction est vide, il y a moins de 3 niveaux, un muscle est inconnu ou non dessiné, une référence est inconnue ou sans DOI/PMID/URL, ou le niveau de preuve est incohérent.
+
+## 6. Exercices partagés entre zones
+
+`src/content/catalog.ts` réserve les identifiants des exercices que plusieurs zones citent (squat, pont fessier, gainage…), chacun avec sa zone propriétaire. Seule la zone propriétaire écrit l'exercice ; les autres peuvent le citer dans leurs pathologies. Pendant une rédaction en parallèle, utilisez `CONTENT_WIP=1 npm run validate:content` : un exercice réservé mais pas encore écrit n'est alors qu'un avertissement.
