@@ -178,6 +178,10 @@
   border-top: 1px solid var(--sep);
 }
 
+.preview svg {
+  max-height: 220px;
+}
+
 .editorGrid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));

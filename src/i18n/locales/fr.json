@@ -386,7 +386,8 @@
       "frequency": "Fréquence"
     },
     "doseStart": "Pour commencer : {{level}}",
-    "doseYours": "Votre niveau : {{level}}"
+    "doseYours": "Votre niveau : {{level}}",
+    "movementAnim": "Le mouvement"
   },
   "library": {
     "subtitle": "Tous les exercices, avec leurs schémas, dosages et références.",
@@ -618,5 +619,33 @@
     "subtitle": "Ce qui a changé à chaque version de Socle.",
     "version": "Version {{version}}",
     "empty": "Aucune note de version pour le moment."
+  },
+  "anim": {
+    "label": "Animation du mouvement : {{name}}",
+    "play": "Lire l’animation",
+    "pause": "Mettre l’animation en pause",
+    "speed": "Vitesse de l’animation",
+    "slow": "0,5×",
+    "normal": "1×",
+    "switchSide": "Changer de côté",
+    "playAnyway": "Lire l’animation",
+    "keyPoses": "Poses clés du mouvement : {{name}}",
+    "poseN": "Pose {{n}} sur {{total}} : {{name}}",
+    "playThumb": "Voir le mouvement : {{name}}",
+    "stopThumb": "Arrêter le mouvement : {{name}}",
+    "show": "Afficher l’animation",
+    "hide": "Masquer l’animation",
+    "say": {
+      "lower": "on descend",
+      "brake": "on freine",
+      "hold": "on tient",
+      "push": "on pousse",
+      "rise": "on monte",
+      "return": "on revient",
+      "land": "on se réceptionne",
+      "jump": "on saute",
+      "step": "on fait un pas",
+      "lift": "on lève"
+    }
   }
 }

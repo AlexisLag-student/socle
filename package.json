@@ -1,6 +1,6 @@
 {
   "name": "socle",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Socle — renforcement musculaire pour coureurs et cyclistes (PWA)",
   "scripts": {
     "dev": "vite",
@@ -15,7 +15,8 @@
     "screens": "playwright test --project=visual",
     "validate:content": "tsx --tsconfig tsconfig.node.json scripts/validate-content.ts",
     "refs:check": "tsx --tsconfig tsconfig.node.json scripts/verify-references.ts",
-    "profiles:report": "tsx --tsconfig tsconfig.node.json scripts/profiles-report.ts"
+    "profiles:report": "tsx --tsconfig tsconfig.node.json scripts/profiles-report.ts",
+    "anim:probe": "tsx --tsconfig tsconfig.node.json scripts/animation-probe.ts"
   },
   "license": "UNLICENSED",
   "type": "module",

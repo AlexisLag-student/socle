@@ -19,6 +19,8 @@ import {
   ui,
 } from '@/components/ui';
 import { MuscleMap } from '@/components/anatomy/MuscleMap';
+import { ExerciseAnimation } from '@/components/animation/ExerciseAnimation';
+import { hasAnimation } from '@/animation/loaders';
 import { content, exerciseById, referenceById } from '@/content/index';
 import { formatAuthors, pathologiesForExercise, referenceLinks } from '@/content/query';
 import { resolveExerciseId } from '@/content/aliases';
@@ -117,6 +119,7 @@ export default function ExercisePage() {
   const { id = '' } = useParams();
   const ex = exerciseById.get(resolveExerciseId(id));
   const states = useExerciseStates();
+  const profile = useProfile();
   const [adding, setAdding] = useState(false);
 
   if (!ex)
@@ -129,6 +132,14 @@ export default function ExercisePage() {
 
   const current = states?.get(ex.id)?.level;
   const shown = ex.levels.find((x) => x.level === (current ?? 1)) ?? ex.levels[0]!;
+  // Variante montrée par l'animation : celle de l'utilisateur ; sinon, pour un niveau sans charge, la version au poids
+  // du corps (celle que décrivent ces niveaux) ; sinon la mieux adaptée à son matériel.
+  const storedVariant = ex.variants.find((v) => v.id === states?.get(ex.id)?.variantId);
+  const animVariant =
+    storedVariant ??
+    (!shown.loaded ? ex.variants.find((v) => v.equipment.length === 0) : undefined) ??
+    pickVariant(ex, equipmentSet(profile?.equipment ?? [])) ??
+    ex.variants[0]!;
   const pathologies = pathologiesForExercise(content, ex.id);
   const eqName = (e: string) => l(content.equipment.find((x) => x.id === e)?.name);
   const fn = (n: number) => `fn-${ex.id}-${n}`;
@@ -141,6 +152,15 @@ export default function ExercisePage() {
         aside={<EvidenceBadge level={ex.evidence.level} seed={ex.id} twoLines />}
         subtitle={[l({ fr: ex.name.en, en: ex.name.fr }), ...ex.sports.map((s) => t(`sports.${s}`)), ...ex.qualities.map((q) => t(`qualities.${q}`))].join(' · ')}
       />
+
+      {hasAnimation(ex.id) && (
+        <section aria-labelledby="anim-h">
+          <h2 id="anim-h" className="visually-hidden">
+            {t('exercise.movementAnim')}
+          </h2>
+          <ExerciseAnimation exerciseId={ex.id} level={shown.level} variant={animVariant.id} tempo={shown.dosage.tempo} />
+        </section>
+      )}
 
       <section aria-labelledby="muscles-h">
         <h2 id="muscles-h" className="visually-hidden">

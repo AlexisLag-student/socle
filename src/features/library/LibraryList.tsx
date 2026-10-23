@@ -2,6 +2,7 @@ import { useMemo, type ReactNode } from 'react';
 import { Link } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { EvidenceBadge, Field, Icon, Input, Select, ui } from '@/components/ui';
+import { AnimationThumb } from '@/components/animation/ExerciseAnimation';
 import { content } from '@/content/index';
 import { filterExercises, type ExerciseFilters } from '@/content/query';
 import { BODY_ZONES, EQUIPMENT, EVIDENCE_LEVELS, OBJECTIVES, SPORTS } from '@/domain/ids';
@@ -82,6 +83,7 @@ export function LibraryList({
           const primary = ex.muscles.primary.map((m) => l(content.muscles.find((x) => x.id === m)?.name)).join(', ');
           return (
             <li key={ex.id} className={css.item}>
+              <AnimationThumb exerciseId={ex.id} />
               <div className={css.itemText}>
                 {linkToDetail ? (
                   <Link to={`/library/${ex.id}`} className={css.itemTitle}>

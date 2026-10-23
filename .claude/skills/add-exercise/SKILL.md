@@ -71,6 +71,15 @@ npm run refs:check -- --id <ref-id>   # pour chaque nouvelle référence
 ```
 La validation échoue si : un champ manque, une traduction est vide, il y a moins de 3 niveaux, un muscle est inconnu ou non dessiné, une référence est inconnue ou sans DOI/PMID/URL, ou le niveau de preuve est incohérent.
 
-## 6. Exercices partagés entre zones
+## 6. Animation du mouvement
+
+Tout exercice ajouté reçoit son animation, selon les règles de la section « Animations des exercices » de `CLAUDE.md` :
+- créer `src/animation/data/<id>.ts` (`defineAnimation`) et l'inscrire dans `src/animation/loaders.ts` ;
+- poses tirées **uniquement** de « Mise en place », « Mouvement », « Consignes » et « Erreurs » (amplitude, alignements) ; en cas de doute, la version la plus prudente, notée dans `DECISIONS.md` ;
+- même mouvement avec un autre matériel ou à un autre niveau → `overrides` (matériel, retouche de pose) ; nouvelles poses clés seulement si le mouvement change ;
+- régler les appuis avec `npm run anim:probe -- <id> [niveau] [variante]`, vérifier dans `/dev/animations?id=<id>` ;
+- `npm run validate:content` et `npx vitest run src/animation` doivent passer (bornes, appuis, continuité, tempo).
+
+## 7. Exercices partagés entre zones
 
 `src/content/catalog.ts` réserve les identifiants des exercices que plusieurs zones citent (squat, pont fessier, gainage…), chacun avec sa zone propriétaire. Seule la zone propriétaire écrit l'exercice ; les autres peuvent le citer dans leurs pathologies. Pendant une rédaction en parallèle, utilisez `CONTENT_WIP=1 npm run validate:content` : un exercice réservé mais pas encore écrit n'est alors qu'un avertissement.

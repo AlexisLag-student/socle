@@ -17,6 +17,9 @@ test('fonctionne hors ligne après la première visite', async ({ page, context,
   await expect(page.getByRole('heading', { name: 'Muscles travaillés' })).toBeVisible();
   await page.goto('/pathologies/achilles-midportion');
   await expect(page.getByRole('heading', { name: 'Quand consulter' })).toBeVisible();
+  // Les animations (moteur et données de chaque exercice) sont précachées.
+  await page.goto('/library/squat');
+  await expect(page.getByRole('img', { name: 'Animation du mouvement : Squat' })).toBeVisible();
   await context.setOffline(false);
 });
 

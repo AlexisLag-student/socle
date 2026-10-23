@@ -146,3 +146,92 @@ test.describe('tablette et ordinateur', () => {
     await page.pdf({ path: `${OUT}/impression-programme.pdf`, format: 'A4' });
   });
 });
+
+/** Animations des exercices : 3 poses par exercice animé, puis la fiche en sombre, en anglais, sur ordinateur, et la bande de poses. */
+test.describe('animations', () => {
+  const PILOTS = [
+    'squat',
+    'split-squat',
+    'calf-raise-straight-knee',
+    'glute-bridge',
+    'side-plank',
+    'nordic-hamstring',
+    'romanian-deadlift',
+    'lateral-band-walk',
+    'step-up',
+    'countermovement-jump',
+  ];
+  const ANIM = `${OUT}/animations`;
+  const prefs = (theme: Theme = 'light') => ({ disclaimerAccepted: true, theme, mode: 'athlete' });
+
+  async function figure(page: Page) {
+    await page.getByTestId('lab-figure').waitFor();
+    await page.evaluate(() => document.fonts.ready);
+    return page.getByTestId('lab-figure');
+  }
+
+  /** Fiche exercice, animation mise en pause sur une pose. */
+  async function sheet(page: Page, id: string, name: string) {
+    await page.goto(`/library/${id}`);
+    await page.getByRole('img', { name: /Animation|animation/ }).first().waitFor();
+    await page.evaluate(() => document.fonts.ready);
+    await page.waitForTimeout(900);
+    await page.getByRole('button', { name: /en pause|Pause the/ }).click();
+    await page.screenshot({ path: `${ANIM}/${name}.png` });
+  }
+
+  test('3 poses par exercice (mobile 390 × 844)', async ({ page }) => {
+    test.setTimeout(180_000);
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.addInitScript((p) => {
+      localStorage.setItem('socle.lang', 'fr');
+      localStorage.setItem('socle.prefs.v1', JSON.stringify(p));
+    }, prefs());
+    for (const id of PILOTS)
+      for (const [k, pose] of [
+        [1, 'start'],
+        [2, 'mid'],
+        [3, 'end'],
+      ] as const) {
+        await page.goto(`/dev/animations?id=${id}&pose=${pose}&capture=1`);
+        await (await figure(page)).screenshot({ path: `${ANIM}/${id}-${k}-${pose}.png` });
+      }
+  });
+
+  test('fiche : sombre, anglais, ordinateur, mouvements réduits', async ({ page }) => {
+    test.setTimeout(120_000);
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.addInitScript((p) => {
+      localStorage.setItem('socle.lang', p.lang);
+      localStorage.setItem('socle.prefs.v1', JSON.stringify(p.prefs));
+    }, { lang: 'fr', prefs: prefs('dark') });
+    await sheet(page, 'squat', 'fiche-squat-sombre');
+    await sheet(page, 'side-plank', 'fiche-gainage-lateral-sombre');
+
+    await page.addInitScript((p) => {
+      localStorage.setItem('socle.lang', 'en');
+      localStorage.setItem('socle.prefs.v1', JSON.stringify(p));
+    }, prefs());
+    await sheet(page, 'glute-bridge', 'fiche-pont-fessier-en');
+
+    await page.setViewportSize({ width: 1280, height: 860 });
+    await page.addInitScript((p) => {
+      localStorage.setItem('socle.lang', 'fr');
+      localStorage.setItem('socle.prefs.v1', JSON.stringify(p));
+    }, prefs());
+    await sheet(page, 'romanian-deadlift', 'fiche-souleve-roumain-ordinateur');
+    await page.goto('/library?q=squat');
+    await page.getByRole('button', { name: /Voir le mouvement/ }).first().waitFor();
+    await page.waitForTimeout(500);
+    await page.screenshot({ path: `${ANIM}/bibliotheque-vignettes-ordinateur.png` });
+
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    for (const id of ['squat', 'nordic-hamstring']) {
+      await page.goto(`/library/${id}`);
+      await page.getByRole('list', { name: /Poses clés/ }).waitFor();
+      await page.evaluate(() => document.fonts.ready);
+      await page.screenshot({ path: `${ANIM}/mouvements-reduits-${id}.png` });
+    }
+  });
+});

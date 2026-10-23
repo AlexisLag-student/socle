@@ -4,6 +4,22 @@ Toutes les évolutions de Socle, de la plus récente à la plus ancienne. Versio
 
 Ce fichier est affiché dans l’app (Réglages › Nouveautés) : garder le format `## [x.y.z] — AAAA-MM-JJ`, puis `### Français` et `### English`, chacun avec une liste à puces.
 
+## [0.4.0] — 2026-10-23
+
+### Français
+
+- Ajouté : les exercices s’animent désormais (10 premiers exercices) dans la fiche, la séance guidée (au rythme des répétitions), la bibliothèque et le mode praticien ; affichage des poses clés si les animations sont réduites sur l’appareil.
+- Dans la bibliothèque, une vignette montre la pose de chaque exercice animé : touchez-la (ou survolez-la à la souris) pour voir le mouvement.
+- En séance guidée, l’animation suit le rythme affiché et se met en pause avec lui ; chaque nouvel exercice s’affiche depuis le haut de l’écran.
+- Corrigé : dans la bibliothèque, une recherche tapée rapidement n’est plus remplacée par la précédente.
+
+### English
+
+- Added: exercises are now animated (first 10 exercises) in the exercise page, guided session (in time with each rep), library and practitioner mode; key poses shown when reduced motion is enabled.
+- In the library, a thumbnail shows the pose of each animated exercise: tap it (or hover with a mouse) to see the movement.
+- In a guided session, the animation follows the displayed tempo and pauses with it; each new exercise opens at the top of the screen.
+- Fixed: in the library, a search typed quickly is no longer replaced by the previous one.
+
 ## [0.3.0] — 2026-10-23
 
 ### Français

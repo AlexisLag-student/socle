@@ -3,6 +3,8 @@ import { useNavigate, useParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { Button, Card, Empty, ButtonLink, HandNote, Icon, Notice, ui } from '@/components/ui';
 import { MuscleMap } from '@/components/anatomy/MuscleMap';
+import { ExerciseAnimation, type AnimSync } from '@/components/animation/ExerciseAnimation';
+import { hasAnimation, loadAnimation } from '@/animation/loaders';
 import { useActiveProgram, useExerciseStates, useProfile } from '@/app/hooks';
 import { setPrefs, usePrefs } from '@/app/prefs';
 import { useMarkSessionRunning } from '@/app/sessionActivity';
@@ -15,6 +17,7 @@ import { beep, keepScreenOn, tempoPhases, vibrate } from '@/lib/device';
 import { formatClock, useCountdown } from '@/lib/useCountdown';
 import { formatDosage, formatDuration } from '@/features/exercise/format';
 import { useLocalized } from '@/i18n/useLocalized';
+import { tempoPosition, useTempoClock, type TempoClock } from './tempoClock';
 import css from './session.module.css';
 
 type Stage = 'work' | 'rest' | 'feedback';
@@ -23,29 +26,31 @@ type Stage = 'work' | 'rest' | 'feedback';
  * Rythme d'une répétition : consigne de la phase en cours, secondes restantes en très grand,
  * barre en segments (phase en cours en rouge) et compteur de répétitions noté à la main.
  */
-function TempoIndicator({ tempo, sound, reps }: { tempo: string; sound: boolean; reps?: number }) {
+function TempoIndicator({ tempo, sound, reps, clock }: { tempo: string; sound: boolean; reps?: number; clock: TempoClock }) {
   const { t } = useTranslation();
   const phases = useMemo(() => tempoPhases(tempo), [tempo]);
-  const [i, setI] = useState(0);
-  const [rep, setRep] = useState(1);
-  const [left, setLeft] = useState(phases[0]?.sec ?? 0);
+  const [pos, setPos] = useState(() => tempoPosition(phases, clock.elapsed()));
+  // Remplissage du segment en cours : départ décalé si l'indicateur s'affiche en cours de phase.
+  const [fill, setFill] = useState({ key: '', delay: 0 });
   useEffect(() => {
-    const p = phases[i];
-    if (!p) return;
-    if (sound) beep(i === 0 ? 'tick' : 'phase');
-    const end = Date.now() + p.sec * 1000;
-    const tick = setInterval(() => setLeft(Math.max(0, (end - Date.now()) / 1000)), 200);
-    const id = setTimeout(() => {
-      const next = (i + 1) % phases.length;
-      if (next === 0) setRep((r) => r + 1);
-      setLeft(phases[next]!.sec);
-      setI(next);
-    }, p.sec * 1000);
-    return () => {
-      clearTimeout(id);
-      clearInterval(tick);
+    let last = '';
+    const tick = () => {
+      const p = tempoPosition(phases, clock.elapsed());
+      const key = `${p.rep}-${p.index}`;
+      if (key !== last) {
+        if (clock.running && sound) beep(p.index === 0 ? 'tick' : 'phase');
+        setFill({ key, delay: (phases[p.index]?.sec ?? 0) - p.left });
+        last = key;
+      }
+      setPos((prev) => (prev.rep === p.rep && prev.index === p.index && Math.ceil(prev.left) === Math.ceil(p.left) ? prev : p));
     };
-  }, [i, phases, sound]);
+    tick();
+    const id = setInterval(tick, 100);
+    return () => clearInterval(id);
+  }, [phases, sound, clock]);
+  const i = pos.index;
+  const rep = pos.rep;
+  const left = pos.left;
   const p = phases[i];
   if (!p) return null;
   return (
@@ -55,7 +60,13 @@ function TempoIndicator({ tempo, sound, reps }: { tempo: string; sound: boolean;
       <div className={css.tempoTrack} style={{ gridTemplateColumns: phases.map((x) => `${x.sec}fr`).join(' ') } as CSSProperties} aria-hidden>
         {phases.map((x, k) => (
           <span key={k} className={k < i ? css.segDone : k === i ? css.segNow : css.segNext}>
-            {k === i && <span key={`${rep}-${i}`} className={css.segFill} style={{ animationDuration: `${x.sec}s` }} />}
+            {k === i && (
+              <span
+                key={fill.key}
+                className={css.segFill}
+                style={{ animationDuration: `${x.sec}s`, animationDelay: `${-fill.delay}s`, animationPlayState: clock.running ? 'running' : 'paused' }}
+              />
+            )}
           </span>
         ))}
       </div>
@@ -93,6 +104,7 @@ function GuidedSession() {
   const [showMap, setShowMap] = useState(false);
   const [tempoOn, setTempoOn] = useState(false);
   const started = useRef(false);
+  const clock = useTempoClock();
   useMarkSessionRunning(!finished);
 
   // Démarrage : crée le journal de séance, garde l'écran allumé.
@@ -124,6 +136,36 @@ function GuidedSession() {
   const item: ProgramItem | undefined = items[idx];
   const ex = item ? exerciseById.get(item.exerciseId) : undefined;
   const entry = log?.entries[idx];
+  const isReps = !!item && !item.dosage.holdSec;
+
+  // Horloge du tempo : tourne pendant chaque série de répétitions, à l'arrêt pendant le repos.
+  useEffect(() => {
+    if (stage === 'work' && isReps && !finished) clock.restart();
+    else clock.stop();
+  }, [stage, idx, setNo, isReps, finished, clock]);
+
+  // L'animation de l'exercice suivant est chargée à l'avance (fonctionne aussi hors ligne).
+  useEffect(() => {
+    const next = items[idx + 1];
+    if (next) void loadAnimation(next.exerciseId);
+  }, [idx, items]);
+
+  // Nouvel exercice : retour en haut de l'écran (nom, animation et minuteur visibles).
+  const firstExercise = useRef(true);
+  useEffect(() => {
+    if (firstExercise.current) {
+      firstExercise.current = false;
+      return;
+    }
+    window.scrollTo?.({ top: 0 });
+  }, [idx]);
+
+  const animSync = useMemo<AnimSync>(
+    () => ({ time: clock.elapsed, running: clock.running, idle: stage !== 'work', onToggle: clock.toggle }),
+    // clock.running est relu à chaque changement d'état de l'horloge (useTempoClock).
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [clock, clock.running, stage],
+  );
 
   const persist = useCallback((next: SessionLog) => {
     setLog(next);
@@ -148,6 +190,10 @@ function GuidedSession() {
     },
   );
 
+  // Maintien : pose tenue, respiration pendant le minuteur.
+  const holdSec = item?.dosage.holdSec;
+  const animHold = useMemo(() => (holdSec ? { running: timer.running && stage === 'work', seconds: holdSec } : undefined), [holdSec, timer.running, stage]);
+
   function updateSet(i: number, patch: Partial<SetLog>) {
     if (!log) return;
     const entries = log.entries.map((e, k) => (k === idx ? { ...e, sets: e.sets.map((s, j) => (j === i ? { ...s, ...patch } : s)) } : e));
@@ -171,6 +217,12 @@ function GuidedSession() {
       timer.start(item.dosage.restSec);
     }
   }
+
+  /** Afficher le tempo repart du début d'une répétition (indicateur et animation ensemble). */
+  const toggleTempo = () => {
+    if (!tempoOn) clock.restart();
+    setTempoOn(!tempoOn);
+  };
 
   const completeSet = () => {
     updateSet(setNo, { done: true });
@@ -323,6 +375,27 @@ function GuidedSession() {
       </header>
       {item.note && <Notice icon="pro">{item.note}</Notice>}
 
+      {/* --- Animation de l'exercice (au rythme du tempo) --- */}
+      {hasAnimation(ex.id) && (
+        <section className={css.anim} aria-label={t('exercise.movementAnim')}>
+          {prefs.sessionAnimation && (
+            <ExerciseAnimation
+              key={idx}
+              exerciseId={ex.id}
+              level={item.level}
+              variant={item.variantId}
+              tempo={d.tempo}
+              sync={d.holdSec ? undefined : animSync}
+              hold={animHold}
+              side={d.perSide && d.holdSec ? side : undefined}
+            />
+          )}
+          <Button size="small" variant="ghost" onClick={() => setPrefs({ sessionAnimation: !prefs.sessionAnimation })} aria-expanded={prefs.sessionAnimation}>
+            {prefs.sessionAnimation ? t('anim.hide') : t('anim.show')}
+          </Button>
+        </section>
+      )}
+
       {/* --- Carte du minuteur --- */}
       <Card featured as="section" className={css.action}>
         <div aria-live="polite" className={css.actionInner}>
@@ -348,7 +421,7 @@ function GuidedSession() {
           {stage === 'work' && !d.holdSec && (
             <>
               {tempoOn && d.tempo ? (
-                <TempoIndicator tempo={d.tempo} sound={prefs.tempoSound} reps={d.reps?.[1]} />
+                <TempoIndicator tempo={d.tempo} sound={prefs.tempoSound} reps={d.reps?.[1]} clock={clock} />
               ) : (
                 <>
                   <span className="kicker">{t('session.set', { n: setNo + 1, total: d.sets })}</span>
@@ -362,7 +435,7 @@ function GuidedSession() {
               )}
               {d.tempo && (
                 <div className={css.tempoTools}>
-                  <Button size="small" variant="ghost" onClick={() => setTempoOn((v) => !v)}>
+                  <Button size="small" variant="ghost" onClick={toggleTempo}>
                     {tempoOn ? t('session.tempo.hide') : t('session.tempo.show')}
                   </Button>
                   <Button size="small" variant="ghost" icon={prefs.tempoSound ? 'sound' : 'mute'} onClick={() => setPrefs({ tempoSound: !prefs.tempoSound })}>
@@ -508,7 +581,7 @@ function GuidedSession() {
           )}
           {stage === 'work' && !d.holdSec && (
             <>
-              <Button variant="secondary" icon={tempoOn ? 'pause' : 'play'} iconOnly label={tempoOn ? t('session.tempo.hide') : t('session.tempo.show')} onClick={() => setTempoOn((v) => !v)} disabled={!d.tempo} />
+              <Button variant="secondary" icon={tempoOn ? 'pause' : 'play'} iconOnly label={tempoOn ? t('session.tempo.hide') : t('session.tempo.show')} onClick={toggleTempo} disabled={!d.tempo} />
               <Button onClick={completeSet}>
                 {t('session.setDone')}
                 {!lastSet ? ` · ${t('session.restFor', { rest: formatDuration(d.restSec, t) })}` : ''}

@@ -19,10 +19,12 @@ export interface Prefs {
   proDraftId: string | null;
   /** Papier ligné Seyès (sinon papier uni). */
   paperLines: boolean;
+  /** Animation de l'exercice affichée pendant la séance guidée. */
+  sessionAnimation: boolean;
 }
 
 const KEY = 'socle.prefs.v1';
-const DEFAULTS: Prefs = { theme: 'system', disclaimerAccepted: false, tempoSound: false, vibration: true, mode: null, proName: '', proDraftId: null, paperLines: true };
+const DEFAULTS: Prefs = { theme: 'system', disclaimerAccepted: false, tempoSound: false, vibration: true, mode: null, proName: '', proDraftId: null, paperLines: true, sessionAnimation: true };
 
 function read(): Prefs {
   try {

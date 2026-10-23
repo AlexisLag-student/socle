@@ -68,6 +68,14 @@
   --area-hover: rgba(31, 42, 92, 0.14);
   --area-selected: rgba(178, 42, 51, 0.42);
 
+  /* Personnage animé (src/components/animation) : mêmes encres que les schémas */
+  --anim-ink: var(--ink);
+  --anim-far: var(--text-muted); /* membres du côté éloigné, dessinés derrière */
+  --anim-paper: var(--paper);
+  --anim-ground: var(--line-main);
+  --anim-prop: var(--ink);
+  --anim-band: var(--stamp-low);
+
   /* Niveaux de preuve (tampons) */
   --ev-strong: var(--stamp-strong);
   --ev-moderate: var(--ink);

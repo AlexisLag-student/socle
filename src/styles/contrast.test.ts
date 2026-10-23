@@ -57,6 +57,11 @@ const TEXT_ON: [string, string[]][] = [
   ['--stamp-low', ['--paper', '--surface']],
   ['--on-ink', ['--ink']],
   ['--surface', ['--red']],
+  // Personnage animé : traits, côté éloigné, muscles et élastique sur le papier (4,5:1 demandé aussi pour les traits).
+  ['--anim-ink', ['--paper', '--surface']],
+  ['--anim-far', ['--paper', '--surface']],
+  ['--m-primary', ['--paper', '--surface']],
+  ['--anim-band', ['--paper', '--surface']],
 ];
 
 describe.each([

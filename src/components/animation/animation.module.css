@@ -1,0 +1,229 @@
+/* Personnage animé « au trait » : encre, papier, stylo rouge. Couleurs : tokens --anim-* et --m-* (tokens.css). */
+.box {
+  display: grid;
+  gap: var(--space-2);
+  /* Sur grand écran, la figure garde une taille de lecture : pas de cadre vide sur toute la colonne. */
+  max-width: 560px;
+}
+
+.stage {
+  position: relative;
+  border: var(--stroke) solid var(--ink);
+  border-radius: var(--radius);
+  background: var(--anim-paper);
+  padding: var(--space-2) var(--space-3) 0;
+}
+
+.loading {
+  min-height: 220px;
+  border: var(--stroke) dashed var(--sep);
+  border-radius: var(--radius);
+}
+
+.rig {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 300px;
+  overflow: visible;
+}
+
+.outer .bone {
+  stroke: var(--anim-ink);
+  stroke-width: calc(var(--w) * 1px + var(--edge));
+  stroke-linecap: round;
+}
+.far .outer .bone {
+  stroke: var(--anim-far);
+}
+.inner .bone {
+  stroke: var(--anim-paper);
+  stroke-width: calc(var(--w) * 1px);
+  stroke-linecap: round;
+}
+
+/* Muscles : principal = aplat, secondaire = hachures, profond = pointillés ; intensité selon la phase (--mi). */
+.muscles {
+  opacity: var(--mi, 1);
+}
+.far .muscles {
+  opacity: calc(var(--mi, 1) * 0.55);
+}
+.m {
+  stroke: none;
+}
+.mPrimary {
+  fill: var(--m-primary);
+}
+.mSecondary {
+  stroke: var(--m-hatch);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+.mTendon {
+  fill: var(--m-tendon);
+  stroke: var(--m-primary);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+.mDeep {
+  fill: var(--red-faint);
+  stroke: var(--m-primary);
+  stroke-width: 1.5;
+  stroke-dasharray: 3 2;
+  vector-effect: non-scaling-stroke;
+}
+.mDeep.mPrimary {
+  fill: var(--red-soft);
+}
+
+.prop {
+  fill: var(--anim-paper);
+  stroke: var(--anim-prop);
+  stroke-width: 2;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
+}
+.band {
+  stroke: var(--anim-band);
+  stroke-width: 3;
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
+}
+.ground {
+  stroke: var(--anim-ground);
+  stroke-width: 2;
+  vector-effect: non-scaling-stroke;
+}
+.breath {
+  fill: none;
+  stroke: var(--anim-ink);
+  stroke-width: 1.5;
+  stroke-dasharray: 3 3;
+  vector-effect: non-scaling-stroke;
+}
+
+/* Superposition des poses clés (outil de vérification) */
+.ghost {
+  opacity: 0.3;
+  pointer-events: none;
+}
+.ghost .outer .bone {
+  stroke: var(--anim-far);
+}
+.ghost .muscles,
+.ghost .ground,
+.ghost .prop,
+.ghost .band {
+  display: none;
+}
+
+/* Annotation manuscrite de la phase en cours (Caveat, 22 px). */
+.caption {
+  position: absolute;
+  top: var(--space-1);
+  right: var(--space-3);
+  font-family: var(--font-hand);
+  font-weight: 700;
+  font-size: 24px;
+  line-height: 28px;
+  color: var(--red);
+  pointer-events: none;
+}
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+.controls button {
+  min-height: var(--tap);
+}
+.controls button[class*='iconOnly'] {
+  min-width: var(--tap);
+}
+
+/* Bande de poses clés (réduire les animations) */
+.strip {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  margin: 0;
+  padding: var(--space-2);
+  list-style: none;
+  border: var(--stroke) solid var(--ink);
+  border-radius: var(--radius);
+  background: var(--anim-paper);
+}
+.stripPose {
+  flex: 1 1 0;
+  min-width: 0;
+}
+.stripPose .rig {
+  max-height: 160px;
+}
+.arrowItem {
+  flex: none;
+}
+.arrow {
+  display: block;
+  width: 28px;
+  height: 18px;
+  fill: none;
+  stroke: var(--red);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Vignette (bibliothèque, compositeur praticien) */
+.thumb {
+  position: relative;
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 72px;
+  height: 72px;
+  min-width: var(--tap);
+  min-height: var(--tap);
+  padding: 2px;
+  border: var(--stroke) solid var(--ink);
+  border-radius: var(--radius);
+  background: var(--anim-paper);
+  overflow: hidden;
+  cursor: pointer;
+}
+.thumb .rig {
+  width: 64px;
+  height: 64px;
+  max-height: none;
+}
+.thumb:focus-visible {
+  outline: none;
+  box-shadow: var(--focus);
+}
+.thumbPlaceholder {
+  width: 100%;
+  height: 100%;
+}
+.thumbBadge {
+  position: absolute;
+  right: 2px;
+  bottom: 2px;
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--ink);
+  color: var(--on-ink);
+}
+
+@media print {
+  .controls,
+  .thumbBadge {
+    display: none;
+  }
+}

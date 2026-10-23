@@ -69,6 +69,19 @@
   padding: 18px 16px 12px;
 }
 
+/* Animation de l'exercice : compacte pour laisser le minuteur visible. */
+.anim {
+  display: grid;
+  justify-items: start;
+  gap: var(--space-1);
+}
+.anim > div {
+  width: 100%;
+}
+.anim svg {
+  max-height: 200px;
+}
+
 .actionInner {
   display: flex;
   flex-direction: column;

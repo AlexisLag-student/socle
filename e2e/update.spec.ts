@@ -102,12 +102,23 @@ test.describe('mise à jour de l’app', () => {
     await waitForController(page);
     await page.getByRole('link', { name: 'Commencer' }).first().click();
     await expect(page.getByText(/Série 1 sur \d/)).toBeVisible();
-    await page.getByRole('button', { name: 'Série terminée' }).click();
+    // Deuxième exercice de la séance A : animé (montée sur pointes jambe tendue).
+    await page.getByRole('button', { name: 'Passer l’exercice' }).click();
+    const fig = page.getByRole('img', { name: /Animation du mouvement/ });
+    await expect(fig).toBeVisible();
+    // Repère posé dans la page : il disparaîtrait si l'app se rechargeait.
+    await page.evaluate(() => ((window as unknown as { __sameSession: boolean }).__sameSession = true));
 
     await publishNewVersion(page, dist);
     // Laisse le temps au bandeau d'apparaître s'il le devait.
     await page.waitForTimeout(1500);
     await expect(banner(page)).toHaveCount(0);
+    expect(await page.evaluate(() => (window as unknown as { __sameSession?: boolean }).__sameSession)).toBe(true);
+    // La séance et son animation continuent avec l'ancienne version.
+    const pose = () => fig.evaluate((el) => Array.from(el.querySelectorAll('g[transform]'), (g) => g.getAttribute('transform')).join('|'));
+    const before = await pose();
+    await expect.poll(pose, { timeout: 3000 }).not.toBe(before);
+    await page.getByRole('button', { name: /Série terminée/ }).click();
     await expect(page.getByText(/Série 2 sur \d|Repos/).first()).toBeVisible();
 
     await page.getByRole('button', { name: 'Quitter la séance' }).click();

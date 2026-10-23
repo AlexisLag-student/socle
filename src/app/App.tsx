@@ -24,6 +24,7 @@ const Settings = lazy(() => import('@/features/settings/SettingsPage'));
 const Changelog = lazy(() => import('@/features/settings/ChangelogPage'));
 const Disclaimer = lazy(() => import('@/features/disclaimer/DisclaimerScreen'));
 const AnatomyDemo = lazy(() => import('@/features/dev/AnatomyDemo'));
+const AnimationLab = lazy(() => import('@/features/dev/AnimationLab'));
 
 function Loading() {
   const { t } = useTranslation();
@@ -66,6 +67,7 @@ const router = createBrowserRouter([
       { path: '/changelog', element: page(<Changelog />) },
       { path: '/disclaimer', element: page(<Disclaimer />) },
       { path: '/dev/anatomy', element: page(<AnatomyDemo />) },
+      { path: '/dev/animations', element: page(<AnimationLab />) },
       { path: '*', element: <RouteError /> },
     ],
   },

@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useSearchParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { PageHeader } from '@/components/ui';
@@ -9,9 +10,15 @@ const KEYS: (keyof ExerciseFilters)[] = ['q', 'sport', 'zone', 'muscle', 'pathol
 export default function LibraryPage() {
   const { t } = useTranslation();
   const [params, setParams] = useSearchParams();
-  const filters = Object.fromEntries(KEYS.map((k) => [k, params.get(k) ?? undefined]).filter(([, v]) => v)) as ExerciseFilters;
-  const onChange = (f: ExerciseFilters) =>
+  // Filtres en état local (affichage immédiat de la saisie), recopiés dans l'URL pour les liens et le retour arrière.
+  // L'URL n'est relue qu'à l'ouverture : une navigation encore en attente ne peut plus écraser une saisie plus récente.
+  const [filters, setFilters] = useState<ExerciseFilters>(
+    () => Object.fromEntries(KEYS.map((k) => [k, params.get(k) ?? undefined]).filter(([, v]) => v)) as ExerciseFilters,
+  );
+  const onChange = (f: ExerciseFilters) => {
+    setFilters(f);
     setParams(Object.fromEntries(Object.entries(f).filter(([, v]) => v)) as Record<string, string>, { replace: true });
+  };
   return (
     <>
       <PageHeader title={t('nav.library')} subtitle={t('library.subtitle')} />
