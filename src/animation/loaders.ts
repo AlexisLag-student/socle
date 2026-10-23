@@ -39,6 +39,19 @@ export const animationLoaders: Record<string, Loader> = {
   'ankling-drill': () => import('./data/ankling-drill'),
   'jump-rope': () => import('./data/jump-rope'),
   'band-ankle-eversion': () => import('./data/band-ankle-eversion'),
+  'lunge': () => import('./data/lunge'),
+  'step-down': () => import('./data/step-down'),
+  'single-leg-squat': () => import('./data/single-leg-squat'),
+  'leg-extension': () => import('./data/leg-extension'),
+  'isometric-knee-extension': () => import('./data/isometric-knee-extension'),
+  'wall-sit': () => import('./data/wall-sit'),
+  'spanish-squat': () => import('./data/spanish-squat'),
+  'leg-press': () => import('./data/leg-press'),
+  'decline-squat': () => import('./data/decline-squat'),
+  'terminal-knee-extension': () => import('./data/terminal-knee-extension'),
+  'straight-leg-raise': () => import('./data/straight-leg-raise'),
+  'reverse-nordic': () => import('./data/reverse-nordic'),
+  'backward-sled-drag': () => import('./data/backward-sled-drag'),
 };
 
 /**
