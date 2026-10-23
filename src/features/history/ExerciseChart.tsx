@@ -17,7 +17,7 @@ export default function ExerciseChart({ logs, exerciseId }: { logs: SessionLog[]
     const el = ref.current;
     if (!el || series.length === 0) return;
     const styles = getComputedStyle(document.documentElement);
-    const color = (v: string) => styles.getPropertyValue(v).trim() || '#888';
+    const color = (v: string) => styles.getPropertyValue(v).trim() || 'currentColor';
     const data: uPlot.AlignedData = [
       series.map((p) => p.t / 1000),
       series.map((p) => p.level),
@@ -32,16 +32,16 @@ export default function ExerciseChart({ logs, exerciseId }: { logs: SessionLog[]
       axes: [
         {
           stroke: color('--text-muted'),
-          grid: { stroke: color('--border'), width: 1 },
+          grid: { stroke: color('--sep'), width: 1 },
           values: (_u, ticks) => ticks.map((s) => new Date(s * 1000).toLocaleDateString(i18n.language, { day: 'numeric', month: 'short' })),
         },
-        { scale: 'level', stroke: color('--text-muted'), grid: { stroke: color('--border'), width: 1 }, incrs: [1], label: t('history.level') },
+        { scale: 'level', stroke: color('--text-muted'), grid: { stroke: color('--sep'), width: 1 }, incrs: [1], label: t('history.level') },
         ...(hasLoad ? [{ scale: 'kg', side: 1 as const, stroke: color('--text-muted'), grid: { show: false }, label: 'kg' }] : []),
       ],
       series: [
         {},
-        { label: t('history.level'), scale: 'level', stroke: color('--brand'), width: 2.5, points: { size: 7 }, paths: uPlot.paths.stepped!({ align: 1 }) },
-        { label: t('history.loadKg'), scale: 'kg', stroke: color('--accent'), width: 2, points: { size: 6 }, show: hasLoad },
+        { label: t('history.level'), scale: 'level', stroke: color('--ink'), width: 2.5, points: { size: 7 }, paths: uPlot.paths.stepped!({ align: 1 }) },
+        { label: t('history.loadKg'), scale: 'kg', stroke: color('--red'), width: 2, points: { size: 6 }, show: hasLoad },
       ],
     };
     const plot = new uPlot(opts, data, el);

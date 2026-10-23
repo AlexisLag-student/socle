@@ -11,18 +11,21 @@
 }
 
 .progress span {
-  height: 5px;
-  border-radius: 99px;
-  background: var(--border);
+  height: 6px;
+  border: 1.5px solid var(--ink);
 }
 
 .progress span.done {
-  background: var(--brand);
+  background: var(--ink);
 }
 
 .stepCount {
-  font-size: 0.8rem;
-  color: var(--text-muted);
+  font-family: var(--font-title);
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--red);
   margin: var(--space-2) 0 0;
 }
 
@@ -40,21 +43,25 @@
 }
 
 .h2 {
-  font-size: 1rem;
+  font-size: 19px;
+  color: var(--red);
   margin: var(--space-2) 0 0;
 }
 
 .region {
-  font-size: 0.85rem;
+  font-family: var(--font-title);
+  font-weight: 600;
+  font-size: 13px;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--text-muted);
+  letter-spacing: 0.08em;
+  color: var(--red);
   margin: var(--space-4) 0 0;
 }
 
 .allList summary {
   cursor: pointer;
-  font-weight: 650;
+  font-weight: 700;
+  color: var(--ink);
   min-height: var(--tap);
   display: flex;
   align-items: center;
@@ -69,14 +76,14 @@
   display: flex;
   gap: 6px;
   align-items: flex-start;
-  font-size: 0.85rem;
-  color: var(--warning);
+  font-size: 14px;
+  color: var(--stamp-low);
   margin: 0 var(--space-2);
 }
 
 .phaseSet {
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
+  border: var(--stroke) solid var(--ink);
+  border-radius: var(--radius);
   padding: var(--space-4);
   margin: 0;
   display: grid;
@@ -94,16 +101,16 @@
   gap: var(--space-3);
   align-items: flex-start;
   padding: var(--space-3);
-  border-radius: var(--radius);
-  background: var(--warning-soft);
-  font-weight: 550;
+  border-left: 4px solid var(--stamp-low);
+  background: var(--surface);
+  font-weight: 700;
 }
 
 .confirm input {
   width: 22px;
   height: 22px;
   margin-top: 2px;
-  accent-color: var(--brand);
+  accent-color: var(--red);
 }
 
 .summary {
@@ -111,17 +118,18 @@
   gap: var(--space-1) var(--space-4);
   margin: 0;
   background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
+  border: var(--stroke) solid var(--ink);
+  border-radius: var(--radius);
   padding: var(--space-4);
 }
 
 .summary dt {
-  font-size: 0.8rem;
-  font-weight: 700;
-  color: var(--text-muted);
+  font-family: var(--font-title);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--red);
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.08em;
   margin-top: var(--space-2);
 }
 
@@ -136,7 +144,7 @@
   gap: var(--space-3);
   justify-content: space-between;
   padding: var(--space-3) 0;
-  background: linear-gradient(transparent, var(--bg) 30%);
+  background: linear-gradient(transparent, var(--paper) 30%);
 }
 
 .nav > :last-child {

@@ -13,11 +13,11 @@
 .icon {
   width: 56px;
   height: 56px;
-  border-radius: 16px;
+  border-radius: 50%;
+  border: var(--stroke) solid var(--ink);
   display: grid;
   place-items: center;
-  background: var(--brand-soft);
-  color: var(--brand);
+  color: var(--ink);
 }
 
 .wrap h1 {
@@ -31,17 +31,18 @@
 
 .box {
   background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
+  border: var(--stroke) solid var(--ink);
+  border-radius: var(--radius);
   padding: var(--space-5);
-  font-size: 1.02rem;
+  font-size: 16px;
+  line-height: 24px;
 }
 
 .stop {
   padding: var(--space-3) var(--space-4);
-  border-left: 4px solid var(--accent);
-  background: var(--danger-soft);
-  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  border-left: 4px solid var(--red);
+  color: var(--text);
+  font-weight: 700;
 }
 
 .muted {
@@ -54,6 +55,6 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  color: var(--success);
-  font-weight: 600;
+  color: var(--stamp-strong);
+  font-weight: 700;
 }

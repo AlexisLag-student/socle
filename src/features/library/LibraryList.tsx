@@ -92,7 +92,7 @@ export function LibraryList({
                 )}
                 <span className={css.itemMeta}>{primary}</span>
                 <span className={css.tags}>
-                  <EvidenceBadge level={ex.evidence.level} compact />
+                  <EvidenceBadge level={ex.evidence.level} compact seed={ex.id} />
                   {ex.sports.map((s) => (
                     <Icon key={s} name={s === 'bike' ? 'bike' : 'run'} size={16} title={t(`sports.${s}`)} />
                   ))}

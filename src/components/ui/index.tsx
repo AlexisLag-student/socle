@@ -5,6 +5,7 @@ import {
   useEffect,
   useRef,
   type ButtonHTMLAttributes,
+  type CSSProperties,
   type ReactNode,
   type InputHTMLAttributes,
   type SelectHTMLAttributes,
@@ -14,6 +15,7 @@ import { Link } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import type { EvidenceLevel } from '@/domain/ids';
 import { Icon, type IconName } from './Icon';
+import { stampAngle } from './stamp';
 import css from './ui.module.css';
 
 export { Icon, type IconName };
@@ -32,9 +34,11 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   /** Bouton icône seule : `label` sert de nom accessible. */
   iconOnly?: boolean;
   label?: string;
+  /** Sans ombre portée (l'ombre est réservée à une seule action par écran). */
+  flat?: boolean;
 }
 
-export function Button({ variant = 'primary', size = 'normal', block, icon, iconOnly, label, className, children, ...rest }: ButtonProps) {
+export function Button({ variant = 'primary', size = 'normal', block, icon, iconOnly, label, flat, className, children, ...rest }: ButtonProps) {
   return (
     <button
       type="button"
@@ -45,6 +49,7 @@ export function Button({ variant = 'primary', size = 'normal', block, icon, icon
         size === 'small' && css.small,
         block && css.block,
         iconOnly && css.iconOnly,
+        flat && css.flat,
         className,
       )}
       aria-label={iconOnly ? label : undefined}
@@ -63,6 +68,7 @@ export function ButtonLink({
   size = 'normal',
   block,
   icon,
+  flat,
   children,
   className,
 }: {
@@ -71,13 +77,14 @@ export function ButtonLink({
   size?: 'small' | 'normal' | 'large';
   block?: boolean;
   icon?: IconName;
+  flat?: boolean;
   children: ReactNode;
   className?: string;
 }) {
   return (
     <Link
       to={to}
-      className={cx(css.btn, css[variant], size === 'large' && css.large, size === 'small' && css.small, block && css.block, className)}
+      className={cx(css.btn, css[variant], size === 'large' && css.large, size === 'small' && css.small, block && css.block, flat && css.flat, className)}
     >
       {icon && <Icon name={icon} size={size === 'small' ? 16 : 20} />}
       {children}
@@ -87,8 +94,19 @@ export function ButtonLink({
 
 // --- Carte ---------------------------------------------------------------------
 
-export function Card({ children, className, as: As = 'div' }: { children: ReactNode; className?: string; as?: 'div' | 'section' | 'article' | 'li' }) {
-  return <As className={cx(css.card, className)}>{children}</As>;
+export function Card({
+  children,
+  className,
+  as: As = 'div',
+  featured,
+}: {
+  children: ReactNode;
+  className?: string;
+  as?: 'div' | 'section' | 'article' | 'li';
+  /** Carte mise en avant (ombre pleine à l'encre) : une seule par écran. */
+  featured?: boolean;
+}) {
+  return <As className={cx(css.card, featured && css.featured, className)}>{children}</As>;
 }
 
 export function CardLink({ to, children, className }: { to: string; children: ReactNode; className?: string }) {
@@ -101,18 +119,18 @@ export function CardLink({ to, children, className }: { to: string; children: Re
 
 // --- Badges ---------------------------------------------------------------------
 
-const EV_DOTS: Record<EvidenceLevel, number> = { strong: 3, moderate: 2, low: 1, expert: 0 };
-
-export function EvidenceBadge({ level, compact }: { level: EvidenceLevel; compact?: boolean }) {
+/** Tampon de niveau de preuve : texte réel (lisible par les lecteurs d'écran), légèrement tourné. */
+export function EvidenceBadge({ level, compact, seed, twoLines }: { level: EvidenceLevel; compact?: boolean; seed?: string; twoLines?: boolean }) {
   const { t } = useTranslation();
+  const label = compact ? t(`evidence.short.${level}`) : t(`evidence.${level}`);
   return (
-    <span className={cx(css.badge, css[`ev-${level}`])} title={t(`evidence.help.${level}`)}>
-      <span className={css.evDots} aria-hidden>
-        {[0, 1, 2].map((i) => (
-          <i key={i} className={i < EV_DOTS[level] ? css.on : undefined} />
-        ))}
-      </span>
-      {compact ? t(`evidence.${level}`).split(' ').pop() : t(`evidence.${level}`)}
+    <span
+      className={cx(css.stamp, css[`ev-${level}`], twoLines && css.stampTwoLines)}
+      style={{ '--stamp-rot': `${stampAngle(seed ?? level).toFixed(1)}deg` } as CSSProperties}
+      title={t(`evidence.help.${level}`)}
+    >
+      <span className="visually-hidden">{t('evidence.label')} : </span>
+      {label}
     </span>
   );
 }
@@ -168,9 +186,7 @@ export function Option({
         <span className={css.optionTitle}>{title}</span>
         {hint && <span className={css.optionHint}>{hint}</span>}
       </span>
-      <span className={css.check} aria-hidden>
-        <Icon name="check" size={14} />
-      </span>
+      <CheckBox checked={pressed} />
     </button>
   );
 }
@@ -254,7 +270,23 @@ export function Dialog({ open, onClose, title, children }: { open: boolean; onCl
 
 // --- En-tête de page ------------------------------------------------------------------
 
-export function PageHeader({ title, subtitle, back, actions }: { title: ReactNode; subtitle?: ReactNode; back?: { to: string; label: string }; actions?: ReactNode }) {
+export function PageHeader({
+  title,
+  subtitle,
+  back,
+  actions,
+  kicker,
+  aside,
+}: {
+  title: ReactNode;
+  subtitle?: ReactNode;
+  back?: { to: string; label: string };
+  actions?: ReactNode;
+  /** Surtitre en petites capitales rouges. */
+  kicker?: ReactNode;
+  /** Élément posé à droite du titre (ex. tampon de preuve). */
+  aside?: ReactNode;
+}) {
   return (
     <header className={css.pageHeader}>
       {back && (
@@ -263,11 +295,13 @@ export function PageHeader({ title, subtitle, back, actions }: { title: ReactNod
           {back.label}
         </Link>
       )}
-      <div className={css.spread}>
+      {kicker && <span className="kicker">{kicker}</span>}
+      <div className={css.titleRow}>
         <h1>{title}</h1>
-        {actions}
+        {aside}
       </div>
       {subtitle && <p>{subtitle}</p>}
+      {actions && <div className={css.row}>{actions}</div>}
     </header>
   );
 }
@@ -293,5 +327,109 @@ export function Toast({ children }: { children: ReactNode }) {
     <div className={css.toast} role="status" aria-live="polite">
       {children}
     </div>
+  );
+}
+
+// --- Éléments « cahier » ----------------------------------------------------------------
+
+/** Case à cocher dessinée : coche rouge une fois faite, pointillés pour « à venir ». */
+export function CheckBox({ checked, pending, label }: { checked?: boolean; pending?: boolean; label?: string }) {
+  return (
+    <svg
+      viewBox="0 0 22 22"
+      className={cx(css.check, checked && css.checked, pending && css.pending)}
+      role={label ? 'img' : undefined}
+      aria-label={label}
+      aria-hidden={label ? undefined : true}
+    >
+      <rect x="1.5" y="1.5" width="19" height="19" rx="2" />
+      <path d="M5 11.5l4 4 9-11" />
+    </svg>
+  );
+}
+
+/** Annotation manuscrite (Caveat) : charges notées, ressentis, conseils. Jamais pour une information indispensable. */
+export function HandNote({
+  children,
+  red,
+  pencil,
+  className,
+  as: As = 'p',
+}: {
+  children: ReactNode;
+  red?: boolean;
+  pencil?: boolean;
+  className?: string;
+  as?: 'p' | 'span';
+}) {
+  return (
+    <As className={cx(css.hand, red && css.handRed, className)}>
+      {pencil && <Icon name="pencil" size={20} />}
+      <span>{children}</span>
+    </As>
+  );
+}
+
+/** Bloc de dosage en colonnes (séries, tempo ou descente, fréquence). */
+export function DosageBlock({ items }: { items: { label: ReactNode; value: ReactNode }[] }) {
+  return (
+    <dl className={css.dosage} style={{ '--cols': items.length } as CSSProperties}>
+      {items.map((it, i) => (
+        <div key={i}>
+          <dt>{it.label}</dt>
+          <dd className={typeof it.value === 'string' && it.value.length > 9 ? css.ddLong : undefined}>{it.value}</dd>
+        </div>
+      ))}
+    </dl>
+  );
+}
+
+export interface WeekDay {
+  letter: string;
+  name: string;
+  mark?: string;
+  done?: boolean;
+  today?: boolean;
+}
+
+/** Bande de la semaine : séances faites en cercles pleins, séance du jour en pointillés rouges. */
+export function WeekStrip({ days, label }: { days: WeekDay[]; label: string }) {
+  return (
+    <ul className={css.week} aria-label={label}>
+      {days.map((d, i) => (
+        <li key={i} className={d.today ? css.dayToday : undefined}>
+          <span aria-hidden>{d.letter}</span>
+          <span className={cx(css.dot, d.done && css.dotDone, d.today && !d.done && css.dotToday)} aria-hidden>
+            {d.mark ?? '·'}
+          </span>
+          <span className="visually-hidden">{d.name}</span>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+/** Appels de note (exposants rouges) renvoyant vers les notes de bas de page. */
+export function FootnoteRefs({ notes }: { notes: { n: number; target: string }[] }) {
+  if (!notes.length) return null;
+  return (
+    <sup className={css.fnRefs}>
+      {notes.map((x, i) => (
+        <span key={x.n}>
+          {i > 0 && ','}
+          <a href={`#${x.target}`} className={css.fnRef}>
+            {x.n}
+          </a>
+        </span>
+      ))}
+    </sup>
+  );
+}
+
+export function Footnotes({ children, label }: { children: ReactNode; label: string }) {
+  return (
+    <ol className={css.footnotes} aria-label={label}>
+      {children}
+    </ol>
   );
 }

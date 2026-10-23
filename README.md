@@ -37,7 +37,8 @@ L'app est servie sur http://localhost:5173. Le service worker n'est actif que su
 | `npm run preview` | Sert le build de production |
 | `npm test` | Tests unitaires (Vitest) : moteur, progression, liens de partage, contenu, .ics… |
 | `npm run e2e` | Tests de bout en bout (Playwright, Chromium mobile + WebKit). Lancer `npx playwright install --with-deps chromium webkit` la première fois |
-| `E2E_BASE_URL=https://socle-rcvo.vercel.app npx playwright test` | Mêmes tests e2e sur le site déployé |
+| `E2E_BASE_URL=https://socle-rcvo.vercel.app npm run e2e` | Mêmes tests e2e sur le site déployé |
+| `npm run screens` | Captures de contrôle visuel (mobile clair/sombre, EN, tablette, ordinateur, impression) dans `design/rendus/` |
 | `npm run lint` / `npm run typecheck` | ESLint / TypeScript |
 | `npm run validate:content` | Valide tout le contenu (schémas Zod + contrôles croisés) |
 | `npm run refs:check` | Vérifie toutes les références sur PubMed/Crossref et régénère `REFERENCES_CHECK.md` |
@@ -60,6 +61,8 @@ scripts/       validation du contenu, vérification des références, rapport de
 e2e/           tests Playwright
 .claude/skills add-exercise, add-pathology, verify-reference
 ```
+
+Identité visuelle : « cahier d'entraînement » (papier Seyès, encre bleue, stylo rouge, annotations manuscrites, tampons de preuve). Référence dans `design/` (maquettes HTML et captures) ; toutes les couleurs sont des variables de `src/styles/tokens.css`, contrastes vérifiés par `src/styles/contrast.test.ts`.
 
 Choix techniques : Vite + React 19 + TypeScript strict, vite-plugin-pwa (Workbox), Zod, Dexie, i18next, lz-string, uPlot, Vitest, Playwright. Le détail et la justification des choix sont dans [`DECISIONS.md`](DECISIONS.md).
 

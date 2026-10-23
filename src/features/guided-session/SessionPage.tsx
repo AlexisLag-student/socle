@@ -1,7 +1,7 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
-import { Button, Empty, ButtonLink, Notice, ui } from '@/components/ui';
+import { Button, Card, Empty, ButtonLink, HandNote, Icon, Notice, ui } from '@/components/ui';
 import { MuscleMap } from '@/components/anatomy/MuscleMap';
 import { useActiveProgram, useExerciseStates, useProfile } from '@/app/hooks';
 import { setPrefs, usePrefs } from '@/app/prefs';
@@ -12,40 +12,60 @@ import { applyFeedback, decideAndApply, newLog, saveLog } from '@/db/repo';
 import { availableLevels, equipmentSet, pickVariant } from '@/engine/availability';
 import { beep, keepScreenOn, tempoPhases, vibrate } from '@/lib/device';
 import { formatClock, useCountdown } from '@/lib/useCountdown';
-import { formatDosage } from '@/features/exercise/format';
+import { formatDosage, formatDuration } from '@/features/exercise/format';
 import { useLocalized } from '@/i18n/useLocalized';
 import css from './session.module.css';
 
 type Stage = 'work' | 'rest' | 'feedback';
 
-/** Indicateur visuel (et sonore en option) du tempo d'une répétition. */
-function TempoIndicator({ tempo, sound }: { tempo: string; sound: boolean }) {
+/**
+ * Rythme d'une répétition : consigne de la phase en cours, secondes restantes en très grand,
+ * barre en segments (phase en cours en rouge) et compteur de répétitions noté à la main.
+ */
+function TempoIndicator({ tempo, sound, reps }: { tempo: string; sound: boolean; reps?: number }) {
   const { t } = useTranslation();
   const phases = useMemo(() => tempoPhases(tempo), [tempo]);
   const [i, setI] = useState(0);
   const [rep, setRep] = useState(1);
+  const [left, setLeft] = useState(phases[0]?.sec ?? 0);
   useEffect(() => {
     const p = phases[i];
     if (!p) return;
     if (sound) beep(i === 0 ? 'tick' : 'phase');
+    const end = Date.now() + p.sec * 1000;
+    const tick = setInterval(() => setLeft(Math.max(0, (end - Date.now()) / 1000)), 200);
     const id = setTimeout(() => {
       const next = (i + 1) % phases.length;
       if (next === 0) setRep((r) => r + 1);
+      setLeft(phases[next]!.sec);
       setI(next);
     }, p.sec * 1000);
-    return () => clearTimeout(id);
+    return () => {
+      clearTimeout(id);
+      clearInterval(tick);
+    };
   }, [i, phases, sound]);
   const p = phases[i];
   if (!p) return null;
   return (
     <div className={css.tempo} aria-live="off">
-      <div className={css.tempoLabel}>
-        <span className={css[`tempo-${p.kind}`]}>{t(`session.tempo.${p.kind}`)}</span>
-        <span className={ui.muted}>{t('session.tempo.rep', { n: rep })}</span>
+      <span className="kicker">{t(`session.tempo.${p.kind}`)}</span>
+      <span className={css.clock}>{Math.max(1, Math.ceil(left))}</span>
+      <div className={css.tempoTrack} style={{ gridTemplateColumns: phases.map((x) => `${x.sec}fr`).join(' ') } as CSSProperties} aria-hidden>
+        {phases.map((x, k) => (
+          <span key={k} className={k < i ? css.segDone : k === i ? css.segNow : css.segNext}>
+            {k === i && <span key={`${rep}-${i}`} className={css.segFill} style={{ animationDuration: `${x.sec}s` }} />}
+          </span>
+        ))}
       </div>
-      <div className={css.tempoTrack}>
-        <div key={`${rep}-${i}`} className={`${css.tempoBar} ${css[`tempo-${p.kind}`]}`} style={{ animationDuration: `${p.sec}s` }} />
+      <div className={css.tempoLabels} style={{ gridTemplateColumns: phases.map((x) => `${x.sec}fr`).join(' ') } as CSSProperties} aria-hidden>
+        {phases.map((x, k) => (
+          <span key={k} className={k === i ? css.labelNow : undefined}>
+            {t(`session.tempo.${x.kind}`)} {x.sec >= 1 ? `${x.sec} s` : ''}
+          </span>
+        ))}
       </div>
+      <HandNote className={css.repCount}>{reps ? t('session.repOf', { n: rep, total: reps }) : t('session.tempo.rep', { n: rep })}</HandNote>
     </div>
   );
 }
@@ -150,7 +170,6 @@ function GuidedSession() {
     }
   }
 
-
   const completeSet = () => {
     updateSet(setNo, { done: true });
     nextSet();
@@ -182,6 +201,7 @@ function GuidedSession() {
     setSide(1);
     setStage('work');
     setShowMap(false);
+    setTempoOn(false);
     if (idx + 1 >= items.length) finish(current);
     else setIdx((i) => i + 1);
   };
@@ -213,25 +233,23 @@ function GuidedSession() {
     const pending = items.map((i) => states.get(i.exerciseId)).filter((s) => s?.pending);
     return (
       <div className={css.summary}>
-        <div className={css.trophy} aria-hidden>
-          ✓
-        </div>
+        <span className="kicker">{t('program.session', { key: session.key })}</span>
         <h1>{t('session.doneTitle')}</h1>
         <p className={ui.muted}>{t('session.doneMeta', { count: done, minutes })}</p>
         {pending.length > 0 && (
-          <section className={ui.stack}>
-            <h2>{t('program.suggestionsTitle')}</h2>
+          <section className={css.suggestions} aria-labelledby="done-sugg">
+            <h2 id="done-sugg">{t('program.suggestionsTitle')}</h2>
             {pending.map((s) => {
               const e = exerciseById.get(s!.exerciseId)!;
               const p = s!.pending!;
               const target = e.levels.find((x) => x.level === p.toLevel);
               return (
                 <div key={s!.exerciseId} className={css.suggestion}>
-                  <p>
-                    <strong>{l(e.name)}</strong> — {t(`progression.${p.kind}`, { level: target ? l(target.name) : p.toLevel, pct: Math.abs(p.loadChangePct ?? 0) })}
-                  </p>
+                  <HandNote red pencil>
+                    {l(e.name)} — {t(`progression.${p.kind}`, { level: target ? l(target.name) : p.toLevel, pct: Math.abs(p.loadChangePct ?? 0) })}
+                  </HandNote>
                   <div className={ui.row}>
-                    <Button size="small" icon="check" onClick={() => void decideAndApply(e.id, true, (id) => exerciseById.get(id))}>
+                    <Button size="small" icon="check" flat onClick={() => void decideAndApply(e.id, true, (id) => exerciseById.get(id))}>
                       {t('progression.accept')}
                     </Button>
                     <Button size="small" variant="secondary" onClick={() => void decideAndApply(e.id, false, (id) => exerciseById.get(id))}>
@@ -244,7 +262,7 @@ function GuidedSession() {
             <p className={ui.muted}>{t('progression.youDecide')}</p>
           </section>
         )}
-        <div className={ui.row} style={{ justifyContent: 'center' }}>
+        <div className={ui.row}>
           <Button size="large" onClick={() => navigate('/history')}>
             {t('session.seeHistory')}
           </Button>
@@ -261,152 +279,159 @@ function GuidedSession() {
   const variant = ex.variants.find((v) => v.id === item.variantId);
   const d = item.dosage;
   const showLoad = !!variant?.loadable || d.intensity.kind === 'load';
+  const lastSet = setNo + 1 >= d.sets;
+  const loadNote = entry.sets.find((s) => s.loadKg)?.loadKg;
+  const holdStarted = timer.running || timer.paused;
 
   return (
     <div className={css.page}>
       <div className={css.top}>
-        <Button variant="ghost" icon="x" iconOnly label={t('session.quit')} onClick={() => { if (log && log.entries.some((e) => e.sets.some((s) => s.done))) finish(); else navigate('/program'); }} />
-        <div className={css.progress} role="progressbar" aria-valuemin={0} aria-valuemax={items.length} aria-valuenow={idx} aria-label={t('session.progress', { n: idx + 1, total: items.length })}>
-          <span style={{ width: `${(idx / items.length) * 100}%` }} />
+        <Button
+          variant="ghost"
+          icon="x"
+          iconOnly
+          label={t('session.quit')}
+          onClick={() => {
+            if (log && log.entries.some((e) => e.sets.some((s) => s.done))) finish();
+            else navigate('/program');
+          }}
+        />
+        <span className={css.count}>{t('session.progress', { n: idx + 1, total: items.length })}</span>
+        <div
+          className={css.progress}
+          role="progressbar"
+          aria-valuemin={0}
+          aria-valuemax={items.length}
+          aria-valuenow={idx}
+          aria-label={t('session.progressLabel')}
+        >
+          {items.map((_, k) => (
+            <span key={k} className={k < idx ? css.pDone : k === idx ? css.pNow : undefined} />
+          ))}
         </div>
-        <span className={css.count}>
-          {idx + 1}/{items.length}
-        </span>
       </div>
 
       <header className={css.head}>
         <h1 className={css.name}>{l(ex.name)}</h1>
-        <p className={ui.muted}>
+        <p>
           {level && l(level.name)}
           {variant ? ` · ${l(variant.name)}` : ''}
         </p>
+        <p className={css.doseLine}>{formatDosage(d, t, l).slice(1).join(' · ')}</p>
       </header>
-
-      <ul className={css.dosage}>
-        {formatDosage(d, t, l).map((x, i) => (
-          <li key={i}>{x}</li>
-        ))}
-      </ul>
       {item.note && <Notice icon="pro">{item.note}</Notice>}
 
-      {/* --- Zone d'action principale --- */}
-      <section className={css.action} aria-live="polite">
-        {stage === 'rest' && (
-          <>
-            <p className={css.stageLabel}>{t('session.rest')}</p>
-            <p className={css.clock}>{formatClock(timer.remaining)}</p>
-            <div className={ui.row} style={{ justifyContent: 'center' }}>
-              <Button variant="secondary" onClick={() => timer.add(15)}>
-                +15 s
-              </Button>
-              <Button onClick={() => { timer.stop(); setStage('work'); }}>{t('session.skipRest')}</Button>
-            </div>
-            <p className={ui.muted}>{t('session.nextSet', { n: setNo + 1, total: d.sets })}</p>
-          </>
-        )}
+      {/* --- Carte du minuteur --- */}
+      <Card featured as="section" className={css.action}>
+        <div aria-live="polite" className={css.actionInner}>
+          {stage === 'rest' && (
+            <>
+              <span className="kicker">{t('session.rest')}</span>
+              <p className={css.clock}>{formatClock(timer.remaining)}</p>
+              <p className={css.sub}>{t('session.nextSet', { n: setNo + 1, total: d.sets })}</p>
+            </>
+          )}
 
-        {stage === 'work' && (
-          <>
-            <p className={css.stageLabel}>
-              {t('session.set', { n: setNo + 1, total: d.sets })}
-              {d.perSide && d.holdSec ? ` · ${t('session.side', { n: side })}` : ''}
-            </p>
-            {d.holdSec ? (
-              <>
-                <p className={css.clock}>{formatClock(timer.running || timer.paused ? timer.remaining : d.holdSec)}</p>
-                {!timer.running && !timer.paused && (
-                  <Button size="large" icon="play" onClick={() => timer.start(d.holdSec!)}>
-                    {t('session.startHold')}
-                  </Button>
-                )}
-                {timer.running && (
-                  <Button size="large" variant="secondary" icon="pause" onClick={timer.pause}>
-                    {t('session.pause')}
-                  </Button>
-                )}
-                {timer.paused && (
-                  <Button size="large" icon="play" onClick={timer.resume}>
-                    {t('session.resume')}
-                  </Button>
-                )}
-              </>
-            ) : (
-              <>
-                <p className={css.clock}>
-                  {d.reps && (d.reps[0] === d.reps[1] ? d.reps[0] : `${d.reps[0]}–${d.reps[1]}`)}
-                  <small> {t('session.reps')}{d.perSide ? ` ${t('common.perSide')}` : ''}</small>
-                </p>
-                {d.tempo && (
-                  <div className={css.tempoBox}>
-                    {tempoOn ? (
-                      <TempoIndicator tempo={d.tempo} sound={prefs.tempoSound} />
-                    ) : (
-                      <p className={ui.muted}>{t('format.tempo', { tempo: d.tempo })}</p>
-                    )}
-                    <div className={ui.row} style={{ justifyContent: 'center' }}>
-                      <Button size="small" variant="ghost" onClick={() => setTempoOn((v) => !v)}>
-                        {tempoOn ? t('session.tempo.hide') : t('session.tempo.show')}
-                      </Button>
-                      <Button
-                        size="small"
-                        variant="ghost"
-                        icon={prefs.tempoSound ? 'sound' : 'mute'}
-                        onClick={() => setPrefs({ tempoSound: !prefs.tempoSound })}
-                      >
-                        {prefs.tempoSound ? t('session.soundOn') : t('session.soundOff')}
-                      </Button>
-                    </div>
-                  </div>
-                )}
-                <Button size="large" icon="check" onClick={completeSet}>
-                  {t('session.setDone')}
-                </Button>
-              </>
-            )}
-          </>
-        )}
+          {stage === 'work' && d.holdSec && (
+            <>
+              <span className="kicker">
+                {t('session.set', { n: setNo + 1, total: d.sets })}
+                {d.perSide ? ` · ${t('session.side', { n: side })}` : ''}
+              </span>
+              <p className={css.clock}>{formatClock(holdStarted ? timer.remaining : d.holdSec)}</p>
+              <p className={css.sub}>{t('session.hold')}</p>
+            </>
+          )}
 
-        {stage === 'feedback' && (
-          <>
-            <p className={css.stageLabel}>{t('session.feedbackTitle')}</p>
-            <div className={css.feedback}>
-              {(['easy', 'ok', 'hard'] as const).map((fb) => (
-                <button key={fb} type="button" className={`${css.fbBtn} ${css[`fb-${fb}`]}`} onClick={() => void giveFeedback(fb)}>
-                  <span className={css.fbEmoji} aria-hidden>
-                    {fb === 'easy' ? '🙂' : fb === 'ok' ? '💪' : '🥵'}
-                  </span>
-                  {t(`session.fb.${fb}`)}
-                </button>
-              ))}
-            </div>
-          </>
-        )}
-      </section>
+          {stage === 'work' && !d.holdSec && (
+            <>
+              {tempoOn && d.tempo ? (
+                <TempoIndicator tempo={d.tempo} sound={prefs.tempoSound} reps={d.reps?.[1]} />
+              ) : (
+                <>
+                  <span className="kicker">{t('session.set', { n: setNo + 1, total: d.sets })}</span>
+                  <p className={css.clock}>{d.reps && (d.reps[0] === d.reps[1] ? d.reps[0] : `${d.reps[0]}–${d.reps[1]}`)}</p>
+                  <p className={css.sub}>
+                    {t('session.reps')}
+                    {d.perSide ? ` ${t('common.perSide')}` : ''}
+                    {d.tempo ? ` · ${t('format.tempo', { tempo: d.tempo })}` : ''}
+                  </p>
+                </>
+              )}
+              {d.tempo && (
+                <div className={css.tempoTools}>
+                  <Button size="small" variant="ghost" onClick={() => setTempoOn((v) => !v)}>
+                    {tempoOn ? t('session.tempo.hide') : t('session.tempo.show')}
+                  </Button>
+                  <Button size="small" variant="ghost" icon={prefs.tempoSound ? 'sound' : 'mute'} onClick={() => setPrefs({ tempoSound: !prefs.tempoSound })}>
+                    {prefs.tempoSound ? t('session.soundOn') : t('session.soundOff')}
+                  </Button>
+                </div>
+              )}
+            </>
+          )}
+
+          {stage === 'feedback' && (
+            <fieldset className={css.feedback}>
+              <legend>{t('session.feedbackTitle')}</legend>
+              <div className={css.fbRow}>
+                {(['easy', 'ok', 'hard'] as const).map((fb) => (
+                  <button key={fb} type="button" className={css.fbBtn} onClick={() => void giveFeedback(fb)}>
+                    {t(`session.fb.${fb}`)}
+                  </button>
+                ))}
+              </div>
+            </fieldset>
+          )}
+        </div>
+      </Card>
 
       {/* --- Séries --- */}
-      <section className={css.sets} aria-label={t('session.setsLabel')}>
-        {entry.sets.map((s, i) => (
-          <div key={i} className={`${css.setRow} ${i === setNo && stage !== 'feedback' ? css.current : ''}`}>
-            <label className={css.setCheck}>
-              <input type="checkbox" checked={s.done} onChange={(e) => updateSet(i, { done: e.target.checked })} />
-              <span>{t('session.setShort', { n: i + 1 })}</span>
-            </label>
-            {d.reps && (
-              <label className={css.setField}>
-                <span className="visually-hidden">{t('session.reps')}</span>
-                <input type="number" inputMode="numeric" min={0} value={s.reps ?? ''} onChange={(e) => updateSet(i, { reps: e.target.value === '' ? undefined : Number(e.target.value) })} />
-                <span>{t('session.repsShort')}</span>
-              </label>
-            )}
-            {showLoad && (
-              <label className={css.setField}>
-                <span className="visually-hidden">{t('session.load')}</span>
-                <input type="number" inputMode="decimal" min={0} step={0.5} value={s.loadKg ?? ''} onChange={(e) => updateSet(i, { loadKg: e.target.value === '' ? undefined : Number(e.target.value) })} />
-                <span>kg</span>
-              </label>
-            )}
-          </div>
-        ))}
+      <section className={css.sets} aria-labelledby="sets-h">
+        <div className={css.setsHead}>
+          <h2 id="sets-h">{t('session.setsTitle')}</h2>
+          {(loadNote || d.intensity.kind === 'bodyweight') && (
+            <HandNote as="span">{t('session.loadNote', { load: loadNote ? `${loadNote} kg` : l(d.intensity.value).toLocaleLowerCase() })}</HandNote>
+          )}
+        </div>
+        <ul className={css.tiles} aria-label={t('session.setsLabel')}>
+          {entry.sets.map((s, i) => {
+            const state = s.done ? css.tileDone : i === setNo && stage !== 'feedback' ? css.tileNow : css.tileNext;
+            return (
+              <li key={i}>
+                <label className={`${css.tile} ${state}`}>
+                  <input type="checkbox" checked={s.done} onChange={(e) => updateSet(i, { done: e.target.checked })} />
+                  {s.done && <Icon name="check" size={18} />}
+                  {t('session.setShort', { n: i + 1 })}
+                </label>
+              </li>
+            );
+          })}
+        </ul>
+        {(d.reps || showLoad) && (
+          <details className={css.details}>
+            <summary>{t('session.noteSets')}</summary>
+            {entry.sets.map((s, i) => (
+              <div key={i} className={css.setRow}>
+                <span>{t('session.setShort', { n: i + 1 })}</span>
+                {d.reps && (
+                  <label className={css.setField}>
+                    <span className="visually-hidden">{t('session.reps')}</span>
+                    <input type="number" inputMode="numeric" min={0} value={s.reps ?? ''} onChange={(e) => updateSet(i, { reps: e.target.value === '' ? undefined : Number(e.target.value) })} />
+                    <span>{t('session.repsShort')}</span>
+                  </label>
+                )}
+                {showLoad && (
+                  <label className={css.setField}>
+                    <span className="visually-hidden">{t('session.load')}</span>
+                    <input type="number" inputMode="decimal" min={0} step={0.5} value={s.loadKg ?? ''} onChange={(e) => updateSet(i, { loadKg: e.target.value === '' ? undefined : Number(e.target.value) })} />
+                    <span>kg</span>
+                  </label>
+                )}
+              </div>
+            ))}
+          </details>
+        )}
       </section>
 
       {/* --- Consignes et schéma --- */}
@@ -436,11 +461,60 @@ function GuidedSession() {
           {t('session.skipExercise')}
         </Button>
         {stage !== 'feedback' && (
-          <Button variant="ghost" onClick={() => { timer.stop(); setStage('feedback'); }}>
+          <Button
+            variant="ghost"
+            onClick={() => {
+              timer.stop();
+              setStage('feedback');
+            }}
+          >
             {t('session.endExercise')}
           </Button>
         )}
       </div>
+
+      {/* --- Barre d'action, au pouce --- */}
+      {stage !== 'feedback' && (
+        <div className={css.bar}>
+          {stage === 'rest' && (
+            <>
+              <Button variant="secondary" onClick={() => timer.add(15)}>
+                +15 s
+              </Button>
+              <Button
+                onClick={() => {
+                  timer.stop();
+                  setStage('work');
+                }}
+              >
+                {t('session.skipRest')}
+              </Button>
+            </>
+          )}
+          {stage === 'work' && d.holdSec && (
+            <>
+              {timer.running && <Button variant="secondary" icon="pause" iconOnly label={t('session.pause')} onClick={timer.pause} />}
+              {timer.paused && <Button variant="secondary" icon="play" iconOnly label={t('session.resume')} onClick={timer.resume} />}
+              {!holdStarted ? (
+                <Button icon="play" onClick={() => timer.start(d.holdSec!)}>
+                  {t('session.startHold')}
+                </Button>
+              ) : (
+                <p className={css.barNote}>{t('session.holding')}</p>
+              )}
+            </>
+          )}
+          {stage === 'work' && !d.holdSec && (
+            <>
+              <Button variant="secondary" icon={tempoOn ? 'pause' : 'play'} iconOnly label={tempoOn ? t('session.tempo.hide') : t('session.tempo.show')} onClick={() => setTempoOn((v) => !v)} disabled={!d.tempo} />
+              <Button onClick={completeSet}>
+                {t('session.setDone')}
+                {!lastSet ? ` · ${t('session.restFor', { rest: formatDuration(d.restSec, t) })}` : ''}
+              </Button>
+            </>
+          )}
+        </div>
+      )}
     </div>
   );
 }

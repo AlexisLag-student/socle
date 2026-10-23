@@ -1,7 +1,23 @@
 import { useState } from 'react';
 import { Link, useParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
-import { Badge, Button, Dialog, Empty, EvidenceBadge, Field, Notice, PageHeader, Section, Select, ui } from '@/components/ui';
+import type { TFunction } from 'i18next';
+import {
+  Button,
+  Dialog,
+  DosageBlock,
+  Empty,
+  EvidenceBadge,
+  Field,
+  FootnoteRefs,
+  Footnotes,
+  HandNote,
+  Notice,
+  PageHeader,
+  Section,
+  Select,
+  ui,
+} from '@/components/ui';
 import { MuscleMap } from '@/components/anatomy/MuscleMap';
 import { content, exerciseById, referenceById } from '@/content/index';
 import { formatAuthors, pathologiesForExercise, referenceLinks } from '@/content/query';
@@ -10,9 +26,9 @@ import { useActiveProgram, useExerciseStates, usePrograms, useProfile } from '@/
 import { usePrefs } from '@/app/prefs';
 import { addItemToProgram } from '@/db/repo';
 import { equipmentSet, pickVariant } from '@/engine/availability';
-import { formatDosage } from '@/features/exercise/format';
+import { formatDosage, formatDuration } from '@/features/exercise/format';
 import { useLocalized } from '@/i18n/useLocalized';
-import type { Exercise } from '@/domain/schema';
+import type { Dosage, Exercise, L } from '@/domain/schema';
 import type { Program } from '@/domain/user';
 import css from './library.module.css';
 
@@ -84,6 +100,17 @@ function AddDialog({ ex, open, onClose }: { ex: Exercise; open: boolean; onClose
   );
 }
 
+/** Valeurs du bloc de dosage (séries, tempo ou repos, fréquence) pour un niveau donné. */
+function dosageItems(d: Dosage, t: TFunction, l: (x: L | undefined) => string) {
+  const work = d.holdSec ? formatDuration(d.holdSec, t) : d.reps ? (d.reps[0] === d.reps[1] ? `${d.reps[0]}` : `${d.reps[0]}–${d.reps[1]}`) : '';
+  const rest = { label: t('exercise.dose.rest'), value: formatDuration(d.restSec, t) };
+  return [
+    { label: t('exercise.dose.sets'), value: `${d.sets} × ${work}` },
+    d.tempo ? { label: t('exercise.dose.tempo'), value: d.tempo } : rest,
+    d.frequency ? { label: t('exercise.dose.frequency'), value: l(d.frequency) } : d.tempo ? rest : undefined,
+  ].filter((x): x is { label: string; value: string } => !!x);
+}
+
 export default function ExercisePage() {
   const { t } = useTranslation();
   const l = useLocalized();
@@ -101,34 +128,39 @@ export default function ExercisePage() {
     );
 
   const current = states?.get(ex.id)?.level;
+  const shown = ex.levels.find((x) => x.level === (current ?? 1)) ?? ex.levels[0]!;
   const pathologies = pathologiesForExercise(content, ex.id);
   const eqName = (e: string) => l(content.equipment.find((x) => x.id === e)?.name);
+  const fn = (n: number) => `fn-${ex.id}-${n}`;
 
   return (
     <article className={css.detail}>
-      <PageHeader title={l(ex.name)} back={{ to: '/library', label: t('nav.library') }} />
-      <div className={css.badges}>
-        <EvidenceBadge level={ex.evidence.level} />
-        {ex.sports.map((s) => (
-          <Badge key={s}>{t(`sports.${s}`)}</Badge>
-        ))}
-        {ex.qualities.map((q) => (
-          <Badge key={q}>{t(`qualities.${q}`)}</Badge>
-        ))}
-      </div>
-      <p className={ui.muted}>{l({ fr: ex.name.en, en: ex.name.fr })}</p>
-      <div className={css.actionsBar}>
-        <Button icon="plus" variant="secondary" onClick={() => setAdding(true)}>
-          {t('library.addTo')}
-        </Button>
-      </div>
+      <PageHeader
+        title={l(ex.name)}
+        back={{ to: '/library', label: t('nav.library') }}
+        aside={<EvidenceBadge level={ex.evidence.level} seed={ex.id} twoLines />}
+        subtitle={[l({ fr: ex.name.en, en: ex.name.fr }), ...ex.sports.map((s) => t(`sports.${s}`)), ...ex.qualities.map((q) => t(`qualities.${q}`))].join(' · ')}
+      />
 
-      <Section title={t('exercise.muscles')}>
+      <section aria-labelledby="muscles-h">
+        <h2 id="muscles-h" className="visually-hidden">
+          {t('exercise.muscles')}
+        </h2>
         <MuscleMap name={l(ex.name)} primary={ex.muscles.primary} secondary={ex.muscles.secondary} zoom={ex.zoom} />
-      </Section>
+      </section>
+
+      <div className={css.dose}>
+        <DosageBlock items={dosageItems(shown.dosage, t, l)} />
+        <p className={css.doseNote}>
+          {t(current ? 'exercise.doseYours' : 'exercise.doseStart', { level: l(shown.name) })} · {l(shown.dosage.intensity.value)}
+        </p>
+      </div>
 
       <Section title={t('exercise.why')}>
-        <p>{l(ex.why)}</p>
+        <p>
+          {l(ex.why)}
+          <FootnoteRefs notes={ex.evidence.citations.map((_, i) => ({ n: i + 1, target: fn(i + 1) }))} />
+        </p>
       </Section>
 
       <Section title={t('exercise.how')}>
@@ -140,7 +172,7 @@ export default function ExercisePage() {
             <strong>{t('exercise.movement')} :</strong> {l(ex.how.movement)}
           </p>
           <h3>{t('exercise.cues')}</h3>
-          <ul>
+          <ul className={css.cues}>
             {ex.how.cues.map((c, i) => (
               <li key={i}>{l(c)}</li>
             ))}
@@ -154,7 +186,7 @@ export default function ExercisePage() {
       </Section>
 
       <Section title={t('exercise.mistakes')}>
-        <ul className={css.prose}>
+        <ul className={`${css.prose} ${css.cues}`}>
           {ex.mistakes.map((m, i) => (
             <li key={i}>{l(m)}</li>
           ))}
@@ -167,9 +199,13 @@ export default function ExercisePage() {
             <li key={lv.level} className={`${css.level} ${current === lv.level ? css.levelCurrent : ''}`}>
               <span className={css.levelNum}>{lv.level}</span>
               <div>
-                <p>
+                <p className={css.levelName}>
                   <strong>{l(lv.name)}</strong>
-                  {current === lv.level && <Badge className={css.badgeCurrent}> {t('exercise.yourLevel')}</Badge>}
+                  {current === lv.level && (
+                    <HandNote as="span" red className={css.yourLevel}>
+                      {t('exercise.yourLevel')}
+                    </HandNote>
+                  )}
                 </p>
                 <p>{l(lv.description)}</p>
                 <p className={ui.muted}>{formatDosage(lv.dosage, t, l).join(' · ')}</p>
@@ -188,15 +224,15 @@ export default function ExercisePage() {
       </Section>
 
       <Section title={t('exercise.variants')}>
-        <div className={css.variants}>
+        <ul className={css.variants}>
           {ex.variants.map((v) => (
-            <div key={v.id} className={css.variant}>
+            <li key={v.id} className={css.variant}>
               <strong>{l(v.name)}</strong>
               <span className={ui.muted}>{v.equipment.length ? v.equipment.map(eqName).join(' + ') : eqName('bodyweight')}</span>
               <p>{l(v.instructions)}</p>
-            </div>
+            </li>
           ))}
-        </div>
+        </ul>
       </Section>
 
       <Section title={t('exercise.precautions')}>
@@ -206,7 +242,7 @@ export default function ExercisePage() {
           ))}
         </ul>
         {ex.contraindications && (
-          <Notice tone="warning">
+          <Notice tone="danger">
             <strong>{t('exercise.contraindications')}</strong>
             <ul className={css.prose}>
               {ex.contraindications.map((c, i) => (
@@ -230,36 +266,44 @@ export default function ExercisePage() {
       )}
 
       <Section title={t('exercise.evidence')} id="refs">
-        <p>
-          <EvidenceBadge level={ex.evidence.level} /> <span className={ui.muted}>{t(`evidence.help.${ex.evidence.level}`)}</span>
+        <p className={css.evidenceLine}>
+          <EvidenceBadge level={ex.evidence.level} seed={ex.id} /> <span className={ui.muted}>{t(`evidence.help.${ex.evidence.level}`)}</span>
         </p>
         {ex.evidence.citations.length === 0 ? (
           <p className={ui.muted}>{t('exercise.noRefs')}</p>
         ) : (
-          <ReferenceList citations={ex.evidence.citations} />
+          <ReferenceList citations={ex.evidence.citations} idPrefix={`fn-${ex.id}`} />
         )}
       </Section>
+
+      <div className={css.addBar}>
+        <Button icon="plus" block size="large" onClick={() => setAdding(true)}>
+          {t('library.addTo')}
+        </Button>
+      </div>
 
       <AddDialog ex={ex} open={adding} onClose={() => setAdding(false)} />
     </article>
   );
 }
 
-export function ReferenceList({ citations }: { citations: { refId: string; finding: { fr: string; en: string } }[] }) {
+/** Références en notes de bas de page numérotées (appels rouges dans le texte). */
+export function ReferenceList({ citations, idPrefix }: { citations: { refId: string; finding: { fr: string; en: string } }[]; idPrefix?: string }) {
   const { t } = useTranslation();
   const l = useLocalized();
   return (
-    <ul className={css.refs}>
-      {citations.map((c) => {
+    <Footnotes label={t('exercise.evidence')}>
+      {citations.map((c, i) => {
         const r = referenceById.get(c.refId);
         if (!r) return null;
         const links = referenceLinks(r);
         return (
-          <li key={c.refId} className={css.ref}>
-            <span>{l(c.finding)}</span>
+          <li key={c.refId} id={idPrefix ? `${idPrefix}-${i + 1}` : undefined} className={css.ref}>
+            <sup>{i + 1}</sup>
+            <span className={css.refFinding}>{l(c.finding)}</span>{' '}
             <span className={css.refCitation}>
-              {formatAuthors(r.authors)} ({r.year}). <em>{r.title}</em>. {r.journal}. <Badge>{t(`refType.${r.type}`)}</Badge>
-            </span>
+              {formatAuthors(r.authors)} ({r.year}). <em>{r.title}</em>. {r.journal}. {t(`refType.${r.type}`)}.
+            </span>{' '}
             <span className={css.refLinks}>
               {links.doi && (
                 <a href={links.doi} target="_blank" rel="noopener noreferrer">
@@ -280,6 +324,6 @@ export function ReferenceList({ citations }: { citations: { refId: string; findi
           </li>
         );
       })}
-    </ul>
+    </Footnotes>
   );
 }

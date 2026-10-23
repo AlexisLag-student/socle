@@ -6,8 +6,8 @@
   "nav": {
     "home": "Home",
     "program": "Program",
-    "library": "Library",
-    "history": "History",
+    "library": "Exercises",
+    "history": "Logbook",
     "settings": "Settings",
     "bibliography": "Bibliography",
     "pro": "Practitioner",
@@ -72,6 +72,12 @@
       "moderate": "At least one good-quality randomised trial.",
       "low": "Cohort studies, case series or small trials.",
       "expert": "Common clinical practice without direct evidence."
+    },
+    "short": {
+      "strong": "Strong",
+      "moderate": "Moderate",
+      "low": "Low",
+      "expert": "Experts"
     }
   },
   "muscles": {
@@ -84,7 +90,10 @@
     "altPrimary": "Primary muscles: {{list}}.",
     "altSecondary": "Secondary muscles: {{list}}.",
     "altFigure": "Muscle diagram for {{name}}.",
-    "legend": "Diagram legend"
+    "legend": "Diagram legend",
+    "legendTendon": "Tendons and fasciae",
+    "deepSuffix": "(deep)",
+    "fig": "Fig. {{n}} · {{label}}"
   },
   "common": {
     "loading": "Loading…",
@@ -169,11 +178,10 @@
     "proCta": "Practitioner mode",
     "exploreLibrary": "Browse the library",
     "explorePathologies": "Condition guides",
-    "hello": "Hello 👋",
     "nextSession": "Next session",
     "sessionMeta_one": "{{count}} exercise · ~{{minutes}} min",
     "sessionMeta_other": "{{count}} exercises · ~{{minutes}} min",
-    "start": "Start",
+    "start": "Get started",
     "viewProgram": "View program",
     "thisWeek": "sessions this week",
     "totalSessions": "sessions in total",
@@ -181,7 +189,22 @@
     "pendingSuggestions_other": "{{count}} progression suggestions are waiting",
     "plannedToday": "A session is planned for today.",
     "editProfile": "Edit my profile",
-    "proMode": "Practitioner mode"
+    "proMode": "Practitioner mode",
+    "todaySession": "Today’s session",
+    "minutes": "{{minutes}} min",
+    "sessionTitle": "Session {{key}} · {{title}}",
+    "moreExercises_one": "+ {{count}} exercise",
+    "moreExercises_other": "+ {{count}} exercises",
+    "startSession": "Start the session",
+    "resumeSession": "Resume the session",
+    "athleteSub": "Create my personalised program",
+    "proSub": "Build and share a program",
+    "weekCount_one": "{{count}} session out of {{target}} this week",
+    "weekCount_other": "{{count}} sessions out of {{target}} this week",
+    "exercisesCount_one": "{{count}} exercise",
+    "exercisesCount_other": "{{count}} exercises",
+    "pathologiesCount_one": "{{count}} condition",
+    "pathologiesCount_other": "{{count}} conditions"
   },
   "setup": {
     "stepOf": "Step {{n}} of {{total}}",
@@ -265,7 +288,11 @@
     },
     "unknownExercise": "Unavailable exercise ({{id}})",
     "unknownExerciseHint": "This exercise does not exist in this version of the app. Update the app.",
-    "suggestionsTitle": "Progression suggestions"
+    "suggestionsTitle": "Progression suggestions",
+    "kickerAuto": "My program · week {{n}}",
+    "kicker": "Program · week {{n}}",
+    "week": "This week",
+    "startSession": "Start session {{key}}"
   },
   "progression": {
     "level-up": "two easy sessions in a row: move to “{{level}}”?",
@@ -320,7 +347,15 @@
     "doneTitle": "Session complete!",
     "doneMeta_one": "{{count}} exercise done in {{minutes}} min.",
     "doneMeta_other": "{{count}} exercises done in {{minutes}} min.",
-    "seeHistory": "See my history"
+    "seeHistory": "See my history",
+    "progressLabel": "Session progress",
+    "repOf": "rep {{n}} / {{total}}",
+    "hold": "seconds of hold",
+    "setsTitle": "Sets",
+    "loadNote": "load: {{load}}",
+    "noteSets": "Log reps and loads",
+    "holding": "Hold the position…",
+    "restFor": "rest {{rest}}"
   },
   "exercise": {
     "muscles": "Muscles worked",
@@ -342,7 +377,15 @@
     "usedFor": "Used in these guides",
     "evidence": "Level of evidence and references",
     "noRefs": "No direct reference: exercise from common clinical practice.",
-    "link": "Link"
+    "link": "Link",
+    "dose": {
+      "sets": "Sets",
+      "tempo": "Tempo",
+      "rest": "Rest",
+      "frequency": "Frequency"
+    },
+    "doseStart": "To start: {{level}}",
+    "doseYours": "Your level: {{level}}"
   },
   "library": {
     "subtitle": "Every exercise, with diagrams, dosage and references.",
@@ -422,7 +465,9 @@
     "chartCaptionLoad": "Level (solid line) and maximum load logged (kg).",
     "sessions": "Recent sessions",
     "exercisesDone_one": "{{count}} exercise",
-    "exercisesDone_other": "{{count}} exercises"
+    "exercisesDone_other": "{{count}} exercises",
+    "total": "In total",
+    "thisWeek": "This week"
   },
   "pro": {
     "title": "Practitioner mode",
@@ -544,10 +589,25 @@
     "resetConfirm": "Permanently erase profile, programs and history from this device?",
     "resetDone": "Data erased.",
     "about": "About",
-    "version": "Version {{app}} · content {{content}} · {{exercises}} exercises, {{pathologies}} conditions, {{references}} references."
+    "version": "Version {{app}} · content {{content}} · {{exercises}} exercises, {{pathologies}} conditions, {{references}} references.",
+    "paper": "Notebook lines",
+    "paperLines": "Notebook lines",
+    "paperPlain": "Plain paper",
+    "paperHint": "The blue notebook lines are decorative: switch to plain paper if they bother you."
   },
   "reminder": {
     "title": "Time for your session 💪",
     "body": "Your strength session is waiting in Socle."
+  },
+  "notebook": {
+    "done": "Done",
+    "dayDone": "session {{keys}} done",
+    "dayToday": "session {{key}} planned today",
+    "dayRest": "rest",
+    "feedback": {
+      "easy": "easy!",
+      "ok": "fine",
+      "hard": "too hard"
+    }
   }
 }

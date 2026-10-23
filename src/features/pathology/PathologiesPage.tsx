@@ -22,7 +22,7 @@ export default function PathologiesPage() {
                   <strong>{l(p.name)}</strong>
                   <span className={css.desc}>{l(p.description)}</span>
                   <span className={css.meta}>
-                    <EvidenceBadge level={p.evidence.level} compact />
+                    <EvidenceBadge level={p.evidence.level} compact seed={p.id} />
                     {p.sports.map((s) => (
                       <Icon key={s} name={s === 'bike' ? 'bike' : 'run'} size={16} title={t(`sports.${s}`)} />
                     ))}

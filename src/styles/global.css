@@ -14,43 +14,59 @@ body {
   margin: 0;
 }
 
+/*
+ * Papier Seyès : une ligne principale toutes les 32 px, une secondaire toutes les 8 px.
+ * La marge rouge verticale est dessinée par la coquille (layout.module.css), car elle suit la colonne de contenu.
+ */
 body {
-  font-family: var(--font-sans);
+  font-family: var(--font-body);
   font-size: 16px;
-  line-height: 1.55;
-  background: var(--bg);
+  line-height: 24px;
   color: var(--text);
+  background-color: var(--paper);
+  background-image:
+    repeating-linear-gradient(to bottom, transparent 0 31px, var(--line-main) 31px 32px),
+    repeating-linear-gradient(to bottom, transparent 0 7px, var(--line-sub) 7px 8px);
   -webkit-font-smoothing: antialiased;
-  font-feature-settings: 'cv11', 'ss01';
+}
+
+:root[data-paper='plain'] body {
+  background-image: none;
 }
 
 h1,
 h2,
 h3,
 h4 {
-  line-height: 1.25;
-  margin: 0 0 var(--space-3);
-  letter-spacing: -0.01em;
+  font-variant-numeric: lining-nums;
+  font-family: var(--font-title);
+  font-weight: 700;
+  color: var(--ink);
+  margin: 0 0 var(--space-2);
+  letter-spacing: -0.005em;
 }
 h1 {
-  font-size: 1.6rem;
-  font-weight: 700;
+  font-size: 32px;
+  line-height: 40px;
 }
 h2 {
-  font-size: 1.25rem;
-  font-weight: 650;
+  font-size: 22px;
+  line-height: 32px;
 }
 h3 {
-  font-size: 1.05rem;
-  font-weight: 650;
+  font-size: 19px;
+  line-height: 24px;
 }
 p {
   margin: 0 0 var(--space-3);
 }
 
 a {
-  color: var(--brand);
-  text-underline-offset: 2px;
+  color: var(--ink);
+  text-underline-offset: 3px;
+}
+a:hover {
+  color: var(--red);
 }
 
 button,
@@ -66,9 +82,8 @@ button {
 }
 
 :focus-visible {
-  outline: none;
-  box-shadow: var(--focus);
-  border-radius: var(--radius-sm);
+  outline: 3px solid var(--red);
+  outline-offset: 2px;
 }
 
 img,
@@ -90,7 +105,27 @@ svg {
 
 .num {
   font-family: var(--font-num);
-  font-variant-numeric: tabular-nums;
+  font-variant-numeric: lining-nums tabular-nums;
+}
+
+/* Écriture manuscrite : annotations seulement, jamais sous 20 px. */
+.hand {
+  font-family: var(--font-hand);
+  font-size: 22px;
+  line-height: 24px;
+  font-weight: 500;
+  color: var(--ink);
+}
+
+/* Surtitre en petites capitales rouges. */
+.kicker {
+  font-family: var(--font-title);
+  font-weight: 600;
+  font-size: 13px;
+  line-height: 24px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--red);
 }
 
 @media (prefers-reduced-motion: reduce) {

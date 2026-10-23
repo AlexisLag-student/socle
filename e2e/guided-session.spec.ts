@@ -31,6 +31,7 @@ test('séance guidée : séries, minuteur, retour de séance, historique', async
   }
   await expect(page.getByRole('heading', { name: 'Séance terminée !' })).toBeVisible();
   await page.getByRole('button', { name: 'Voir mon historique' }).click();
-  await expect(page.getByText('séances au total')).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Carnet', level: 1 })).toBeVisible();
+  await expect(page.getByText('Au total')).toBeVisible();
   await expect(page.getByRole('img', { name: /Calendrier des 16 dernières semaines/ })).toBeVisible();
 });

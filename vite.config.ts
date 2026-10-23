@@ -28,8 +28,8 @@ export default defineConfig({
         scope: '/',
         display: 'standalone',
         orientation: 'portrait',
-        background_color: '#f6f8fa',
-        theme_color: '#0f5f5a',
+        background_color: '#fbfaf6',
+        theme_color: '#fbfaf6',
         categories: ['health', 'fitness', 'sports'],
         icons: [
           { src: 'pwa-192.png', sizes: '192x192', type: 'image/png' },

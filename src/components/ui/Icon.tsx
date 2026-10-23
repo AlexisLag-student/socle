@@ -1,11 +1,10 @@
-/** Jeu d'icônes au trait (24 × 24), dessiné pour l'app. */
+/** Jeu d'icônes au trait (24 × 24, trait 2 px « encre »), dessiné pour l'app. */
 const PATHS = {
-  home: 'M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z',
-  program: 'M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01',
-  library: 'M4 5a1 1 0 0 1 1-1h4v16H5a1 1 0 0 1-1-1zM9 4h4v16H9zM14.5 4.6l3.8-1 3.6 14.3-3.8 1z',
-  history: 'M3 12a9 9 0 1 0 3-6.7M3 4v4h4M12 7v5l3 2',
-  settings:
-    'M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1A1.7 1.7 0 0 0 4.6 9a1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z',
+  home: 'M4 11l8-6 8 6v8H4z',
+  program: 'M9 6h11M9 12h11M9 18h11M4 6h1M4 12h1M4 18h1',
+  library: 'M5 4h4v16H5zM10 4h4v16h-4zM15.5 5l3.5-1 2.5 15-3.5 1z',
+  history: 'M5.5 5h13A1.5 1.5 0 0 1 20 6.5v12a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 18.5v-12A1.5 1.5 0 0 1 5.5 5zM4 10h16M9 3v4M15 3v4',
+  settings: 'M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1',
   play: 'M7 4.5v15a.5.5 0 0 0 .8.4l11.5-7.5a.5.5 0 0 0 0-.8L7.8 4.1a.5.5 0 0 0-.8.4z',
   pause: 'M7 4h3v16H7zM14 4h3v16h-3z',
   check: 'M4 12.5l5 5L20 6.5',
@@ -39,6 +38,8 @@ const PATHS = {
   download: 'M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3',
   upload: 'M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12',
   bell: 'M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 0 1-3.4 0',
+  pencil: 'M4 20l4-1 11-11-3-3L5 16z',
+  arrow: 'M5 12h14M13 6l6 6-6 6',
   grip: 'M9 6h.01M15 6h.01M9 12h.01M15 12h.01M9 18h.01M15 18h.01',
 } as const;
 
@@ -52,7 +53,7 @@ export function Icon({ name, size = 20, className, title }: { name: IconName; si
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
-      strokeWidth={name === 'play' ? 0 : 1.9}
+      strokeWidth={name === 'play' ? 0 : 2}
       strokeLinecap="round"
       strokeLinejoin="round"
       className={className}

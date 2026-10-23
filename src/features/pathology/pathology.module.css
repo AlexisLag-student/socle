@@ -16,7 +16,8 @@
 
 .desc {
   color: var(--text-muted);
-  font-size: 0.9rem;
+  font-size: 14px;
+  line-height: 20px;
   display: -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
@@ -27,8 +28,8 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 6px;
-  color: var(--text-faint);
+  gap: 10px;
+  color: var(--text-muted);
 }
 
 .page {
@@ -55,8 +56,8 @@
 
 .phase {
   background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
+  border: var(--stroke) solid var(--ink);
+  border-radius: var(--radius);
   padding: var(--space-4);
 }
 
@@ -67,10 +68,11 @@
 }
 
 .phase h4 {
-  font-size: 0.85rem;
+  font-size: 13px;
+  font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--text-muted);
+  letter-spacing: 0.08em;
+  color: var(--red);
   margin: var(--space-3) 0 var(--space-2);
 }
 
@@ -80,9 +82,10 @@
   width: 28px;
   height: 28px;
   border-radius: 50%;
-  background: var(--brand);
-  color: var(--on-brand);
-  font-size: 0.9rem;
+  background: var(--ink);
+  color: var(--on-ink);
+  font-family: var(--font-title);
+  font-size: 15px;
 }
 
 .exList {
@@ -101,26 +104,25 @@
 }
 
 .exList a {
-  font-weight: 650;
+  font-weight: 700;
 }
 
 .note {
   flex-basis: 100%;
-  font-size: 0.85rem;
+  font-size: 14px;
   color: var(--text-muted);
 }
 
 .advice {
   margin: var(--space-3) 0 0;
   padding: var(--space-2) var(--space-3);
-  border-radius: var(--radius-sm);
-  background: var(--brand-soft);
-  font-size: 0.92rem;
+  border-left: 4px solid var(--ink);
+  background: var(--surface);
+  font-size: 15px;
 }
 
 .consult {
-  background: var(--danger-soft);
-  border-left: 4px solid var(--danger);
-  border-radius: 0 var(--radius) var(--radius) 0;
+  background: var(--surface);
+  border-left: 4px solid var(--red);
   padding: var(--space-3) var(--space-4);
 }

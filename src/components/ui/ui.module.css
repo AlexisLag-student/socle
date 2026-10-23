@@ -1,139 +1,151 @@
-/* --- Boutons ---------------------------------------------------------------- */
+/* --- Boutons : principal à l'encre pleine (ombre rouge), secondaire blanc au trait d'encre ------------- */
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: var(--space-2);
   min-height: var(--tap);
-  padding: 0 var(--space-4);
-  border-radius: 999px;
-  border: 1.5px solid transparent;
-  font-weight: 600;
-  font-size: 0.98rem;
-  line-height: 1.1;
+  padding: 0 var(--space-5);
+  border-radius: var(--radius);
+  border: var(--stroke) solid var(--ink);
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 20px;
   text-decoration: none;
-  transition:
-    background 0.15s ease,
-    border-color 0.15s ease,
-    transform 0.05s ease;
   white-space: nowrap;
   -webkit-tap-highlight-color: transparent;
 }
-.btn:active {
-  transform: scale(0.98);
+.btn:active:not(:disabled) {
+  translate: 1px 1px;
 }
 .btn:disabled {
   opacity: 0.5;
+  box-shadow: none;
   cursor: not-allowed;
 }
+.primary,
+.primary:hover {
+  background: var(--ink);
+  color: var(--on-ink);
+}
 .primary {
-  background: var(--brand);
-  color: var(--on-brand);
+  box-shadow: var(--shadow-red);
 }
-.primary:hover:not(:disabled) {
-  background: var(--brand-strong);
+/* Une seule ombre par écran : les boutons principaux secondaires de la page s'en passent. */
+.flat {
+  box-shadow: none;
 }
-.secondary {
+.secondary,
+.secondary:hover {
   background: var(--surface);
-  color: var(--text);
-  border-color: var(--border-strong);
-}
-.secondary:hover:not(:disabled) {
-  border-color: var(--brand);
+  color: var(--ink);
 }
 .ghost {
   background: transparent;
-  color: var(--brand);
+  border-color: transparent;
+  color: var(--ink);
 }
 .ghost:hover:not(:disabled) {
-  background: var(--brand-soft);
+  color: var(--red);
 }
-.danger {
-  background: var(--danger-soft);
-  color: var(--danger);
+.danger,
+.danger:hover {
+  background: var(--surface);
+  border-color: var(--red);
+  color: var(--red);
 }
 .block {
   width: 100%;
 }
 .large {
-  min-height: 56px;
-  font-size: 1.05rem;
-  padding: 0 var(--space-5);
+  min-height: 52px;
 }
 .small {
-  min-height: 36px;
+  min-height: 44px;
   padding: 0 var(--space-3);
-  font-size: 0.875rem;
+  font-size: 15px;
 }
 .iconOnly {
   padding: 0;
   width: var(--tap);
 }
 .iconOnly.small {
-  width: 36px;
+  width: 44px;
 }
 
 /* --- Cartes -------------------------------------------------------------------- */
 .card {
   background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
+  border: var(--stroke) solid var(--ink);
+  border-radius: var(--radius);
   padding: var(--space-4);
-  box-shadow: var(--shadow-1);
+}
+.featured {
+  box-shadow: var(--shadow-ink);
+  padding: 18px;
 }
 .cardLink {
   display: block;
   color: inherit;
   text-decoration: none;
-  transition: border-color 0.15s ease;
 }
 .cardLink:hover {
-  border-color: var(--brand);
+  color: inherit;
+  border-color: var(--red);
 }
 
-/* --- Badges et puces ------------------------------------------------------------ */
+/* --- Tampons de niveau de preuve -------------------------------------------------- */
+.stamp {
+  display: inline-block;
+  flex: none;
+  rotate: var(--stamp-rot, -3deg);
+  border: 2.5px solid currentColor;
+  border-radius: var(--radius-stamp);
+  padding: 3px 8px;
+  font-family: var(--font-title);
+  font-weight: 700;
+  font-size: 12px;
+  line-height: 14px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-align: center;
+  white-space: nowrap;
+  background: color-mix(in srgb, var(--surface) 70%, transparent);
+}
+.stampTwoLines {
+  white-space: normal;
+  width: min-content;
+}
+.ev-strong {
+  color: var(--ev-strong);
+}
+.ev-moderate {
+  color: var(--ev-moderate);
+}
+.ev-low {
+  color: var(--ev-low);
+}
+.ev-expert {
+  color: var(--ev-expert);
+  border-style: dashed;
+}
+
+/* Étiquette neutre (niveau, variante…) */
 .badge {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 3px 10px;
-  border-radius: 999px;
-  font-size: 0.78rem;
-  font-weight: 600;
-  line-height: 1.4;
-  background: var(--surface-2);
-  color: var(--text-muted);
+  padding: 0 8px;
+  min-height: 24px;
+  border-radius: var(--radius);
+  border: 1.5px solid var(--sep);
+  font-size: 13px;
+  line-height: 20px;
+  font-weight: 700;
+  color: var(--text-2);
+  background: var(--surface);
   white-space: nowrap;
-}
-.ev-strong {
-  background: var(--ev-strong-soft);
-  color: var(--ev-strong);
-}
-.ev-moderate {
-  background: var(--ev-moderate-soft);
-  color: var(--ev-moderate);
-}
-.ev-low {
-  background: var(--ev-low-soft);
-  color: var(--ev-low);
-}
-.ev-expert {
-  background: var(--ev-expert-soft);
-  color: var(--ev-expert);
-}
-.evDots {
-  display: inline-flex;
-  gap: 2px;
-}
-.evDots i {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: currentColor;
-  opacity: 0.25;
-}
-.evDots i.on {
-  opacity: 1;
 }
 
 .chips {
@@ -147,85 +159,107 @@
   gap: var(--space-2);
   min-height: 44px;
   padding: 0 var(--space-4);
-  border-radius: 999px;
-  border: 1.5px solid var(--border-strong);
+  border-radius: var(--radius);
+  border: var(--stroke) solid var(--ink);
   background: var(--surface);
-  font-weight: 550;
-  font-size: 0.95rem;
-  color: var(--text);
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--ink);
 }
 .chip[aria-pressed='true'],
 .chip[aria-checked='true'] {
-  background: var(--brand-soft);
-  border-color: var(--brand);
-  color: var(--brand-strong);
+  background: var(--ink);
+  color: var(--on-ink);
 }
 
-/* --- Grande option (choix du parcours) ---------------------------------------------- */
+/* --- Grande option (choix du parcours) : ligne de cahier avec case à cocher ------------------ */
 .option {
   display: grid;
-  grid-template-columns: auto 1fr auto;
+  grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
   gap: var(--space-3);
   width: 100%;
   min-height: 64px;
-  padding: var(--space-3) var(--space-4);
+  padding: var(--space-2) var(--space-4);
   border-radius: var(--radius);
-  border: 1.5px solid var(--border);
+  border: var(--stroke) solid var(--ink);
   background: var(--surface);
   text-align: left;
   color: var(--text);
 }
 .option[aria-pressed='true'],
 .option[aria-checked='true'] {
-  border-color: var(--brand);
-  background: var(--brand-soft);
+  box-shadow: inset 4px 0 0 var(--red);
 }
 .optionIcon {
   display: grid;
   place-items: center;
   width: 40px;
   height: 40px;
-  border-radius: 12px;
-  background: var(--surface-2);
-  color: var(--brand);
+  color: var(--ink);
 }
 .optionTitle {
-  font-weight: 650;
+  font-weight: 700;
+  color: var(--ink);
 }
 .optionHint {
   display: block;
-  font-size: 0.85rem;
+  font-size: 14px;
+  line-height: 20px;
   color: var(--text-muted);
   font-weight: 400;
 }
-.check {
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  border: 2px solid var(--border-strong);
-  display: grid;
-  place-items: center;
-  color: transparent;
+.option .check {
+  width: 22px;
+  height: 22px;
 }
-.option[aria-pressed='true'] .check,
-.option[aria-checked='true'] .check {
-  background: var(--brand);
-  border-color: var(--brand);
-  color: var(--on-brand);
+
+/* --- Case à cocher dessinée ----------------------------------------------------------- */
+.check {
+  display: inline-block;
+  flex: none;
+  width: 22px;
+  height: 22px;
+  overflow: visible;
+}
+.check rect {
+  fill: var(--surface);
+  stroke: var(--ink);
+  stroke-width: 2;
+}
+.check path {
+  fill: none;
+  stroke: var(--red);
+  stroke-width: 2.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 20;
+  stroke-dashoffset: 20;
+}
+.check.checked path {
+  stroke-dashoffset: 0;
+  transition: stroke-dashoffset 0.15s ease-out;
+}
+.check.pending rect {
+  stroke: var(--disabled);
+  stroke-dasharray: 3 2;
+  fill: transparent;
 }
 
 /* --- Formulaires ------------------------------------------------------------------ */
 .field {
   display: grid;
-  gap: 6px;
+  gap: 4px;
 }
 .label {
-  font-weight: 600;
-  font-size: 0.9rem;
+  font-weight: 700;
+  font-size: 15px;
+  line-height: 24px;
+  color: var(--ink);
 }
 .hint {
-  font-size: 0.82rem;
+  font-size: 14px;
+  line-height: 20px;
   color: var(--text-muted);
 }
 .input,
@@ -234,99 +268,103 @@
   width: 100%;
   min-height: var(--tap);
   padding: 10px 12px;
-  border-radius: var(--radius-sm);
-  border: 1.5px solid var(--border-strong);
+  border-radius: var(--radius);
+  border: var(--stroke) solid var(--ink);
   background: var(--surface);
   color: var(--text);
+}
+.input::placeholder,
+.textarea::placeholder {
+  color: var(--text-muted);
 }
 .textarea {
   min-height: 96px;
   resize: vertical;
 }
-.input:focus,
-.select:focus,
-.textarea:focus {
-  outline: none;
-  border-color: var(--brand);
-  box-shadow: var(--focus);
+.input:focus-visible,
+.select:focus-visible,
+.textarea:focus-visible {
+  outline: 3px solid var(--red);
+  outline-offset: 0;
 }
 
 .segmented {
   display: inline-flex;
-  padding: 4px;
-  background: var(--surface-2);
-  border-radius: 999px;
-  gap: 4px;
   flex-wrap: wrap;
+  border: var(--stroke) solid var(--ink);
+  border-radius: var(--radius);
+  background: var(--surface);
+  overflow: hidden;
 }
 .segmented button {
-  min-height: 40px;
+  min-height: 44px;
   padding: 0 var(--space-4);
-  border-radius: 999px;
   border: 0;
+  border-right: 1px solid var(--sep);
   background: transparent;
-  font-weight: 600;
-  color: var(--text-muted);
+  font-weight: 700;
+  color: var(--ink);
+}
+.segmented button:last-child {
+  border-right: 0;
 }
 .segmented button[aria-pressed='true'] {
-  background: var(--surface);
-  color: var(--text);
-  box-shadow: var(--shadow-1);
+  background: var(--ink);
+  color: var(--on-ink);
 }
 
-/* --- Bandeaux ------------------------------------------------------------------- */
+/* --- Bandeaux : trait vertical dans la marge du texte ------------------------------------ */
 .notice {
   display: grid;
-  grid-template-columns: auto 1fr;
+  grid-template-columns: auto minmax(0, 1fr);
   gap: var(--space-3);
-  padding: var(--space-3) var(--space-4);
-  border-radius: var(--radius);
-  background: var(--surface-2);
-  font-size: 0.92rem;
+  padding: var(--space-2) var(--space-4);
+  border-left: 4px solid var(--ink);
+  background: var(--surface);
+  font-size: 15px;
+  line-height: 24px;
+}
+.notice > svg {
+  margin-top: 2px;
+  color: var(--ink);
 }
 .notice p:last-child {
   margin-bottom: 0;
 }
-.notice-info {
-  background: var(--brand-soft);
-  color: var(--text);
-}
-.notice-info > svg {
-  color: var(--brand);
-}
 .notice-warning {
-  background: var(--warning-soft);
+  border-left-color: var(--stamp-low);
 }
 .notice-warning > svg {
-  color: var(--warning);
+  color: var(--stamp-low);
 }
 .notice-danger {
-  background: var(--danger-soft);
+  border-left-color: var(--red);
 }
 .notice-danger > svg {
-  color: var(--danger);
+  color: var(--red);
 }
 
 /* --- Dialogue --------------------------------------------------------------------- */
 .dialog {
-  border: 0;
+  border: var(--stroke) solid var(--ink);
   padding: 0;
-  border-radius: var(--radius-lg);
-  background: var(--surface);
+  border-radius: var(--radius);
+  background: var(--paper);
   color: var(--text);
   width: min(560px, calc(100vw - 24px));
   max-height: calc(100dvh - 32px);
-  box-shadow: var(--shadow-2);
+  box-shadow: var(--shadow-ink);
 }
 .dialog::backdrop {
-  background: rgba(8, 15, 20, 0.55);
+  background: var(--backdrop);
 }
 .dialogHeader {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: var(--space-3);
-  padding: var(--space-4) var(--space-4) 0;
+  padding: var(--space-3) var(--space-3) 0 var(--space-4);
+  border-bottom: var(--stroke) solid var(--ink);
 }
 .dialogHeader h2 {
   margin: 0;
@@ -339,8 +377,8 @@
 /* --- En-tête de page ---------------------------------------------------------------- */
 .pageHeader {
   display: grid;
-  gap: var(--space-2);
-  margin-bottom: var(--space-5);
+  gap: 0;
+  margin-bottom: var(--space-4);
 }
 .pageHeader h1 {
   margin: 0;
@@ -348,28 +386,38 @@
 .pageHeader p {
   color: var(--text-muted);
   margin: 0;
+  line-height: 32px;
 }
 .backLink {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  color: var(--text-muted);
+  color: var(--ink);
   text-decoration: none;
-  font-size: 0.9rem;
-  min-height: 36px;
+  font-size: 15px;
+  min-height: 44px;
   width: fit-content;
+}
+.titleRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
 }
 
 .section {
-  margin-top: var(--space-6);
+  margin-top: var(--space-4);
 }
+.section > div > h2,
 .section > h2 {
-  font-size: 1.1rem;
+  font-size: 19px;
+  line-height: 32px;
+  color: var(--red);
+  margin: 0;
 }
 
 .empty {
-  text-align: center;
-  padding: var(--space-6) var(--space-4);
+  padding: var(--space-5) 0;
   color: var(--text-muted);
 }
 
@@ -381,7 +429,7 @@
 .row {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-2);
+  gap: var(--space-3);
   align-items: center;
 }
 .spread {
@@ -395,7 +443,145 @@
   color: var(--text-muted);
 }
 .small-text {
-  font-size: 0.875rem;
+  font-size: 14px;
+}
+
+/* --- Annotation manuscrite ------------------------------------------------------- */
+.hand {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  margin: 0;
+  font-family: var(--font-hand);
+  font-weight: 500;
+  font-size: 22px;
+  line-height: 24px;
+  color: var(--ink);
+}
+.hand > svg {
+  flex: none;
+  margin-top: 2px;
+}
+.handRed {
+  color: var(--red);
+}
+
+/* --- Bloc de dosage : trois colonnes ------------------------------------------------ */
+.dosage {
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(var(--cols, 3), minmax(0, 1fr));
+  border: var(--stroke) solid var(--ink);
+  border-radius: var(--radius);
+  background: var(--surface);
+  text-align: center;
+}
+.dosage > div {
+  padding: 8px 4px;
+  border-right: 1px solid var(--sep);
+  min-width: 0;
+}
+.dosage > div:last-child {
+  border-right: 0;
+}
+.dosage dt::first-letter {
+  text-transform: uppercase;
+}
+.dosage dt {
+  font-size: 13px;
+  line-height: 20px;
+  color: var(--text-muted);
+}
+.dosage dd {
+  margin: 0;
+  font-variant-numeric: lining-nums tabular-nums;
+  font-family: var(--font-title);
+  font-weight: 700;
+  font-size: 24px;
+  line-height: 32px;
+  color: var(--ink);
+  overflow-wrap: anywhere;
+}
+
+.dosage dd.ddLong {
+  font-size: 18px;
+  line-height: 24px;
+  padding: 4px 0;
+}
+
+/* --- Bande de la semaine ------------------------------------------------------------- */
+.week {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 4px;
+  text-align: center;
+  font-size: 13px;
+  line-height: 20px;
+  color: var(--text-muted);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.week li {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+.dot {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--text-muted);
+}
+.dotDone {
+  background: var(--ink);
+  color: var(--on-ink);
+  border: var(--stroke) solid var(--ink);
+}
+.dotToday {
+  border: var(--stroke) dashed var(--red);
+  color: var(--red);
+}
+.dayToday {
+  color: var(--red);
+  font-weight: 700;
+}
+
+/* --- Notes de bas de page ------------------------------------------------------------ */
+.fnRefs {
+  color: var(--red);
+  font-weight: 700;
+  margin-left: 1px;
+}
+.fnRef {
+  color: var(--red);
+  font-weight: 700;
+  font-size: 0.75em;
+  line-height: 0;
+  text-decoration: none;
+  padding: 0 1px;
+}
+.footnotes {
+  margin: var(--space-5) 0 0;
+  padding: 6px 0 0;
+  border-top: 1px solid var(--ink);
+  list-style: none;
+  font-size: 13px;
+  line-height: 20px;
+  color: var(--text-muted);
+  display: grid;
+  gap: 6px;
+}
+.footnotes sup {
+  color: var(--red);
+  font-weight: 700;
+  margin-right: 3px;
 }
 
 /* --- Toast -------------------------------------------------------------------- */
@@ -408,11 +594,11 @@
   display: flex;
   align-items: center;
   gap: var(--space-3);
-  padding: var(--space-3) var(--space-4);
+  padding: var(--space-2) var(--space-4);
   border-radius: var(--radius);
-  background: var(--text);
-  color: var(--bg);
-  box-shadow: var(--shadow-2);
+  background: var(--ink);
+  color: var(--on-ink);
+  box-shadow: var(--shadow-red);
   width: max-content;
   max-width: calc(100vw - 32px);
 }

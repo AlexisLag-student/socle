@@ -1,6 +1,6 @@
 import { useId, type ReactNode } from 'react';
 import type { MuscleId } from '@/domain/ids';
-import { buildFigure, type FigureShape } from './figure';
+import { buildFigure, isTendon, type FigureShape } from './figure';
 import type { DrawingId } from './drawings/registry';
 import type { Box } from './drawings/geometry';
 import css from './anatomy.module.css';
@@ -47,6 +47,12 @@ export function MuscleFigure({
   const uid = useId().replace(/:/g, '');
   const fig = buildFigure(drawing, { primary, secondary, box });
   const shapes = showMuscles ? fig.shapes : fig.shapes.filter((s) => s.kind !== 'muscle');
+  // Hachures à 45° des muscles secondaires : motif propre à chaque figure, pas proportionnel au cadrage.
+  const hatch = `${uid}-hatch`;
+  const hatchTendon = `${uid}-hatch-t`;
+  const unit = Number(fig.viewBox.split(' ')[2]) / 32;
+  const fillFor = (s: FigureShape) =>
+    s.role === 'secondary' ? { fill: `url(#${s.muscle && isTendon(s.muscle) ? hatchTendon : hatch})` } : undefined;
 
   return (
     <svg
@@ -58,6 +64,10 @@ export function MuscleFigure({
     >
       <title id={`${uid}-t`}>{title}</title>
       {desc && <desc id={`${uid}-d`}>{desc}</desc>}
+      <defs>
+        <HatchPattern id={hatch} size={unit} background="var(--m-hatch-bg)" />
+        <HatchPattern id={hatchTendon} size={unit} background="var(--m-tendon)" />
+      </defs>
       {groupShapes(shapes).map((g, gi) =>
         g.muscle ? (
           <g key={g.muscle} id={`${uid}-${g.muscle}`} data-muscle={g.muscle} data-role={g.shapes[0]!.role}>
@@ -65,7 +75,8 @@ export function MuscleFigure({
               <path
                 key={s.key}
                 d={s.d}
-                className={[css.muscle, css[s.role ?? 'neutral'], s.deep ? css.deep : ''].join(' ')}
+                className={[css.muscle, css[s.role ?? 'neutral'], s.deep ? css.deep : '', s.muscle && isTendon(s.muscle) ? css.tendon : ''].join(' ')}
+                style={fillFor(s)}
                 vectorEffect="non-scaling-stroke"
               />
             ))}
@@ -96,5 +107,15 @@ export function MuscleFigure({
       )}
       {children}
     </svg>
+  );
+}
+
+/** Motif de hachures rouges à 45° (muscle secondaire), réutilisé par la légende. */
+export function HatchPattern({ id, size, background }: { id: string; size: number; background: string }) {
+  return (
+    <pattern id={id} width={size} height={size} patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+      <rect width={size} height={size} style={{ fill: background }} />
+      <line x1={0} y1={0} x2={0} y2={size} style={{ stroke: 'var(--m-hatch)', strokeWidth: size * 0.6 }} />
+    </pattern>
   );
 }

@@ -1,7 +1,7 @@
 .card {
   background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
+  border: var(--stroke) solid var(--ink);
+  border-radius: var(--radius);
   padding: var(--space-4);
   display: grid;
   gap: var(--space-3);
@@ -20,10 +20,11 @@
   place-items: center;
   width: 32px;
   height: 32px;
-  border-radius: 10px;
-  background: var(--brand-soft);
-  color: var(--brand-strong);
-  font-weight: 750;
+  border-radius: 50%;
+  border: var(--stroke) solid var(--ink);
+  color: var(--ink);
+  font-family: var(--font-title);
+  font-weight: 700;
   font-variant-numeric: tabular-nums;
 }
 
@@ -35,16 +36,17 @@
 
 .title {
   margin: 0;
-  font-size: 1.05rem;
+  font-size: 19px;
+  line-height: 24px;
 }
 
 .title a {
-  color: var(--text);
+  color: var(--ink);
   text-decoration: none;
 }
 
 .title a:hover {
-  color: var(--brand);
+  color: var(--red);
   text-decoration: underline;
 }
 
@@ -81,8 +83,9 @@
 }
 
 .levelName {
-  font-weight: 650;
+  font-weight: 700;
   margin: 0;
+  color: var(--ink);
 }
 
 .dosage {
@@ -95,24 +98,26 @@
 }
 
 .dosage li {
-  background: var(--surface-2);
-  border-radius: 8px;
-  padding: 4px 10px;
-  font-size: 0.88rem;
-  font-weight: 550;
+  border: 1.5px solid var(--sep);
+  border-radius: var(--radius);
+  padding: 0 8px;
+  font-size: 14px;
+  line-height: 24px;
 }
 
 .dosage li:first-child {
-  background: var(--brand-soft);
-  color: var(--brand-strong);
+  border-color: var(--ink);
+  color: var(--ink);
+  font-family: var(--font-title);
   font-weight: 700;
+  font-size: 16px;
 }
 
 .cues {
   margin: 0;
   padding-left: 1.1rem;
-  color: var(--text-muted);
-  font-size: 0.9rem;
+  color: var(--text-2);
+  font-size: 15px;
 }
 
 .note {
@@ -120,16 +125,15 @@
   gap: 6px;
   align-items: flex-start;
   margin: 0;
-  padding: var(--space-2) var(--space-3);
-  border-radius: var(--radius-sm);
-  background: var(--warning-soft);
-  font-size: 0.9rem;
+  padding: var(--space-1) var(--space-3);
+  border-left: 4px solid var(--ink);
+  font-size: 15px;
 }
 
 .reason {
   margin: 0;
-  font-size: 0.8rem;
-  color: var(--text-faint);
+  font-size: 13px;
+  color: var(--text-muted);
 }
 
 .muted {

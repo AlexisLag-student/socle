@@ -12,3 +12,6 @@ blob-report
 .DS_Store
 Thumbs.db
 preview-anatomy*.png
+
+# Captures de contrôle visuel (npm run screens), régénérables
+design/rendus/

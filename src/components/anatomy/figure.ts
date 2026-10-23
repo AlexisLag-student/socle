@@ -30,6 +30,11 @@ export function isDeep(id: MuscleId): boolean {
   return deepIds.has(id);
 }
 
+/** Tendons et fascias : dessinés en rouge très clair quand ils sont sollicités. */
+export function isTendon(id: MuscleId): boolean {
+  return id.endsWith('-tendon') || id === 'plantar-fascia' || id === 'it-band';
+}
+
 export interface FigureOptions {
   primary?: readonly MuscleId[];
   secondary?: readonly MuscleId[];

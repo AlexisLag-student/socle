@@ -1,6 +1,7 @@
 import { lazy, Suspense, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Card, Empty, Field, PageHeader, Section, Select, ButtonLink, ui } from '@/components/ui';
+import { DosageBlock, Empty, Field, HandNote, PageHeader, Section, Select, ButtonLink, WeekStrip, ui } from '@/components/ui';
+import { weekDays } from '@/features/exercise/notebook';
 import { useLogs } from '@/app/hooks';
 import { exerciseById } from '@/content/index';
 import { useLocalized } from '@/i18n/useLocalized';
@@ -36,24 +37,27 @@ export default function HistoryPage() {
     );
 
   const maxWeek = Math.max(1, ...weekly.map((w) => w.count));
+  /** Ressenti majoritaire de la séance, noté à la main (« facile ! », « correct »…). */
+  const feedbackSummary = (fbs: (string | undefined)[]) => {
+    const counts = new Map<string, number>();
+    for (const f of fbs) if (f) counts.set(f, (counts.get(f) ?? 0) + 1);
+    const top = [...counts.entries()].sort((a, b) => b[1] - a[1])[0]?.[0];
+    return top ? t(`notebook.feedback.${top as 'easy'}`) : '';
+  };
   const fmtDay = (d: Date) => d.toLocaleDateString(i18n.language, { weekday: 'short', day: 'numeric', month: 'short' });
 
   return (
     <div>
       <PageHeader title={t('nav.history')} />
-      <div className={css.stats}>
-        <Card>
-          <span className={css.value}>{finished.length}</span>
-          <span className={css.label}>{t('home.totalSessions')}</span>
-        </Card>
-        <Card>
-          <span className={css.value}>{weekly.at(-1)?.count ?? 0}</span>
-          <span className={css.label}>{t('home.thisWeek')}</span>
-        </Card>
-        <Card>
-          <span className={css.value}>{weekStreak(finished, now)}</span>
-          <span className={css.label}>{t('history.streak')}</span>
-        </Card>
+      <div className={css.top}>
+        <WeekStrip days={weekDays(logs, undefined, t, i18n.language, now)} label={t('program.week')} />
+        <DosageBlock
+          items={[
+            { label: t('history.total'), value: String(finished.length) },
+            { label: t('history.thisWeek'), value: String(weekly.at(-1)?.count ?? 0) },
+            { label: t('history.streak'), value: String(weekStreak(finished, now)) },
+          ]}
+        />
       </div>
 
       <Section title={t('history.calendar')}>
@@ -82,7 +86,7 @@ export default function HistoryPage() {
                     y={d * 16}
                     width={13}
                     height={13}
-                    rx={3}
+                    rx={6.5}
                     className={future ? css.future : n === 0 ? css.c0 : n === 1 ? css.c1 : css.c2}
                   >
                     <title>{`${fmtDay(day)} : ${t('history.sessionsCount', { count: n })}`}</title>
@@ -96,11 +100,13 @@ export default function HistoryPage() {
 
       <Section title={t('history.perWeek')}>
         <div className={css.bars} role="list">
-          {weekly.map((w) => (
+          {weekly.map((w, i) => (
             <div key={w.weekStart.getTime()} className={css.bar} role="listitem" aria-label={`${fmtDay(w.weekStart)} : ${t('history.sessionsCount', { count: w.count })}`}>
               <span className={css.barValue}>{w.count || ''}</span>
               <span className={css.barFill} style={{ height: `${(w.count / maxWeek) * 100}%` }} />
-              <span className={css.barLabel}>{w.weekStart.getDate()}/{w.weekStart.getMonth() + 1}</span>
+              <span className={css.barLabel} aria-hidden>
+                {(weekly.length - 1 - i) % 2 === 0 ? `${w.weekStart.getDate()}/${w.weekStart.getMonth() + 1}` : ''}
+              </span>
             </div>
           ))}
         </div>
@@ -129,11 +135,13 @@ export default function HistoryPage() {
             const done = log.entries.filter((e) => !e.skipped && e.sets.some((s) => s.done));
             return (
               <li key={log.id}>
-                <strong>{fmtDay(new Date(log.finishedAt!))}</strong> · {t('program.session', { key: log.sessionKey })}
-                <span className={ui.muted}> · {t('history.exercisesDone', { count: done.length })}</span>
-                <span className={css.fb}>
-                  {done.map((e) => (e.feedback === 'easy' ? '🙂' : e.feedback === 'hard' ? '🥵' : e.feedback === 'ok' ? '💪' : '')).join('')}
+                <span>
+                  <strong>{fmtDay(new Date(log.finishedAt!))}</strong> · {t('program.session', { key: log.sessionKey })}
+                  <span className={ui.muted}> · {t('history.exercisesDone', { count: done.length })}</span>
                 </span>
+                <HandNote as="span" className={css.fb}>
+                  {feedbackSummary(done.map((e) => e.feedback))}
+                </HandNote>
               </li>
             );
           })}

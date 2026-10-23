@@ -79,6 +79,18 @@ export default function SettingsPage() {
           onChange={(v) => setPrefs({ theme: v })}
           options={(['system', 'light', 'dark'] as const).map((v) => ({ value: v, label: t(`settings.themes.${v}`) }))}
         />
+        <div className={ui.stack} style={{ marginTop: 'var(--space-3)' }}>
+          <Segmented<'lines' | 'plain'>
+            label={t('settings.paper')}
+            value={prefs.paperLines ? 'lines' : 'plain'}
+            onChange={(v) => setPrefs({ paperLines: v === 'lines' })}
+            options={[
+              { value: 'lines', label: t('settings.paperLines') },
+              { value: 'plain', label: t('settings.paperPlain') },
+            ]}
+          />
+          <p className={ui.muted}>{t('settings.paperHint')}</p>
+        </div>
       </Section>
 
       <Section title={t('settings.reminders')} id="reminders">

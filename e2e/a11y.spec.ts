@@ -20,3 +20,24 @@ test('accessibilité de la fiche programme', async ({ page }) => {
   const serious = results.violations.filter((v) => v.impact === 'serious' || v.impact === 'critical');
   expect(serious.map((v) => `${v.id}: ${v.nodes[0]?.target}`)).toEqual([]);
 });
+
+test.describe('mode sombre', () => {
+  for (const path of ['/', '/library', '/library/squat', '/settings', '/pro']) {
+    test(`accessibilité ${path} (sombre)`, async ({ page }) => {
+      await page.addInitScript(() => localStorage.setItem('socle.prefs.v1', JSON.stringify({ disclaimerAccepted: true, theme: 'dark' })));
+      await start(page, path);
+      await page.waitForLoadState('networkidle');
+      await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
+      const results = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze();
+      const serious = results.violations.filter((v) => v.impact === 'serious' || v.impact === 'critical');
+      expect(serious.map((v) => `${v.id}: ${v.nodes.length} nœud(s) — ${v.nodes[0]?.target}`)).toEqual([]);
+    });
+  }
+  test('accessibilité de la fiche programme (sombre)', async ({ page }) => {
+    await page.addInitScript(() => localStorage.setItem('socle.prefs.v1', JSON.stringify({ disclaimerAccepted: true, theme: 'dark' })));
+    await createAthleteProgram(page);
+    const results = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze();
+    const serious = results.violations.filter((v) => v.impact === 'serious' || v.impact === 'critical');
+    expect(serious.map((v) => `${v.id}: ${v.nodes[0]?.target}`)).toEqual([]);
+  });
+});

@@ -6,8 +6,8 @@
   "nav": {
     "home": "Accueil",
     "program": "Programme",
-    "library": "Bibliothèque",
-    "history": "Historique",
+    "library": "Exercices",
+    "history": "Carnet",
     "settings": "Réglages",
     "bibliography": "Bibliographie",
     "pro": "Praticien",
@@ -72,6 +72,12 @@
       "moderate": "Au moins un essai randomisé de bonne qualité.",
       "low": "Études de cohorte, séries de cas ou petits essais.",
       "expert": "Pratique clinique courante, sans preuve directe."
+    },
+    "short": {
+      "strong": "Forte",
+      "moderate": "Modérée",
+      "low": "Faible",
+      "expert": "Experts"
     }
   },
   "muscles": {
@@ -84,7 +90,10 @@
     "altPrimary": "Muscles principaux : {{list}}.",
     "altSecondary": "Muscles secondaires : {{list}}.",
     "altFigure": "Schéma musculaire de l’exercice {{name}}.",
-    "legend": "Légende du schéma"
+    "legend": "Légende du schéma",
+    "legendTendon": "Tendons et fascias",
+    "deepSuffix": "(profond)",
+    "fig": "Fig. {{n}} · {{label}}"
   },
   "common": {
     "loading": "Chargement…",
@@ -169,11 +178,10 @@
     "proCta": "Mode praticien",
     "exploreLibrary": "Explorer la bibliothèque",
     "explorePathologies": "Fiches pathologies",
-    "hello": "Bonjour 👋",
     "nextSession": "Prochaine séance",
     "sessionMeta_one": "{{count}} exercice · ~{{minutes}} min",
     "sessionMeta_other": "{{count}} exercices · ~{{minutes}} min",
-    "start": "Commencer",
+    "start": "Démarrer",
     "viewProgram": "Voir le programme",
     "thisWeek": "séances cette semaine",
     "totalSessions": "séances au total",
@@ -181,7 +189,22 @@
     "pendingSuggestions_other": "{{count}} propositions de progression vous attendent",
     "plannedToday": "Une séance est prévue aujourd’hui.",
     "editProfile": "Modifier mon profil",
-    "proMode": "Mode praticien"
+    "proMode": "Mode praticien",
+    "todaySession": "Séance du jour",
+    "minutes": "{{minutes}} min",
+    "sessionTitle": "Séance {{key}} · {{title}}",
+    "moreExercises_one": "+ {{count}} exercice",
+    "moreExercises_other": "+ {{count}} exercices",
+    "startSession": "Commencer la séance",
+    "resumeSession": "Reprendre la séance",
+    "athleteSub": "Créer mon programme personnalisé",
+    "proSub": "Composer et partager un programme",
+    "weekCount_one": "{{count}} séance sur {{target}} cette semaine",
+    "weekCount_other": "{{count}} séances sur {{target}} cette semaine",
+    "exercisesCount_one": "{{count}} exercice",
+    "exercisesCount_other": "{{count}} exercices",
+    "pathologiesCount_one": "{{count}} pathologie",
+    "pathologiesCount_other": "{{count}} pathologies"
   },
   "setup": {
     "stepOf": "Étape {{n}} sur {{total}}",
@@ -265,7 +288,11 @@
     },
     "unknownExercise": "Exercice indisponible ({{id}})",
     "unknownExerciseHint": "Cet exercice n’existe pas dans cette version de l’app. Mettez l’app à jour.",
-    "suggestionsTitle": "Propositions de progression"
+    "suggestionsTitle": "Propositions de progression",
+    "kickerAuto": "Mon programme · semaine {{n}}",
+    "kicker": "Programme · semaine {{n}}",
+    "week": "Cette semaine",
+    "startSession": "Commencer la séance {{key}}"
   },
   "progression": {
     "level-up": "deux séances faciles d’affilée : passer à « {{level}} » ?",
@@ -320,7 +347,15 @@
     "doneTitle": "Séance terminée !",
     "doneMeta_one": "{{count}} exercice réalisé en {{minutes}} min.",
     "doneMeta_other": "{{count}} exercices réalisés en {{minutes}} min.",
-    "seeHistory": "Voir mon historique"
+    "seeHistory": "Voir mon historique",
+    "progressLabel": "Progression de la séance",
+    "repOf": "répétition {{n}} / {{total}}",
+    "hold": "secondes de maintien",
+    "setsTitle": "Séries",
+    "loadNote": "charge : {{load}}",
+    "noteSets": "Noter répétitions et charges",
+    "holding": "Tenez la position…",
+    "restFor": "repos {{rest}}"
   },
   "exercise": {
     "muscles": "Muscles travaillés",
@@ -342,7 +377,15 @@
     "usedFor": "Utilisé dans les fiches",
     "evidence": "Niveau de preuve et références",
     "noRefs": "Pas de référence directe : exercice issu de la pratique clinique courante.",
-    "link": "Lien"
+    "link": "Lien",
+    "dose": {
+      "sets": "Séries",
+      "tempo": "Tempo",
+      "rest": "Repos",
+      "frequency": "Fréquence"
+    },
+    "doseStart": "Pour commencer : {{level}}",
+    "doseYours": "Votre niveau : {{level}}"
   },
   "library": {
     "subtitle": "Tous les exercices, avec leurs schémas, dosages et références.",
@@ -422,7 +465,9 @@
     "chartCaptionLoad": "Niveau (trait plein) et charge maximale notée (kg).",
     "sessions": "Dernières séances",
     "exercisesDone_one": "{{count}} exercice",
-    "exercisesDone_other": "{{count}} exercices"
+    "exercisesDone_other": "{{count}} exercices",
+    "total": "Au total",
+    "thisWeek": "Cette semaine"
   },
   "pro": {
     "title": "Mode praticien",
@@ -544,10 +589,25 @@
     "resetConfirm": "Effacer définitivement profil, programmes et historique de cet appareil ?",
     "resetDone": "Données effacées.",
     "about": "À propos",
-    "version": "Version {{app}} · contenu {{content}} · {{exercises}} exercices, {{pathologies}} pathologies, {{references}} références."
+    "version": "Version {{app}} · contenu {{content}} · {{exercises}} exercices, {{pathologies}} pathologies, {{references}} références.",
+    "paper": "Lignes du cahier",
+    "paperLines": "Lignes du cahier",
+    "paperPlain": "Papier uni",
+    "paperHint": "Les lignes bleues du cahier sont décoratives : passez au papier uni si elles vous gênent."
   },
   "reminder": {
     "title": "C’est l’heure de votre séance 💪",
     "body": "Votre séance de renforcement vous attend dans Socle."
+  },
+  "notebook": {
+    "done": "Fait",
+    "dayDone": "séance {{keys}} faite",
+    "dayToday": "séance {{key}} prévue aujourd’hui",
+    "dayRest": "repos",
+    "feedback": {
+      "easy": "facile !",
+      "ok": "correct",
+      "hard": "trop dur"
+    }
   }
 }

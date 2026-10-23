@@ -11,7 +11,7 @@ const inner = svg.replace(/^[\s\S]*?<svg[^>]*>/, '').replace(/<\/svg>\s*$/, '');
 
 // Version « maskable » : fond plein bord à bord, pictogramme réduit dans la zone de sécurité (80 %).
 const maskable = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <rect width="512" height="512" fill="#0f5f5a"/>
+  <rect width="512" height="512" fill="#fbfaf6"/>
   <g transform="translate(76.8 76.8) scale(0.7)">${inner.replace(/<rect width="512"[^>]*\/>/, '')}</g>
 </svg>`;
 

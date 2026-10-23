@@ -1,142 +1,150 @@
-.welcome {
-  display: grid;
-  gap: var(--space-5);
+/* Accueil — maquette design/maquettes/1-accueil.html */
+.page {
+  display: flex;
+  flex-direction: column;
+  padding-top: 6px;
 }
 
-.hero {
-  text-align: center;
-  display: grid;
-  justify-items: center;
-  gap: var(--space-2);
-  padding: var(--space-4) 0 0;
-}
-
-.hero h1 {
-  font-size: 1.9rem;
-  margin: var(--space-2) 0 0;
-}
-
-.hero p {
-  color: var(--text-muted);
-  max-width: 34ch;
+.title {
   margin: 0;
+  font-size: 38px;
+  line-height: 32px;
+  padding-top: 2px;
+  max-width: 7.5em;
 }
 
-.heroLogo {
-  width: 64px;
-  height: 64px;
+.tagline {
+  margin: 18px 0 0;
+  font-size: 16px;
+  line-height: 32px;
+  color: var(--text-2);
 }
 
-.modes {
-  display: grid;
+/* Carte « Séance du jour » */
+.today {
+  margin-top: 26px;
+}
+
+.todayHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
   gap: var(--space-3);
 }
 
-@media (min-width: 640px) {
-  .modes {
-    grid-template-columns: 1fr 1fr;
-  }
+.minutes {
+  font-size: 14px;
+  color: var(--text-muted);
 }
 
-.mode {
-  display: grid;
-  gap: var(--space-2);
-  padding: var(--space-5);
+.todayTitle {
+  margin: 6px 0 0;
+  font-size: 26px;
+  line-height: 32px;
 }
 
-.mode strong {
-  font-size: 1.15rem;
-}
-
-.modeIcon {
-  display: inline-flex;
+.preview {
+  list-style: none;
+  margin: 12px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
   gap: 6px;
-  width: fit-content;
-  padding: 10px 12px;
-  border-radius: 14px;
-  background: var(--brand-soft);
-  color: var(--brand);
+  font-size: 15px;
+  line-height: 20px;
 }
 
-.modeCta {
-  display: inline-flex;
+.preview li {
+  display: flex;
+  gap: 10px;
   align-items: center;
+}
+
+.preview li svg {
+  width: 18px;
+  height: 18px;
+}
+
+.done {
+  color: var(--text-muted);
+  text-decoration: line-through;
+}
+
+.more {
+  color: var(--text-muted);
+}
+
+.startBtn {
+  margin-top: 16px;
+}
+
+.notes {
+  margin-top: var(--space-4);
+  display: grid;
   gap: 4px;
-  font-weight: 650;
-  color: var(--brand);
-  margin-top: var(--space-2);
 }
 
-.explore {
+.notes a {
+  color: inherit;
+}
+
+/* Entrées « Je cours ou je roule » / « Je suis praticien » */
+.entries {
+  margin-top: 26px;
   display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: var(--space-4);
+  flex-direction: column;
 }
 
-.explore a {
-  display: inline-flex;
+.entry {
+  display: flex;
+  justify-content: space-between;
   align-items: center;
-  gap: 6px;
-  font-weight: 600;
-  text-decoration: none;
-  min-height: var(--tap);
-}
-
-.greeting {
-  margin-bottom: 0;
-}
-
-.next {
-  display: grid;
-  gap: var(--space-2);
-  padding: var(--space-5);
-  background: linear-gradient(160deg, var(--brand-soft), var(--surface) 70%);
-}
-
-.kicker {
-  font-size: 0.78rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--brand);
-}
-
-.nextTitle {
-  font-size: 1.6rem;
-  margin: 0;
-}
-
-.stats {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
   gap: var(--space-3);
+  min-height: 64px;
+  padding: 4px 0;
+  text-decoration: none;
+  color: var(--text);
+  border-bottom: 1.5px solid var(--ink);
 }
 
-.stats > div {
-  display: grid;
-  gap: 2px;
-}
-
-.statValue {
-  font-size: 1.9rem;
-  font-weight: 750;
-  font-variant-numeric: tabular-nums;
-}
-
-.statValue small {
-  font-size: 1rem;
-  color: var(--text-muted);
-  font-weight: 600;
-}
-
-.statLabel {
-  color: var(--text-muted);
-  font-size: 0.875rem;
-}
-
-.links {
+.entry > span {
   display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2);
+  flex-direction: column;
+}
+
+.entry > svg {
+  flex: none;
+  color: var(--ink);
+}
+
+.entry:hover .entryTitle,
+.entry:hover > svg {
+  color: var(--red);
+}
+
+.entryTitle {
+  font-family: var(--font-title);
+  font-weight: 700;
+  font-size: 20px;
+  line-height: 28px;
+  color: var(--ink);
+}
+
+.entryText {
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--text-muted);
+}
+
+.count {
+  margin-top: 14px;
+}
+
+.count a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.count a:hover {
+  text-decoration: underline;
 }

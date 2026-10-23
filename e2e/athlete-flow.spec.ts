@@ -16,6 +16,8 @@ test('parcours sportif complet → programme personnalisé', async ({ page }) =>
     expect(n).toBeGreaterThanOrEqual(4);
     expect(n).toBeLessThanOrEqual(8);
   }
+  // Chaque ligne du programme se déplie sur la fiche détaillée (schéma, dosage, raison).
+  await page.locator('section[aria-labelledby="s-A"] li button[aria-expanded]').first().click();
   await expect(page.getByText('Pour : Tendinopathie d’Achille (portion moyenne)').first()).toBeVisible();
   await expect(page.locator('article svg[role="img"] [data-role="primary"]').first()).toBeAttached();
   await expect(page.getByRole('button', { name: 'Imprimer / PDF' })).toBeVisible();

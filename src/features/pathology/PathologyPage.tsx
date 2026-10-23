@@ -37,7 +37,7 @@ export default function PathologyPage() {
     <article className={css.page}>
       <PageHeader title={l(p.name)} back={{ to: '/pathologies', label: t('nav.pathologies') }} />
       <div className={css.meta}>
-        <EvidenceBadge level={p.evidence.level} />
+        <EvidenceBadge level={p.evidence.level} seed={p.id} />
         {p.sports.map((s) => (
           <Badge key={s}>{t(`sports.${s}`)}</Badge>
         ))}
@@ -126,7 +126,7 @@ export default function PathologyPage() {
 
       <Section title={t('exercise.evidence')}>
         <p>
-          <EvidenceBadge level={p.evidence.level} /> <span className={ui.muted}>{t(`evidence.help.${p.evidence.level}`)}</span>
+          <EvidenceBadge level={p.evidence.level} seed={p.id} /> <span className={ui.muted}>{t(`evidence.help.${p.evidence.level}`)}</span>
         </p>
         <ReferenceList citations={p.evidence.citations} />
         <p>

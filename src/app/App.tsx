@@ -3,7 +3,7 @@ import { createBrowserRouter, RouterProvider, useRouteError, Link } from 'react-
 import { useTranslation } from 'react-i18next';
 import { initI18n } from '@/i18n';
 import { Layout } from './Layout';
-import { applyTheme, getPrefs } from './prefs';
+import { applyPaper, applyTheme, getPrefs } from './prefs';
 
 initI18n();
 
@@ -72,6 +72,7 @@ const router = createBrowserRouter([
 export function App() {
   useEffect(() => {
     applyTheme(getPrefs().theme);
+    applyPaper(getPrefs().paperLines);
     const mq = window.matchMedia?.('(prefers-color-scheme: dark)');
     const onChange = () => applyTheme(getPrefs().theme);
     mq?.addEventListener?.('change', onChange);

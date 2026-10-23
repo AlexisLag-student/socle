@@ -1,24 +1,6 @@
-.stats {
+.top {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: var(--space-3);
-}
-
-.stats > div {
-  display: grid;
-  gap: 2px;
-  padding: var(--space-3);
-}
-
-.value {
-  font-size: 1.8rem;
-  font-weight: 750;
-  font-variant-numeric: tabular-nums;
-}
-
-.label {
-  font-size: 0.8rem;
-  color: var(--text-muted);
+  gap: var(--space-4);
 }
 
 .calendarWrap {
@@ -37,17 +19,18 @@
 }
 
 .c0 {
-  fill: var(--surface-2);
+  fill: var(--surface);
+  stroke: var(--sep);
 }
 .c1 {
-  fill: color-mix(in srgb, var(--brand) 55%, var(--surface-2));
+  fill: var(--ink);
 }
 .c2 {
-  fill: var(--brand);
+  fill: var(--red);
 }
 .future {
   fill: transparent;
-  stroke: var(--border);
+  stroke: var(--disabled);
   stroke-dasharray: 2 2;
 }
 
@@ -70,26 +53,27 @@
 .barFill {
   width: 100%;
   min-height: 2px;
-  border-radius: 6px 6px 2px 2px;
-  background: var(--brand);
+  background: var(--ink);
   align-self: end;
 }
 
 .barValue {
-  font-size: 0.75rem;
+  font-family: var(--font-title);
+  font-size: 13px;
   font-weight: 700;
+  color: var(--ink);
 }
 
 .barLabel {
-  font-size: 0.65rem;
-  color: var(--text-faint);
+  font-size: 11px;
+  color: var(--text-muted);
   margin-top: 4px;
 }
 
 .chart {
   margin: var(--space-3) 0 0;
   background: var(--surface);
-  border: 1px solid var(--border);
+  border: var(--stroke) solid var(--ink);
   border-radius: var(--radius);
   padding: var(--space-3);
 }
@@ -109,16 +93,25 @@
   padding: 0;
   margin: 0;
   display: grid;
-  gap: 6px;
+  border-top: var(--stroke) solid var(--ink);
 }
 
 .list li {
-  padding: var(--space-3);
-  border-radius: var(--radius);
-  background: var(--surface);
-  border: 1px solid var(--border);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0 var(--space-3);
+  min-height: 48px;
+  padding: 4px 0;
+  border-bottom: 1px solid var(--sep);
+  font-size: 15px;
+}
+
+.list strong {
+  color: var(--ink);
 }
 
 .fb {
-  float: right;
+  white-space: nowrap;
 }

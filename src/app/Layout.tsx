@@ -13,15 +13,22 @@ import css from './layout.module.css';
 
 export const PENDING_SHARE_KEY = 'socle.pendingShare';
 
+/** Logo : trois barres empilées (rouge, contour à l'encre, encre pleine). */
 export function Logo({ className }: { className?: string }) {
   return (
-    <svg viewBox="0 0 512 512" className={className} aria-hidden>
-      <rect width="512" height="512" rx="112" fill="var(--brand)" />
-      <rect x="186" y="132" width="140" height="62" rx="16" fill="#ff5a5f" />
-      <rect x="146" y="216" width="220" height="62" rx="16" fill="#fff" fillOpacity="0.88" />
-      <rect x="106" y="300" width="300" height="72" rx="18" fill="#fff" />
+    <svg viewBox="0 0 28 28" className={className} aria-hidden>
+      <rect x="7" y="4" width="14" height="5" rx="1.5" fill="var(--red)" />
+      <rect x="4" y="11" width="20" height="5" rx="1.5" fill="none" stroke="var(--ink)" strokeWidth="2" />
+      <rect x="2" y="18" width="24" height="6" rx="1.5" fill="var(--ink)" />
     </svg>
   );
+}
+
+/** Date du jour, écrite à la main dans l'en-tête. */
+function Today() {
+  const { i18n } = useTranslation();
+  const label = new Intl.DateTimeFormat(i18n.language === 'en' ? 'en-GB' : 'fr-FR', { weekday: 'long', day: 'numeric', month: 'short' }).format(new Date());
+  return <span className={css.today}>{label}</span>;
 }
 
 const NAV: { to: string; key: string; icon: IconName; end?: boolean }[] = [
@@ -68,7 +75,7 @@ export function Layout() {
   const gated = !prefs.disclaimerAccepted && pathname !== '/disclaimer';
 
   return (
-    <div className={`${css.shell} ${immersive ? css.immersive : ''}`}>
+    <div className={`${css.shell} ${immersive ? css.immersive : ''} ${wide ? css.wideShell : ''}`}>
       <a href="#main" className={css.skip}>
         {t('nav.skipToContent')}
       </a>
@@ -77,6 +84,7 @@ export function Layout() {
           <Logo className={css.logo} />
           <span>{t('app.name')}</span>
         </Link>
+        {!gated && !immersive && <Today />}
         {!gated && (
           <nav className={css.headerNav} aria-label={t('nav.main')}>
             {NAV.map((n) => (
@@ -87,7 +95,7 @@ export function Layout() {
           </nav>
         )}
       </header>
-      <main id="main" className={`${css.main} ${wide ? css.wide : ''}`} tabIndex={-1}>
+      <main id="main" className={css.main} tabIndex={-1}>
         {gated ? <DisclaimerScreen /> : <Outlet />}
       </main>
       {!gated && (

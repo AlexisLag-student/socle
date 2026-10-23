@@ -61,7 +61,7 @@ export function ExerciseCard({
             <Link to={`/library/${ex.id}`}>{l(ex.name)}</Link>
           </h3>
           <div className={css.meta}>
-            <EvidenceBadge level={ex.evidence.level} />
+            <EvidenceBadge level={ex.evidence.level} compact seed={ex.id} />
             <Badge>{t('program.level', { n: item.level, total: ex.levels.length })}</Badge>
             {variant && <Badge>{l(variant.name)}</Badge>}
           </div>

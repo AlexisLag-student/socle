@@ -12,7 +12,7 @@ test('fonctionne hors ligne après la première visite', async ({ page, context,
 
   await context.setOffline(true);
   await page.goto('/library');
-  await expect(page.getByRole('heading', { name: 'Bibliothèque' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Exercices' })).toBeVisible();
   await page.getByRole('link', { name: /Copenhagen/ }).first().click();
   await expect(page.getByRole('heading', { name: 'Muscles travaillés' })).toBeVisible();
   await page.goto('/pathologies/achilles-midportion');
