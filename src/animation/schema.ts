@@ -13,7 +13,7 @@ export const EASINGS = ['easeInOut', 'linear', 'easeIn', 'easeOut'] as const;
 export type Easing = (typeof EASINGS)[number];
 
 /** Annotations manuscrites de phase (clés i18n `anim.say.*`). */
-export const SAYINGS = ['lower', 'brake', 'hold', 'push', 'rise', 'return', 'land', 'jump', 'step', 'lift'] as const;
+export const SAYINGS = ['lower', 'brake', 'hold', 'push', 'rise', 'return', 'land', 'jump', 'step', 'lift', 'flatBack'] as const;
 export type Saying = (typeof SAYINGS)[number];
 
 /**

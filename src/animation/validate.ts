@@ -6,8 +6,8 @@
 import type { Exercise } from '@/domain/schema';
 import type { MuscleId } from '@/domain/ids';
 import { AnimationSchema, type Animation, type Contact } from './schema';
-import { buildTimeline, contactWorld, createFrame, resolve, sample, timeOfKeyframe, type Resolved, type Timeline } from './engine';
-import { CENTRAL_JOINTS, CH, JOINT_BOUNDS, N_SEGMENTS, SIDED_JOINTS, SIDED_SEGMENTS, contactDef, type Channel, type ContactPoint } from './skeleton';
+import { PROP_SIZE, buildTimeline, contactWorld, createFrame, isScenery, resolve, sample, segPoint, timeOfKeyframe, type Resolved, type Timeline } from './engine';
+import { CENTRAL_JOINTS, CH, H, JOINT_BOUNDS, N_SEGMENTS, SEGMENTS, SIDED_JOINTS, SIDED_SEGMENTS, contactDef, strokesOf, type Channel, type ContactPoint } from './skeleton';
 
 /** Tolérance des appuis (unités du monde, taille du personnage = 180 ; ≈ 1 cm). */
 export const CONTACT_TOL = 2;
@@ -19,6 +19,50 @@ export const MAX_ANGLE_STEP = 8;
  */
 export const MAX_MOVE_STEP = 8;
 const FPS = 120;
+/** Pénétration tolérée du corps dans un meuble (unités ; le trait du contour fait déjà environ 1). */
+export const SCENERY_TOL = 2.5;
+
+/**
+ * Parties pleines du mobilier que le corps ne doit pas traverser : plateau d'une chaise ou d'un banc,
+ * volume d'une marche ou d'une box. Mur, tapis, cale et ballon ne sont pas contrôlés (appuis voulus).
+ */
+type Solid = { kind: string; x0: number; x1: number; y0: number; y1: number };
+export function solidRects(tl: Timeline): Solid[] {
+  return tl.r.props.filter(isScenery).flatMap((p): Solid[] => {
+    const [w, h] = p.size ?? PROP_SIZE[p.kind];
+    const [x, y] = p.at;
+    if (p.kind === 'chair') return [{ kind: p.kind, x0: x, x1: x + w, y0: y + h - 0.025 * H, y1: y + h }];
+    if (p.kind === 'bench') return [{ kind: p.kind, x0: x, x1: x + w, y0: y + h - 0.035 * H, y1: y + h }];
+    if (p.kind === 'step' || p.kind === 'box') return [{ kind: p.kind, x0: x, x1: x + w, y0: y, y1: y + h }];
+    return [];
+  });
+}
+
+/** Pénétration maximale du corps dans le mobilier sur un cycle (traits épais échantillonnés). */
+export function sceneryPenetration(tl: Timeline, fps = 60): { kind: string; depth: number; t: number } | null {
+  const rects = solidRects(tl);
+  if (!rects.length) return null;
+  const f = createFrame();
+  const pt = { x: 0, y: 0 };
+  let worst: { kind: string; depth: number; t: number } | null = null;
+  const n = Math.max(1, Math.ceil(tl.total * fps));
+  for (let i = 0; i <= n; i++) {
+    sample(tl, Math.min(tl.total - 1e-9, (tl.total * i) / n), f);
+    for (let si = 0; si < N_SEGMENTS; si++)
+      for (const [u0, v0, u1, v1, r] of strokesOf(SEGMENTS[si]!, tl.r.view))
+        for (let k = 0; k <= 6; k++) {
+          segPoint(f, si, u0 + ((u1 - u0) * k) / 6, v0 + ((v1 - v0) * k) / 6, pt);
+          for (const q of rects) {
+            const dx = Math.max(q.x0 - pt.x, 0, pt.x - q.x1);
+            const dy = Math.max(q.y0 - pt.y, 0, pt.y - q.y1);
+            const inside = dx === 0 && dy === 0;
+            const depth = inside ? r + Math.min(pt.x - q.x0, q.x1 - pt.x, pt.y - q.y0, q.y1 - pt.y) : r - Math.hypot(dx, dy);
+            if (depth > (worst?.depth ?? 0)) worst = { kind: q.kind, depth, t: f.t };
+          }
+        }
+  }
+  return worst;
+}
 
 export interface ContactSample {
   point: ContactPoint;
@@ -136,6 +180,8 @@ function checkTimeline(tl: Timeline, label: string, errors: string[], tempo?: st
   }
   for (const d of worst.values())
     errors.push(`${label} : l’appui ${d.point} quitte sa surface (écart vertical ${d.dy.toFixed(1)}, glissement ${d.dx.toFixed(1)}) à t = ${d.t.toFixed(2)} s`);
+  const pen = sceneryPenetration(tl);
+  if (pen && pen.depth > SCENERY_TOL) errors.push(`${label} : le corps traverse le mobilier (${pen.kind}, ${pen.depth.toFixed(1)} unités) à t = ${pen.t.toFixed(2)} s`);
 }
 
 /** Combinaisons niveau × variante qui donnent des animations différentes. */

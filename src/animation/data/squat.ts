@@ -21,12 +21,9 @@ export default defineAnimation({
   ],
   contacts: [{ point: 'heelN' }, { point: 'toeN' }, { point: 'heelF' }, { point: 'toeF' }],
   overrides: [
-    // Niveau 1 : squat jusqu'à la chaise, effleurée en bas.
-    {
-      levels: [1],
-      props: [{ kind: 'chair', at: [-62, 0], size: [43, 55] }],
-      contacts: [{ point: 'heelN' }, { point: 'toeN' }, { point: 'heelF' }, { point: 'toeF' }, { point: 'seat', y: 55, from: 1, to: 2 }],
-    },
+    // Niveau 1 : squat jusqu'à effleurer une chaise placée derrière les mollets (plateau à 1 unité sous les cuisses
+    // en position basse : jamais traversée, contrôlé par la validation).
+    { levels: [1], props: [{ kind: 'chair', at: [-58, 0], size: [41, 37] }] },
     // Gobelet : haltère tenu verticalement contre la poitrine.
     { variants: ['goblet'], pose: { shoulder: 30, elbow: 140 }, props: [{ kind: 'dumbbell', attach: 'handN', axis: 'vertical' }] },
     // Barre sur le haut du dos, mains sur la barre.

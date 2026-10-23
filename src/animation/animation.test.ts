@@ -19,7 +19,7 @@ import {
 import { animationLoaders, hasAnimation, loadAnimation } from './loaders';
 import { AnimationSchema, defineAnimation, type Animation } from './schema';
 import { CH, JOINT_BOUNDS } from './skeleton';
-import { CONTACT_TOL, MAX_ANGLE_STEP, combinations, contactDeviations, validateAnimation } from './validate';
+import { CONTACT_TOL, MAX_ANGLE_STEP, SCENERY_TOL, combinations, contactDeviations, sceneryPenetration, validateAnimation } from './validate';
 import { animationMuscles } from './zones';
 
 const drawn = (() => {
@@ -64,6 +64,15 @@ describe('données d’animation', () => {
         const worst = Math.max(0, ...devs.map((d) => Math.max(Math.abs(d.dy), Math.abs(d.dx))));
         expect(worst, `niveau ${c.level}, ${c.variant}, tempo ${tempo}`).toBeLessThanOrEqual(CONTACT_TOL);
       }
+    }
+  });
+});
+
+describe('mobilier', () => {
+  it.each(all)('%s : le corps ne traverse jamais une chaise, un banc, une marche ou une box', (id, anim) => {
+    for (const c of combinations(anim, exerciseById.get(id)!)) {
+      const pen = sceneryPenetration(buildTimeline(c.r));
+      expect(pen?.depth ?? 0, `niveau ${c.level}, ${c.variant}`).toBeLessThanOrEqual(SCENERY_TOL);
     }
   });
 });

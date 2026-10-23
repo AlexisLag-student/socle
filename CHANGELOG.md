@@ -4,6 +4,22 @@ Toutes les évolutions de Socle, de la plus récente à la plus ancienne. Versio
 
 Ce fichier est affiché dans l’app (Réglages › Nouveautés) : garder le format `## [x.y.z] — AAAA-MM-JJ`, puis `### Français` et `### English`, chacun avec une liste à puces.
 
+## [0.4.1] — 2026-10-23
+
+### Français
+
+- Corrigé : montée sur pointes et fente, les deux bras bougent maintenant de la même façon (mains posées au mur).
+- Corrigé : squat sur chaise, la chaise est placée derrière vous et n’est plus traversée pendant le mouvement.
+- Corrigé : soulevé de terre jambes tendues, le bâton dans le dos est retiré ; les deux bras pendent devant les cuisses et l’animation rappelle de garder le dos droit.
+- Corrigé : la montée sur pointes sur une marche et le squat bulgare n’empiètent plus sur la marche ou le banc.
+
+### English
+
+- Fixed: calf raise and split squat, both arms now move the same way (hands on the wall).
+- Fixed: chair squat, the chair now sits behind you and is no longer crossed during the movement.
+- Fixed: Romanian deadlift, the stick along the back is gone; both arms hang in front of the thighs and the animation reminds you to keep your back flat.
+- Fixed: the calf raise on a step and the Bulgarian split squat no longer overlap the step or the bench.
+
 ## [0.4.0] — 2026-10-23
 
 ### Français

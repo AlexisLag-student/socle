@@ -645,7 +645,8 @@
       "land": "on se réceptionne",
       "jump": "on saute",
       "step": "on fait un pas",
-      "lift": "on lève"
+      "lift": "on lève",
+      "flatBack": "dos droit"
     }
   }
 }

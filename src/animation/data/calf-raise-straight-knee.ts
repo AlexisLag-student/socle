@@ -12,11 +12,14 @@ export default defineAnimation({
   loop: 'cycle',
   side: 'bilateral',
   anchor: { point: 'toeN' },
-  // La main reste posée au mur : le coude se plie quand le corps monte.
-  ik: [{ limb: 'armN', pin: 'wrist' }],
+  // Les deux mains restent posées au mur : les coudes se plient quand le corps monte.
+  ik: [
+    { limb: 'armN', pin: 'wrist' },
+    { limb: 'armF', pin: 'wrist' },
+  ],
   still: 1,
   keyframes: [
-    { pose: { knee: 3, hip: 3, shoulderN: 62, elbowN: 12 }, dur: 1.5, phase: 'concentrique', say: 'rise' },
+    { pose: { knee: 3, hip: 3, shoulder: 62, elbow: 12 }, dur: 1.5, phase: 'concentrique', say: 'rise' },
     { pose: { ankle: -42 }, dur: 0, phase: 'pause' },
     { pose: {}, dur: 1.5, phase: 'excentrique' },
   ],
@@ -30,14 +33,14 @@ export default defineAnimation({
       levels: [3],
       anchor: { point: 'toeN', y: 18 },
       keyframes: [
-        { pose: { knee: 3, hip: 3, ankle: 18, shoulderN: 62, elbowN: 12, hipF: 12, kneeF: 75, ankleF: -20 }, dur: 1.5, phase: 'concentrique', say: 'rise' },
+        { pose: { knee: 3, hip: 3, ankle: 18, shoulder: 62, elbow: 12, hipF: 12, kneeF: 75, ankleF: -20 }, dur: 1.5, phase: 'concentrique', say: 'rise' },
         { pose: { ankle: -42, ankleF: -20 }, dur: 0, phase: 'pause' },
         { pose: {}, dur: 1.5, phase: 'excentrique' },
       ],
       contacts: [{ point: 'toeN', y: 18 }],
-      props: [{ kind: 'step', at: [-14, 0], size: [36, 18] }],
+      props: [{ kind: 'step', at: [-5, 0], size: [36, 18] }],
     },
-    // Charge du côté de la jambe qui travaille, l’autre main au mur.
+    // Charge du côté de la jambe qui travaille, l’autre main au mur (seul cas à un bras, demandé par le texte).
     { levels: [4, 5], variants: ['dumbbell', 'bodyweight'], pose: { shoulderN: 4, elbowN: 6, shoulderF: 62, elbowF: 12 }, ik: [{ limb: 'armF', pin: 'wrist' }], props: [{ kind: 'dumbbell', attach: 'handN' }] },
     // Machine ou barre guidée : charge sur les épaules, sans appui au mur.
     { levels: [4, 5], variants: ['machine'], pose: { shoulder: -35, elbow: 125 }, ik: [], props: [{ kind: 'barbell', attach: 'trunk', at: [0.97, 1.2] }] },

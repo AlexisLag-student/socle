@@ -645,7 +645,8 @@
       "land": "landing",
       "jump": "jump",
       "step": "step",
-      "lift": "lift"
+      "lift": "lift",
+      "flatBack": "back flat"
     }
   }
 }
