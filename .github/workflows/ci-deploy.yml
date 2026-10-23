@@ -11,8 +11,12 @@ concurrency:
 
 jobs:
   test-build-deploy:
-    # Version fixe : ubuntu-latest bascule sur Ubuntu 26 (oct. 2026), où l'installation des navigateurs Playwright a bloqué.
+    # Version fixe : ubuntu-latest bascule sur Ubuntu 26 (oct. 2026).
     runs-on: ubuntu-24.04
+    # Image officielle Playwright : navigateurs et dépendances système déjà installés, plus aucun téléchargement
+    # (l'installation en CI échouait par intermittence). Son numéro suit @playwright/test, vérifié plus bas.
+    container:
+      image: mcr.microsoft.com/playwright:v1.64.1-noble
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
@@ -26,15 +30,13 @@ jobs:
       - run: npm run validate:content
       - run: npm test
       - run: npm run build
-      - name: Install Playwright browsers
-        timeout-minutes: 12
+      - name: Playwright version matches the container image
         run: |
-          for i in 1 2 3; do
-            timeout 240 npx playwright install --with-deps chromium webkit && exit 0
-            echo "::warning::Installation des navigateurs : tentative $i échouée"
-            sleep 10
-          done
-          exit 1
+          v=$(node -p "require('@playwright/test/package.json').version")
+          if [ "$v" != "1.64.1" ]; then
+            echo "::error::@playwright/test $v : mettre l'image du conteneur à mcr.microsoft.com/playwright:v$v-noble"
+            exit 1
+          fi
       - run: npm run e2e
       - uses: actions/upload-artifact@v4
         if: failure()

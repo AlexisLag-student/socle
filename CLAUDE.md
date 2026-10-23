@@ -10,7 +10,8 @@ Socle est une PWA de renforcement musculaire pour coureurs et cyclistes : hors l
 - Entrée en tête de [CHANGELOG.md](CHANGELOG.md), format lu par l'app (Réglages › Nouveautés) : `## [x.y.z] — AAAA-MM-JJ`, puis `### Français` et `### English`, chacun avec des puces `- …` écrites pour l'utilisateur (pas de jargon technique). `src/lib/changelog.test.ts` échoue si la première entrée ne correspond pas à `package.json`.
 - Le contenu (exercices, pathologies, références) a en plus son propre `CONTENT_VERSION` (`AAAA.MM.n`) dans `src/content/index.ts`.
 - La version est injectée au build (`__APP_VERSION__`, `define` dans `vite.config.ts`) : ne jamais l'écrire en dur.
-- Un push sur `main` déploie en production (Vercel) : demander avant de pousser.
+- Un push sur `main` déploie en production (Vercel) : ne jamais pousser soi-même, donner à l'utilisateur la commande à lancer (ex. `git push origin main vX.Y.Z`).
+- La CI tourne dans l'image `mcr.microsoft.com/playwright:v<version>-noble` : toute mise à jour de `@playwright/test` doit changer cette image dans `.github/workflows/ci-deploy.yml`.
 
 ## Architecture
 
