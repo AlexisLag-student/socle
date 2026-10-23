@@ -38,7 +38,7 @@ function ItemEditor({ item, onChange }: { item: ProgramItem; onChange: (i: Progr
   return (
     <div className={css.editor}>
       {/* Aperçu animé au niveau, à la variante et au tempo choisis. */}
-      {hasAnimation(ex.id) && <ExerciseAnimation exerciseId={ex.id} level={item.level} variant={item.variantId} tempo={d.tempo} className={css.preview} />}
+      {hasAnimation(ex.id, item.level) && <ExerciseAnimation exerciseId={ex.id} level={item.level} variant={item.variantId} tempo={d.tempo} className={css.preview} />}
       <div className={css.editorGrid}>
         <Field label={t('pro.variant')} htmlFor={`${uid}-v`}>
           <Select id={`${uid}-v`} value={item.variantId} onChange={(e) => onChange({ ...item, variantId: e.target.value })}>

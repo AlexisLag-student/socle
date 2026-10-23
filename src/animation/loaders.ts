@@ -17,10 +17,29 @@ export const animationLoaders: Record<string, Loader> = {
   'lateral-band-walk': () => import('./data/lateral-band-walk'),
   'step-up': () => import('./data/step-up'),
   'countermovement-jump': () => import('./data/countermovement-jump'),
+  'calf-raise-bent-knee': () => import('./data/calf-raise-bent-knee'),
+  'calf-isometric-hold': () => import('./data/calf-isometric-hold'),
+  'eccentric-heel-drop': () => import('./data/eccentric-heel-drop'),
+  'windlass-heel-raise': () => import('./data/windlass-heel-raise'),
+  'ball-squeeze-heel-raise': () => import('./data/ball-squeeze-heel-raise'),
+  'calf-raise-explosive': () => import('./data/calf-raise-explosive'),
+  'seated-soleus-isometric': () => import('./data/seated-soleus-isometric'),
+  'band-plantar-flexion': () => import('./data/band-plantar-flexion'),
+  'toe-walk-carry': () => import('./data/toe-walk-carry'),
+  'pogo-hops': () => import('./data/pogo-hops'),
 };
 
-export function hasAnimation(exerciseId: string): boolean {
-  return Object.hasOwn(animationLoaders, exerciseId);
+/**
+ * Niveaux animés, pour les exercices dont certains niveaux ne se dessinent pas avec le personnage
+ * (mouvement des doigts, des orteils…) : ces niveaux gardent le seul schéma musculaire. Absent = tous les niveaux.
+ */
+export const animatedLevels: Record<string, readonly number[]> = {};
+
+/** L'exercice est-il animé (à ce niveau, si on le précise) ? */
+export function hasAnimation(exerciseId: string, level?: number): boolean {
+  if (!Object.hasOwn(animationLoaders, exerciseId)) return false;
+  const levels = animatedLevels[exerciseId];
+  return level === undefined || !levels || levels.includes(level);
 }
 
 const cache = new Map<string, Animation>();

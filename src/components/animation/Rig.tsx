@@ -94,7 +94,7 @@ function Scenery({ p }: { p: Extract<Prop, { size?: unknown }> }) {
         <g className={css.prop}>
           <line x1={x} y1={y} x2={x} y2={y + h} />
           {Array.from({ length: Math.floor(h / 12) }, (_, i) => (
-            <line key={i} x1={x} y1={y + 4 + i * 12} x2={x + 1.6 * w} y2={y + 10 + i * 12} />
+            <line key={i} x1={x} y1={y + 4 + i * 12} x2={x + (p.flip ? -1.6 : 1.6) * w} y2={y + 10 + i * 12} />
           ))}
         </g>
       );

@@ -6,6 +6,7 @@
 import type { Exercise } from '@/domain/schema';
 import type { MuscleId } from '@/domain/ids';
 import { AnimationSchema, type Animation, type Contact } from './schema';
+import { animatedLevels } from './loaders';
 import { PROP_SIZE, buildTimeline, contactWorld, createFrame, isScenery, resolve, sample, segPoint, timeOfKeyframe, type Resolved, type Timeline } from './engine';
 import { CENTRAL_JOINTS, CH, H, JOINT_BOUNDS, N_SEGMENTS, SEGMENTS, SIDED_JOINTS, SIDED_SEGMENTS, contactDef, strokesOf, type Channel, type ContactPoint } from './skeleton';
 
@@ -188,7 +189,8 @@ function checkTimeline(tl: Timeline, label: string, errors: string[], tempo?: st
 export function combinations(anim: Animation, ex: Exercise): { level: number; variant: string; r: Resolved; tempo?: string }[] {
   const seen = new Set<string>();
   const out: { level: number; variant: string; r: Resolved; tempo?: string }[] = [];
-  for (const lv of ex.levels)
+  const only = animatedLevels[anim.exerciseId];
+  for (const lv of ex.levels.filter((l) => !only || only.includes(l.level)))
     for (const v of ex.variants) {
       const r = resolve(anim, { level: lv.level, variant: v.id });
       const key = JSON.stringify([r.keyframes, r.props, r.contacts, r.anchor, r.ik, Array.from(r.poses, (p) => Array.from(p)), lv.dosage.tempo]);
@@ -210,8 +212,11 @@ export function validateAnimation(raw: unknown, exercises: Map<string, Exercise>
   const pre = `animation ${id}`;
   const levels = new Set(ex.levels.map((l) => l.level));
   const variants = new Set(ex.variants.map((v) => v.id));
+  const only = animatedLevels[anim.exerciseId];
+  for (const l of only ?? []) if (!levels.has(l)) errors.push(`${pre} : niveau animé ${l} inexistant`);
   anim.overrides?.forEach((o, i) => {
     for (const l of o.levels ?? []) if (!levels.has(l)) errors.push(`${pre} : surcharge ${i}, niveau ${l} inexistant`);
+    for (const l of o.levels ?? []) if (only && !only.includes(l)) errors.push(`${pre} : surcharge ${i}, niveau ${l} non animé`);
     for (const v of o.variants ?? []) if (!variants.has(v)) errors.push(`${pre} : surcharge ${i}, variante « ${v} » inexistante`);
   });
   const exMuscles = new Set<MuscleId>([...ex.muscles.primary, ...ex.muscles.secondary]);

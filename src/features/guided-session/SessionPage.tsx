@@ -376,7 +376,7 @@ function GuidedSession() {
       {item.note && <Notice icon="pro">{item.note}</Notice>}
 
       {/* --- Animation de l'exercice (au rythme du tempo) --- */}
-      {hasAnimation(ex.id) && (
+      {hasAnimation(ex.id, item.level) && (
         <section className={css.anim} aria-label={t('exercise.movementAnim')}>
           {prefs.sessionAnimation && (
             <ExerciseAnimation

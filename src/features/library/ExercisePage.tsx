@@ -153,7 +153,7 @@ export default function ExercisePage() {
         subtitle={[l({ fr: ex.name.en, en: ex.name.fr }), ...ex.sports.map((s) => t(`sports.${s}`)), ...ex.qualities.map((q) => t(`qualities.${q}`))].join(' · ')}
       />
 
-      {hasAnimation(ex.id) && (
+      {hasAnimation(ex.id, shown.level) && (
         <section aria-labelledby="anim-h">
           <h2 id="anim-h" className="visually-hidden">
             {t('exercise.movementAnim')}

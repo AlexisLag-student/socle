@@ -155,6 +155,10 @@ function Player_({
   const name = l(ex.name);
   const showStrip = reduced && !started;
 
+  // Exercice à durée mais en mouvement (corde à sauter, marche sur pointes…) : le cycle tourne pendant le minuteur.
+  const dynamicHold = !!hold && !tl.segs.some((s) => s.phase === 'isométrique');
+  const staticHold = !!hold && !dynamicHold;
+
   const restTime = useCallback(() => {
     if (hold) return holdTime(tl);
     if (sync) return sync.idle ? timeOfKeyframe(tl, 0) : sync.time() + tl.tempoOffset;
@@ -210,16 +214,27 @@ function Player_({
     }
   }, [handle, sync, sync?.running, sync?.idle, reduced, started, tl, restTime]);
 
+  // Séance : exercice à durée en mouvement, le cycle suit le minuteur (pause, reprise).
+  useEffect(() => {
+    const p = player.current;
+    if (!p || !dynamicHold) return;
+    if (hold.running && (!reduced || started)) p.play();
+    else {
+      p.pause();
+      p.seek(holdTime(tl));
+    }
+  }, [handle, hold, hold?.running, dynamicHold, reduced, started, tl]);
+
   // Séance : maintien, respiration pendant le minuteur.
   useEffect(() => {
     const p = player.current;
-    if (!p || !hold) return;
+    if (!p || !staticHold) return;
     p.seek(holdTime(tl));
     const n = Math.max(1, Math.round(hold.seconds / 5));
     p.breathPeriod = hold.running && (!reduced || started) ? hold.seconds / n : 0;
     p.setOnScreen(true);
     p.render();
-  }, [handle, hold, hold?.running, hold?.seconds, reduced, started, tl]);
+  }, [handle, hold, hold?.running, hold?.seconds, staticHold, reduced, started, tl]);
 
   useEffect(() => {
     if (player.current) player.current.speed = speed;
@@ -264,13 +279,13 @@ function Player_({
           muscles={muscles}
           mirrored={mirrored}
           bilateral={!unilateral}
-          breath={!!hold}
+          breath={staticHold}
           title={label}
           desc={l(ex.how.movement)}
           onHandle={setHandle}
         />
-        {!noCaption && !hold && <span ref={caption} className={css.caption} aria-hidden />}
-        {hold && <span className={css.caption} aria-hidden>{t('anim.say.hold')}</span>}
+        {!noCaption && !staticHold && <span ref={caption} className={css.caption} aria-hidden />}
+        {staticHold && <span className={css.caption} aria-hidden>{t('anim.say.hold')}</span>}
       </div>
       {!hold && (
         <div className={css.controls}>

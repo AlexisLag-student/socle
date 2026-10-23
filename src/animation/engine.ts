@@ -35,6 +35,8 @@ const RAD = Math.PI / 180;
 
 /** Durée d'une phase explosive « X » (identique à `tempoPhases` de src/lib/device.ts). */
 export const EXPLOSIVE_SEC = 0.8;
+/** Durée donnée à une remontée non chronométrée (tempo « 3-0-0 »), prise sur la descente. */
+export const UNTIMED_CON_SEC = 0.6;
 
 /** Même format que `Dosage.tempo` (src/domain/schema.ts). */
 export const TEMPO_RE = /^([0-9]|X)(-([0-9]|X)){2,3}$/;
@@ -365,9 +367,16 @@ export function applyTempo(segs: Segment[], [ecc, low, con, high]: [number, numb
     const sum = idx.reduce((n, k) => n + segs[k]!.dur, 0);
     for (const k of idx) segs[k]!.dur = sum > 0 ? (segs[k]!.dur * target) / sum : target / idx.length;
   };
-  scale('ecc', ecc);
+  // Concentrique à 0 (« 3-0-0 ») : remontée non chronométrée, aidée par l'autre jambe. Elle prend un court
+  // moment sur la descente pour que le cycle reste exactement celui de l'indicateur de tempo.
+  if (con === 0 && ecc > 2 * UNTIMED_CON_SEC && classes.includes('con')) {
+    scale('ecc', ecc - UNTIMED_CON_SEC);
+    scale('con', UNTIMED_CON_SEC);
+  } else {
+    scale('ecc', ecc);
+    scale('con', con);
+  }
   scale('low', low);
-  scale('con', con);
   scale('high', high);
 }
 
@@ -629,8 +638,9 @@ function computeBounds(tl: Timeline): Timeline['bounds'] {
       const [w, h] = p.size ?? PROP_SIZE[p.kind];
       const x0 = p.kind === 'ball' ? p.at[0] - w / 2 : p.at[0];
       const y0 = p.kind === 'ball' ? p.at[1] - h / 2 : p.at[1];
-      minX = Math.min(minX, x0 - 2);
-      maxX = Math.max(maxX, x0 + w + 2);
+      const back = p.kind === 'wall' && p.flip ? 1.6 * w : 0;
+      minX = Math.min(minX, x0 - back - 2);
+      maxX = Math.max(maxX, x0 + (back ? 0 : w) + 2);
       maxY = Math.max(maxY, y0 + h + 2);
     }
     if (p.kind === 'barbell') {
