@@ -50,7 +50,7 @@ function TempoIndicator({ tempo, sound }: { tempo: string; sound: boolean }) {
   );
 }
 
-export default function SessionPage() {
+function GuidedSession() {
   const { t } = useTranslation();
   const l = useLocalized();
   const navigate = useNavigate();
@@ -159,7 +159,8 @@ export default function SessionPage() {
   const giveFeedback = async (fb: Feedback) => {
     if (!log || !item || !ex) return;
     const entries = log.entries.map((e, k) => (k === idx ? { ...e, feedback: fb } : e));
-    persist({ ...log, entries });
+    const updated = { ...log, entries };
+    persist(updated);
     const eq = equipmentSet([...(profile?.equipment ?? []), ...(ex.variants.find((v) => v.id === item.variantId)?.equipment ?? [])]);
     const variant = pickVariant(ex, eq, item.variantId);
     const loads = entries[idx]!.sets.map((s) => s.loadKg).filter((x): x is number => !!x);
@@ -171,26 +172,28 @@ export default function SessionPage() {
       { availableLevels: (variant ? availableLevels(ex, variant, eq) : [item.level]).filter((lv) => !item.maxLevel || lv <= item.maxLevel), loadable: !!variant?.loadable },
       loads.length ? Math.max(...loads) : undefined,
     );
-    goNext();
+    goNext(updated);
   };
 
-  const goNext = () => {
+  /** Passe à l'exercice suivant ; « current » = journal le plus récent (évite d'écraser le dernier retour). */
+  const goNext = (current: SessionLog | null = log) => {
     timer.stop();
     setSetNo(0);
     setSide(1);
     setStage('work');
     setShowMap(false);
-    if (idx + 1 >= items.length) finish();
+    if (idx + 1 >= items.length) finish(current);
     else setIdx((i) => i + 1);
   };
 
   const skip = () => {
-    if (log) persist({ ...log, entries: log.entries.map((e, k) => (k === idx ? { ...e, skipped: true } : e)) });
-    goNext();
+    const updated = log ? { ...log, entries: log.entries.map((e, k) => (k === idx ? { ...e, skipped: true } : e)) } : null;
+    if (updated) persist(updated);
+    goNext(updated);
   };
 
-  const finish = () => {
-    if (log) persist({ ...log, finishedAt: Date.now() });
+  const finish = (current: SessionLog | null = log) => {
+    if (current) persist({ ...current, finishedAt: Date.now() });
     setFinished(true);
   };
 
@@ -440,4 +443,10 @@ export default function SessionPage() {
       </div>
     </div>
   );
+}
+
+/** Réinitialise complètement la séance quand on passe d'une séance à l'autre (A → B). */
+export default function SessionPage() {
+  const { key } = useParams();
+  return <GuidedSession key={key} />;
 }
