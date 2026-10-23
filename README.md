@@ -2,6 +2,8 @@
 
 **Le renforcement musculaire des coureurs et des cyclistes, fondé sur les preuves.**
 
+En ligne : https://socle-rcvo.vercel.app
+
 Socle est une Progressive Web App (PWA) hors ligne, sans compte ni serveur :
 
 - **Mode sportif** : l'utilisateur indique son sport, ses objectifs, ses douleurs (carte du corps cliquable ou liste), sa phase, son matériel et sa disponibilité. Un moteur de recommandation génère un programme personnalisé (séances A/B/C).
@@ -35,6 +37,7 @@ L'app est servie sur http://localhost:5173. Le service worker n'est actif que su
 | `npm run preview` | Sert le build de production |
 | `npm test` | Tests unitaires (Vitest) : moteur, progression, liens de partage, contenu, .ics… |
 | `npm run e2e` | Tests de bout en bout (Playwright, Chromium mobile + WebKit). Lancer `npx playwright install --with-deps chromium webkit` la première fois |
+| `E2E_BASE_URL=https://socle-rcvo.vercel.app npx playwright test` | Mêmes tests e2e sur le site déployé |
 | `npm run lint` / `npm run typecheck` | ESLint / TypeScript |
 | `npm run validate:content` | Valide tout le contenu (schémas Zod + contrôles croisés) |
 | `npm run refs:check` | Vérifie toutes les références sur PubMed/Crossref et régénère `REFERENCES_CHECK.md` |
