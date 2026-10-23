@@ -21,6 +21,7 @@ const ProHome = lazy(() => import('@/features/practitioner/ProHomePage'));
 const ProEditor = lazy(() => import('@/features/practitioner/ProEditorPage'));
 const ShareImport = lazy(() => import('@/features/share-import/ImportPage'));
 const Settings = lazy(() => import('@/features/settings/SettingsPage'));
+const Changelog = lazy(() => import('@/features/settings/ChangelogPage'));
 const Disclaimer = lazy(() => import('@/features/disclaimer/DisclaimerScreen'));
 const AnatomyDemo = lazy(() => import('@/features/dev/AnatomyDemo'));
 
@@ -62,6 +63,7 @@ const router = createBrowserRouter([
       { path: '/pro/edit/:id', element: page(<ProEditor />) },
       { path: '/import', element: page(<ShareImport />) },
       { path: '/settings', element: page(<Settings />) },
+      { path: '/changelog', element: page(<Changelog />) },
       { path: '/disclaimer', element: page(<Disclaimer />) },
       { path: '/dev/anatomy', element: page(<AnatomyDemo />) },
       { path: '*', element: <RouteError /> },

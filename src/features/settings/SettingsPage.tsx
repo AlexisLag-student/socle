@@ -194,8 +194,7 @@ export default function SettingsPage() {
           <Link to="/disclaimer">{t('nav.disclaimer')}</Link> · <Link to="/bibliography">{t('nav.bibliography')}</Link>
         </p>
         <p className={ui.muted}>
-          {t('settings.version', {
-            app: __APP_VERSION__,
+          {t('settings.contentInfo', {
             content: CONTENT_VERSION,
             exercises: content.exercises.length,
             pathologies: content.pathologies.length,
@@ -203,6 +202,11 @@ export default function SettingsPage() {
           })}
         </p>
       </Section>
+
+      <p className={ui.muted} style={{ textAlign: 'center', marginTop: 'var(--space-6)' }}>
+        <span data-testid="app-version">{t('settings.appVersion', { version: __APP_VERSION__ })}</span> ·{' '}
+        <Link to="/changelog">{t('settings.whatsNew')}</Link>
+      </p>
     </>
   );
 }

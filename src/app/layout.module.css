@@ -174,7 +174,60 @@
   padding-bottom: calc(var(--space-5) + env(safe-area-inset-bottom));
 }
 
+/* Bandeau « Nouvelle version disponible » : note épinglée, marge rouge, ombre au stylo rouge. */
+.updateBanner {
+  position: fixed;
+  left: 50%;
+  bottom: calc(var(--nav-h) + 16px + env(safe-area-inset-bottom));
+  transform: translateX(-50%);
+  z-index: 50;
+  width: min(440px, calc(100vw - 32px));
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2) var(--space-3);
+  padding: var(--space-3) var(--space-3) var(--space-3) calc(var(--space-5) + 6px);
+  background: var(--surface);
+  color: var(--text);
+  border: var(--stroke) solid var(--ink);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-red);
+}
+
+.updateBanner::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: var(--space-4);
+  width: 2px;
+  background: var(--margin-line);
+}
+
+.updateTitle {
+  margin: 0;
+  font-family: var(--font-title);
+  font-weight: 600;
+  font-size: 18px;
+  line-height: 24px;
+  color: var(--ink);
+}
+
+.updateActions {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.immersive .updateBanner {
+  bottom: calc(16px + env(safe-area-inset-bottom));
+}
+
 @media (min-width: 1024px) {
+  .updateBanner {
+    bottom: var(--space-5);
+  }
+
   .headerNav {
     display: flex;
     flex: 1;
@@ -217,7 +270,8 @@
   .header,
   .bottomNav,
   .footer,
-  .skip {
+  .skip,
+  .updateBanner {
     display: none !important;
   }
   .main {

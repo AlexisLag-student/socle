@@ -111,8 +111,9 @@
     "perSide": "par côté"
   },
   "pwa": {
-    "updateAvailable": "Une nouvelle version de Socle est disponible.",
-    "reload": "Mettre à jour",
+    "updateAvailable": "Nouvelle version disponible",
+    "reload": "Recharger",
+    "later": "Plus tard",
     "offlineReady": "Socle fonctionne maintenant hors ligne."
   },
   "zooms": {
@@ -589,11 +590,13 @@
     "resetConfirm": "Effacer définitivement profil, programmes et historique de cet appareil ?",
     "resetDone": "Données effacées.",
     "about": "À propos",
-    "version": "Version {{app}} · contenu {{content}} · {{exercises}} exercices, {{pathologies}} pathologies, {{references}} références.",
     "paper": "Lignes du cahier",
     "paperLines": "Lignes du cahier",
     "paperPlain": "Papier uni",
-    "paperHint": "Les lignes bleues du cahier sont décoratives : passez au papier uni si elles vous gênent."
+    "paperHint": "Les lignes bleues du cahier sont décoratives : passez au papier uni si elles vous gênent.",
+    "contentInfo": "Contenu {{content}} · {{exercises}} exercices, {{pathologies}} pathologies, {{references}} références.",
+    "appVersion": "Version {{version}}",
+    "whatsNew": "Nouveautés"
   },
   "reminder": {
     "title": "C’est l’heure de votre séance 💪",
@@ -609,5 +612,11 @@
       "ok": "correct",
       "hard": "trop dur"
     }
+  },
+  "changelog": {
+    "title": "Nouveautés",
+    "subtitle": "Ce qui a changé à chaque version de Socle.",
+    "version": "Version {{version}}",
+    "empty": "Aucune note de version pour le moment."
   }
 }

@@ -5,6 +5,7 @@ import { Button, Card, Empty, ButtonLink, HandNote, Icon, Notice, ui } from '@/c
 import { MuscleMap } from '@/components/anatomy/MuscleMap';
 import { useActiveProgram, useExerciseStates, useProfile } from '@/app/hooks';
 import { setPrefs, usePrefs } from '@/app/prefs';
+import { useMarkSessionRunning } from '@/app/sessionActivity';
 import { exerciseById } from '@/content/index';
 import type { Feedback } from '@/domain/ids';
 import type { ProgramItem, SessionEntry, SessionLog, SetLog } from '@/domain/user';
@@ -92,6 +93,7 @@ function GuidedSession() {
   const [showMap, setShowMap] = useState(false);
   const [tempoOn, setTempoOn] = useState(false);
   const started = useRef(false);
+  useMarkSessionRunning(!finished);
 
   // Démarrage : crée le journal de séance, garde l'écran allumé.
   useEffect(() => {
