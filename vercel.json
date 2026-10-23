@@ -4,7 +4,7 @@
   "outputDirectory": "dist",
   "framework": "vite",
   "git": { "deploymentEnabled": false },
-  "rewrites": [{ "source": "/((?!assets/|.*\..*).*)", "destination": "/index.html" }],
+  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }],
   "headers": [
     {
       "source": "/sw.js",
