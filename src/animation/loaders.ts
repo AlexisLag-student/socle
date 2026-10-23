@@ -27,13 +27,28 @@ export const animationLoaders: Record<string, Loader> = {
   'band-plantar-flexion': () => import('./data/band-plantar-flexion'),
   'toe-walk-carry': () => import('./data/toe-walk-carry'),
   'pogo-hops': () => import('./data/pogo-hops'),
+  'single-leg-balance': () => import('./data/single-leg-balance'),
+  'hop-stabilization': () => import('./data/hop-stabilization'),
+  'star-excursion-reach': () => import('./data/star-excursion-reach'),
+  'tibialis-anterior-raise': () => import('./data/tibialis-anterior-raise'),
+  'heel-walk': () => import('./data/heel-walk'),
+  'knee-to-wall-mobility': () => import('./data/knee-to-wall-mobility'),
+  'line-hops': () => import('./data/line-hops'),
+  'plantar-fascia-stretch': () => import('./data/plantar-fascia-stretch'),
+  'calf-wall-stretch': () => import('./data/calf-wall-stretch'),
+  'ankling-drill': () => import('./data/ankling-drill'),
+  'jump-rope': () => import('./data/jump-rope'),
+  'band-ankle-eversion': () => import('./data/band-ankle-eversion'),
 };
 
 /**
  * Niveaux animés, pour les exercices dont certains niveaux ne se dessinent pas avec le personnage
  * (mouvement des doigts, des orteils…) : ces niveaux gardent le seul schéma musculaire. Absent = tous les niveaux.
  */
-export const animatedLevels: Record<string, readonly number[]> = {};
+export const animatedLevels: Record<string, readonly number[]> = {
+  'plantar-fascia-stretch': [2, 3],
+  'band-ankle-eversion': [4],
+};
 
 /** L'exercice est-il animé (à ce niveau, si on le précise) ? */
 export function hasAnimation(exerciseId: string, level?: number): boolean {
