@@ -120,8 +120,8 @@ export default definePathology({
       {
         refId: 'van-dijk-2018',
         finding: {
-          fr: 'Ce consensus international recommande d’abord un traitement conservateur pour toutes les atteintes des tendons fibulaires, d’éviter l’immobilisation et de reprendre l’appui, la mobilité puis des exercices de mise en charge du tendon dès que la douleur le permet.',
-          en: 'This international consensus recommends conservative treatment first for all peroneal tendon problems, avoiding immobilisation and resuming weight-bearing, range of motion and then tendon-loading exercises as soon as pain allows.',
+          fr: 'Ce consensus international recommande d’abord un traitement conservateur pour toutes les atteintes des tendons fibulaires, d’éviter l’immobilisation et de reprendre l’appui, la mobilité puis des exercices de mise en charge du tendon une fois l’appui indolore.',
+          en: 'This international consensus recommends conservative treatment first for all peroneal tendon problems, avoiding immobilisation and resuming weight-bearing, range of motion and then tendon-loading exercises once weight-bearing is pain-free.',
         },
       },
     ],

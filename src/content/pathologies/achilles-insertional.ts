@@ -46,6 +46,8 @@ export default definePathology({
           exerciseId: 'calf-raise-straight-knee',
           priority: 2,
           startLevel: 1,
+          // Niveau 3 = talon sous le niveau d'une marche : exclu tant que l'insertion est irritable.
+          maxLevel: 2,
           dosage: { sets: 3, reps: [10, 15], tempo: '3-0-3', restSec: 60, perSide: false, intensity: symptomGuided(), frequency: freq.everyOtherDay },
           note: { fr: 'Au sol uniquement : le talon s’arrête au sol.', en: 'On the floor only: the heel stops at floor level.' },
         },
@@ -81,13 +83,22 @@ export default definePathology({
           exerciseId: 'calf-raise-straight-knee',
           priority: 1,
           startLevel: 2,
-          note: { fr: 'Ajoutez de la charge plutôt que de l’amplitude : talon arrêté au sol.', en: 'Add load rather than range: heel stops at floor level.' },
+          // Plafonné au niveau 2 (sur une jambe, au sol) : le niveau 3 descend le talon sous la marche.
+          maxLevel: 2,
+          note: { fr: 'Au sol uniquement, talon arrêté au sol ; la charge progresse avec les montées genou fléchi assis.', en: 'On the floor only, heel stopping at floor level; load progresses with the seated bent-knee raises.' },
         },
-        { exerciseId: 'calf-raise-bent-knee', priority: 1, startLevel: 2 },
+        {
+          exerciseId: 'calf-raise-bent-knee',
+          priority: 1,
+          startLevel: 2,
+          note: { fr: 'Talon arrêté au niveau de l’avant-pied, jamais sous le bord d’une marche.', en: 'Heel stopping level with the forefoot, never below the edge of a step.' },
+        },
         {
           exerciseId: 'eccentric-heel-drop',
           priority: 3,
           startLevel: 1,
+          // Niveaux 2-3 = protocole d'Alfredson sur marche (flexion de cheville sous l'horizontale) : exclus.
+          maxLevel: 1,
           dosage: { sets: 3, reps: [15, 15], tempo: '3-0-0', restSec: 60, perSide: true, intensity: symptomGuided(), frequency: freq.twiceDaily },
           note: { fr: 'Version au sol uniquement (niveau 1), sans descendre sous l’horizontale.', en: 'Floor version only (level 1), without going below flat.' },
         },

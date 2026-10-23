@@ -425,8 +425,8 @@ export default [
         {
           refId: 'alfredson-1998',
           finding: {
-            fr: 'Après 12 semaines d’excentrique lourd, les 15 coureurs suivis avaient repris la course à leur niveau antérieur, avec moins de douleur et une force du mollet rétablie.',
-            en: 'After 12 weeks of heavy eccentric training, all 15 followed runners were back to pre-injury running, with less pain and restored calf strength.',
+            fr: 'Après 12 semaines d’excentrique lourd, les 15 sportifs amateurs suivis (tendinopathie d’Achille chronique) avaient repris la course à leur niveau antérieur, avec moins de douleur et une force du mollet rétablie (étude non randomisée).',
+            en: 'After 12 weeks of heavy eccentric training, all 15 recreational athletes followed (chronic Achilles tendinopathy) were back to full pre-injury running, with less pain and restored calf strength (non-randomised study).',
           },
         },
         {
@@ -672,7 +672,7 @@ export default [
   // ---------------------------------------------------------------------------
   defineExercise({
     id: 'seated-soleus-isometric',
-    family: 'calf-isometric',
+    family: 'soleus-isometric-seated',
     name: { fr: 'Isométrie du soléaire assis', en: 'Seated soleus isometric' },
     sports: ['run', 'bike'],
     zones: ['calf'],

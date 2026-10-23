@@ -152,8 +152,8 @@ export default definePathology({
       {
         refId: 'marques-2025',
         finding: {
-          fr: 'Une méta-analyse de 12 essais montre que l’entraînement neuromusculaire prévient le syndrome de stress tibial médial (certitude élevée), contrairement aux étirements statiques.',
-          en: 'A meta-analysis of 12 trials shows neuromuscular training prevents medial tibial stress syndrome (high certainty), unlike static stretching.',
+          fr: 'Dans une méta-analyse d’essais de prévention, l’entraînement neuromusculaire réduisait le risque de syndrome de stress tibial médial (4 essais, 3 887 participants, certitude élevée) ; aucune preuve ne soutenait les étirements statiques.',
+          en: 'In a meta-analysis of prevention trials, neuromuscular training reduced the risk of medial tibial stress syndrome (4 trials, 3,887 participants, high certainty); no evidence supported static stretching.',
         },
       },
       {

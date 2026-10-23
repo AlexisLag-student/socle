@@ -97,7 +97,8 @@ export default [
     journal: 'Br J Sports Med',
     doi: '10.1136/bjsports-2016-096178',
     pmid: '28053200',
-    type: 'meta-analysis',
+    // Synthèse de revues systématiques (overview) : pas de méta-analyse propre.
+    type: 'systematic-review',
     verification: { status: 'verified', checkedAt: '2026-10-22', via: 'pubmed', abstractChecked: true },
   }),
   defineReference({

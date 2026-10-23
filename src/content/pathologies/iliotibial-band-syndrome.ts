@@ -136,8 +136,8 @@ export default definePathology({
       {
         refId: 'sanchez-alvarado-2024',
         finding: {
-          fr: 'Cette revue de 13 études (201 coureurs) retrouve le renforcement des abducteurs de hanche comme stratégie commune des traitements efficaces, mais l’hétérogénéité et la faible qualité des études limitent les conclusions.',
-          en: 'This review of 13 studies (201 runners) found hip abductor strengthening to be a common feature of effective treatments, but heterogeneity and low study quality limit the conclusions.',
+          fr: 'Cette revue de 13 études (201 coureurs) retrouve le renforcement des abducteurs de hanche comme stratégie commune des traitements efficaces, mais la grande hétérogénéité des études (dont 6 études de cas, sans méta-analyse possible) limite les conclusions.',
+          en: 'This review of 13 studies (201 runners) found hip abductor strengthening to be a common feature of effective treatments, but large heterogeneity between studies (including 6 case studies, precluding meta-analysis) limits the conclusions.',
         },
       },
       {

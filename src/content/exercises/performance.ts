@@ -48,7 +48,7 @@ export default [
   // ---------------------------------------------------------------------------
   defineExercise({
     id: 'deadlift',
-    family: 'deadlift',
+    family: 'hip-hinge-bilateral',
     name: { fr: 'Soulevé de terre', en: 'Deadlift' },
     sports: ['run', 'bike'],
     zones: ['hip-glutes', 'thigh', 'trunk'],
@@ -225,8 +225,22 @@ export default [
         {
           refId: 'lauersen-2014',
           finding: {
-            fr: 'Dans cette méta-analyse de 25 essais (26 610 participants), le renforcement musculaire a réduit les blessures sportives à moins d’un tiers et presque divisé par deux les blessures de surmenage.',
-            en: 'In this meta-analysis of 25 trials (26,610 participants), strength training cut sports injuries to less than a third and almost halved overuse injuries.',
+            fr: 'Dans cette méta-analyse de 25 essais (26 610 participants), le renforcement musculaire a réduit les blessures sportives à moins d’un tiers, et l’ensemble des programmes d’exercice a presque divisé par deux les blessures de surmenage.',
+            en: 'In this meta-analysis of 25 trials (26,610 participants), strength training cut sports injuries to less than a third, and exercise programmes overall almost halved overuse injuries.',
+          },
+        },
+        {
+          refId: 'beattie-2014',
+          finding: {
+            fr: 'Cette revue systématique de 26 études chez des athlètes d’endurance entraînés conclut que l’ajout de renforcement améliore l’économie, la puissance musculaire et la performance en contre-la-montre.',
+            en: 'This systematic review of 26 studies in trained endurance athletes concludes that adding strength training improves economy, muscle power and time-trial performance.',
+          },
+        },
+        {
+          refId: 'suchomel-2016',
+          finding: {
+            fr: 'Cette revue narrative associe une plus grande force maximale à de meilleures capacités de saut, de sprint et de changement de direction, ainsi qu’à un risque de blessure plus faible (sportifs en général, pas spécifiquement d’endurance).',
+            en: 'This narrative review links greater maximal strength to better jumping, sprinting and change-of-direction ability, and to lower injury risk (athletes in general, not specifically endurance athletes).',
           },
         },
       ],
@@ -788,8 +802,8 @@ export default [
         {
           refId: 'paavolainen-1999',
           finding: {
-            fr: 'Chez des coureurs entraînés, remplacer 32 % de l’entraînement par du travail de force explosive pendant 9 semaines a amélioré le 5 km et l’économie de course, sans changement de VO2max.',
-            en: 'In trained runners, replacing 32% of training with explosive strength work for 9 weeks improved 5 km time and running economy, with no change in VO2max.',
+            fr: 'Chez 18 athlètes d’endurance entraînés, remplacer 32 % de l’entraînement par du travail de force explosive pendant 9 semaines a amélioré le 5 km et l’économie de course, sans changement de VO2max.',
+            en: 'In 18 trained endurance athletes, replacing 32% of training with explosive strength work for 9 weeks improved 5 km time and running economy, with no change in VO2max.',
           },
         },
         {
@@ -1745,7 +1759,7 @@ export default [
       },
     ],
     evidence: {
-      level: 'strong',
+      level: 'moderate',
       citations: [
         {
           refId: 'hackett-2016',

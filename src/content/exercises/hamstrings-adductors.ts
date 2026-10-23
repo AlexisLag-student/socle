@@ -172,8 +172,8 @@ export default [
         {
           refId: 'bourne-2017',
           finding: {
-            fr: 'En 10 semaines, un exercice d’extension de hanche a allongé les faisceaux du biceps fémoral autant que le Nordic et semblait favoriser davantage son hypertrophie.',
-            en: 'Over 10 weeks, a hip extension exercise lengthened biceps femoris fascicles as much as the Nordic exercise and appeared to better promote its hypertrophy.',
+            fr: 'Chez 30 sportifs, 10 semaines d’un exercice d’extension de hanche (différent du soulevé de terre roumain, mais du même type) ont allongé les faisceaux du biceps fémoral autant que le Nordic et semblaient favoriser davantage son hypertrophie.',
+            en: 'In 30 athletes, 10 weeks of a hip extension exercise (not the Romanian deadlift itself, but the same movement type) lengthened biceps femoris fascicles as much as the Nordic exercise and appeared to better promote its hypertrophy.',
           },
         },
         {
@@ -323,8 +323,8 @@ export default [
         {
           refId: 'severini-2018',
           finding: {
-            fr: 'Le « diver », proche de ce mouvement, fait partie du protocole L d’Askling : il sollicite les ischios dans une position proche de la fin de la phase aérienne de la course.',
-            en: 'The “diver”, close to this movement, is part of the Askling L-protocol: it loads the hamstrings in a position similar to the late swing phase of running.',
+            fr: 'Le « diver », proche de ce mouvement, fait partie du protocole L d’Askling, dont les exercices sollicitent les ischios dans une position proche de la phase aérienne de la course.',
+            en: 'The “diver”, close to this movement, is part of the Askling L-protocol, whose exercises load the hamstrings in a position similar to the swing phase of running.',
           },
         },
       ],

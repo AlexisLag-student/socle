@@ -163,8 +163,8 @@ export default definePathology({
       {
         refId: 'breda-2021',
         finding: {
-          fr: 'Chez 76 patients, un programme de charge progressive en plusieurs étapes, jusqu’aux sauts et aux gestes du sport, a donné de meilleurs résultats à 24 semaines que l’excentrique seul.',
-          en: 'In 76 patients, a staged progressive loading programme, progressing to jumps and sport-specific tasks, gave better 24-week results than eccentric training alone.',
+          fr: 'Chez 76 patients, un programme d’exercices de mise en charge progressive du tendon a donné de meilleurs résultats à 24 semaines que l’excentrique seul.',
+          en: 'In 76 patients, a progressive tendon-loading exercise programme gave better 24-week results than eccentric training alone.',
         },
       },
       {

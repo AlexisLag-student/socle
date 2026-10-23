@@ -2,10 +2,8 @@
  * Exercices — vélo et haut du corps (cou, omoplates, épaules, avant-bras, mains).
  * Skill add-exercise. Références : src/content/references/cycling.ts.
  *
- * Note anatomique : les fléchisseurs profonds du cou (`deep-neck-flexors`) et le sterno-cléido-mastoïdien
- * ne sont visibles dans aucun zoom (seulement sur la silhouette de face). Pour le rentré de menton,
- * le muscle principal affiché est donc provisoirement `neck-extensors` (zoom « shoulders-neck »),
- * les fléchisseurs profonds étant indiqués en secondaire. À corriger si un zoom « cou de face » est ajouté.
+ * Note anatomique : le zoom « trunk-front » inclut le cou ; les fléchisseurs profonds du cou
+ * (`deep-neck-flexors`) y sont visibles et sont le muscle principal du rentré de menton.
  * Les nerfs (médian, ulnaire) ne sont pas dessinés : les glissements neuraux affichent les muscles
  * de l'avant-bras et de la main traversés par ces nerfs.
  */
@@ -32,11 +30,10 @@ export default [
     zones: ['neck-shoulders'],
     half: 'upper',
     muscles: {
-      // Voir la note en tête de fichier : les fléchisseurs profonds sont le vrai muscle cible.
-      primary: ['neck-extensors'],
-      secondary: ['deep-neck-flexors', 'sternocleidomastoid'],
+      primary: ['deep-neck-flexors'],
+      secondary: ['sternocleidomastoid'],
     },
-    zoom: 'shoulders-neck',
+    zoom: 'trunk-front',
     qualities: ['endurance', 'control', 'isometric'],
     objectives: ['prevention', 'pain', 'return'],
     preventionFor: ['bike'],
@@ -444,8 +441,8 @@ export default [
         {
           refId: 'cools-2007',
           finding: {
-            fr: 'Chez 45 personnes, l’élévation horizontale en rotation externe et l’extension des bras à plat ventre activaient fortement les trapèzes moyen et inférieur avec peu de trapèze supérieur.',
-            en: 'In 45 people, prone horizontal abduction with external rotation and prone arm extension strongly activated the middle and lower trapezius with little upper trapezius.',
+            fr: 'Chez 45 personnes, l’élévation horizontale en rotation externe et l’extension des bras à plat ventre faisaient partie des exercices offrant le meilleur rapport entre trapèzes moyen et inférieur et trapèze supérieur (peu de trapèze supérieur).',
+            en: 'In 45 people, prone horizontal abduction with external rotation and prone arm extension were among the exercises with the best balance between middle/lower and upper trapezius (little upper trapezius).',
           },
         },
         {
@@ -560,8 +557,8 @@ export default [
         {
           refId: 'andersen-2008-b',
           finding: {
-            fr: 'Chez 12 femmes avec myalgie du trapèze, l’oiseau (écarté arrière) faisait partie des exercices qui activaient fortement les muscles du cou et des épaules.',
-            en: 'In 12 women with trapezius myalgia, the reverse fly was among the exercises that strongly activated the neck and shoulder muscles.',
+            fr: 'Chez 12 femmes avec myalgie du trapèze, la plupart des exercices d’un programme comprenant l’oiseau (écarté arrière) activaient fortement (plus de 60 % du maximum) les muscles du cou et des épaules.',
+            en: 'In 12 women with trapezius myalgia, most exercises in a programme including the reverse fly strongly activated (over 60% of maximum) the neck and shoulder muscles.',
           },
         },
         {
@@ -689,8 +686,8 @@ export default [
         {
           refId: 'andersen-2008-b',
           finding: {
-            fr: 'Le rowing à un bras faisait partie des exercices de ce programme qui activaient fortement les muscles du cou et des épaules.',
-            en: 'The one-arm row was among the exercises in this programme that strongly activated the neck and shoulder muscles.',
+            fr: 'Dans un programme comprenant le rowing à un bras, la plupart des exercices activaient fortement (plus de 60 % du maximum) les muscles du cou et des épaules.',
+            en: 'In a programme including the one-arm row, most exercises strongly activated (over 60% of maximum) the neck and shoulder muscles.',
           },
         },
         {
@@ -802,8 +799,8 @@ export default [
         {
           refId: 'andersen-2014',
           finding: {
-            fr: 'Chez 47 employés de bureau avec douleur chronique du cou et des épaules, 10 semaines d’entraînement du dentelé antérieur et du trapèze inférieur (dont la pompe « plus ») ont réduit la douleur de façon cliniquement pertinente.',
-            en: 'In 47 office workers with chronic neck and shoulder pain, 10 weeks of serratus anterior and lower trapezius training (including the push-up plus) reduced pain by a clinically relevant amount.',
+            fr: 'Chez 47 employés de bureau avec douleur chronique du cou et des épaules, 10 semaines d’entraînement du dentelé antérieur et du trapèze inférieur, en limitant le travail du haut des trapèzes, ont réduit la douleur de façon cliniquement pertinente.',
+            en: 'In 47 office workers with chronic neck and shoulder pain, 10 weeks of serratus anterior and lower trapezius training, minimising upper trapezius work, reduced pain by a clinically relevant amount.',
           },
         },
         {
@@ -1827,8 +1824,8 @@ export default [
         {
           refId: 'basson-2017',
           finding: {
-            fr: 'Faute d’études suffisantes, l’effet de la mobilisation neurale reste incertain pour la compression du nerf ulnaire au coude ; aucune étude ne porte sur le canal de Guyon du cycliste.',
-            en: 'Owing to too few studies, the effect of neural mobilisation remains uncertain for ulnar nerve compression at the elbow; no study addresses Guyon’s canal in cyclists.',
+            fr: 'Faute d’études suffisantes, l’effet de la mobilisation neurale reste incertain pour la compression du nerf ulnaire au coude ; la compression au poignet (canal de Guyon), typique du cycliste, n’est pas évaluée dans ce résumé.',
+            en: 'Owing to too few studies, the effect of neural mobilisation remains uncertain for ulnar nerve compression at the elbow; compression at the wrist (Guyon’s canal), typical of cyclists, is not assessed in this summary.',
           },
         },
       ],

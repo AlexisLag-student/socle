@@ -125,12 +125,12 @@ Pour chaque profil, le moteur (fonction pure `generateProgram`) produit les séa
 - **Avertissements du moteur** : aucun
 - **Invariants** : ✅ tous respectés
 
-**Séance A** — 4 exercices, ~16 min
+**Séance A** — 4 exercices, ~14 min
 
 | # | Exercice | Niveau | Variante | Dosage | Raison | Preuve |
 |---|---|---|---|---|---|---|
 | 1 | Montée sur pointes jambe tendue | 1/5 — Deux pieds au sol | Poids du corps | 2 × 10–15, tempo 3-0-3, repos 45 s (~4 min) | pathologie : Tendinopathie d’Achille (portion moyenne) | strong |
-| 2 | Montée sur pointes genou fléchi | 1/4 — Deux jambes, genoux fléchis | Poids du corps sur une jambe | 2 × 15–20, tempo 2-0-2, repos 45 s (~4 min) | prévention (course) | strong |
+| 2 | Nordic hamstring (ischios nordiques) | 1/4 — Descente partielle assistée | Partenaire ou meuble | 2 × 4–6, tempo 3-0-X, repos 45 s (~2 min) | prévention (course) | strong |
 | 3 | Serrage des adducteurs (isométrie) | 1/4 — Genoux fléchis, effort modéré | Ballon, coussin ou poings | 2 × 20 s, repos 30 s (~2 min) | prévention (course) | moderate |
 | 4 | Maintien isométrique sur pointes | 1/3 — Deux pieds | Poids du corps | 5 × 30 s, repos 60 s (~7 min) | pathologie : Tendinopathie d’Achille (portion moyenne) | expert |
 
@@ -138,19 +138,19 @@ Pour chaque profil, le moteur (fonction pure `generateProgram`) produit les séa
 
 | # | Exercice | Niveau | Variante | Dosage | Raison | Preuve |
 |---|---|---|---|---|---|---|
-| 1 | Montée sur pointes genou fléchi | 1/4 — Deux jambes, genoux fléchis | Poids du corps sur une jambe | 2 × 15–20, tempo 2-0-2, repos 45 s (~4 min) | prévention (course) | strong |
+| 1 | Isométrie du soléaire assis | 1/4 — Poussée modérée | Sous une table | 3 × 30 s /côté, repos 45 s (~5 min) | pathologie : Tendinopathie d’Achille (portion moyenne) | expert |
 | 2 | Nordic hamstring (ischios nordiques) | 1/4 — Descente partielle assistée | Partenaire ou meuble | 2 × 4–6, tempo 3-0-X, repos 45 s (~2 min) | prévention (course) | strong |
-| 3 | Montée sur pointes jambe tendue | 1/5 — Deux pieds au sol | Poids du corps | 2 × 10–15, tempo 3-0-3, repos 45 s (~4 min) | pathologie : Tendinopathie d’Achille (portion moyenne) | strong |
+| 3 | Copenhagen (gainage latéral adducteurs) | 1/4 — Levier court, maintien | Chaise, canapé ou partenaire | 2 × 20 s /côté, repos 45 s (~3 min) | prévention (course) | strong |
 | 4 | Maintien isométrique sur pointes | 1/3 — Deux pieds | Poids du corps | 5 × 30 s, repos 60 s (~7 min) | pathologie : Tendinopathie d’Achille (portion moyenne) | expert |
 
-**Séance C** — 4 exercices, ~16 min
+**Séance C** — 4 exercices, ~15 min
 
 | # | Exercice | Niveau | Variante | Dosage | Raison | Preuve |
 |---|---|---|---|---|---|---|
-| 1 | Montée sur pointes jambe tendue | 1/5 — Deux pieds au sol | Poids du corps | 2 × 10–15, tempo 3-0-3, repos 45 s (~4 min) | pathologie : Tendinopathie d’Achille (portion moyenne) | strong |
-| 2 | Copenhagen (gainage latéral adducteurs) | 1/4 — Levier court, maintien | Chaise, canapé ou partenaire | 2 × 20 s /côté, repos 45 s (~3 min) | prévention (course) | strong |
-| 3 | Maintien isométrique sur pointes | 1/3 — Deux pieds | Poids du corps | 5 × 30 s, repos 60 s (~7 min) | pathologie : Tendinopathie d’Achille (portion moyenne) | expert |
-| 4 | Équilibre sur une jambe | 1/5 — Sol, yeux ouverts | Élastique | 2 × 30 s /côté, repos 20 s (~3 min) | prévention (course) | strong |
+| 1 | Montée sur pointes genou fléchi | 1/4 — Deux jambes, genoux fléchis | Poids du corps sur une jambe | 2 × 15–20, tempo 2-0-2, repos 45 s (~4 min) | prévention (course) | strong |
+| 2 | Nordic hamstring (ischios nordiques) | 1/4 — Descente partielle assistée | Partenaire ou meuble | 2 × 4–6, tempo 3-0-X, repos 45 s (~2 min) | prévention (course) | strong |
+| 3 | Copenhagen (gainage latéral adducteurs) | 1/4 — Levier court, maintien | Chaise, canapé ou partenaire | 2 × 20 s /côté, repos 45 s (~3 min) | prévention (course) | strong |
+| 4 | Maintien isométrique sur pointes | 1/3 — Deux pieds | Poids du corps | 5 × 30 s, repos 60 s (~7 min) | pathologie : Tendinopathie d’Achille (portion moyenne) | expert |
 
 ## Coureuse, syndrome fémoro-patellaire en reconstruction, haltères + marche, 2 × 30 min
 
@@ -311,14 +311,14 @@ Pour chaque profil, le moteur (fonction pure `generateProgram`) produit les séa
 - **Avertissements du moteur** : aucun
 - **Invariants** : ✅ tous respectés
 
-**Séance A** — 4 exercices, ~32 min
+**Séance A** — 4 exercices, ~31 min
 
 | # | Exercice | Niveau | Variante | Dosage | Raison | Preuve |
 |---|---|---|---|---|---|---|
-| 1 | Pont fessier et hip thrust | 1/5 — Pont sur deux pieds | Machine à hip thrust ou cadre guidé | 2 × 10–12, tempo 2-0-1-2, repos 45 s (~3 min) | pathologie : Tendinopathie glutéale (douleur latérale de hanche) | moderate |
-| 2 | Montée sur pointes, serviette sous les orteils (Rathleff) | 3/5 — Une jambe sur marche | Machine à mollets debout | 3 × 10–12 /côté, tempo 3-0-3-2, repos 120 s (~13 min) | pathologie : Talalgie plantaire (fasciite plantaire) | moderate |
-| 3 | Montée sur pointes genou fléchi | 2/4 — Une jambe, genou fléchi | Machine à mollets assis | 3 × 12–15 /côté, tempo 2-0-2, repos 75 s (~8 min) | pathologie : Talalgie plantaire (fasciite plantaire) | strong |
-| 4 | Abduction de hanche isométrique | 1/4 — Allongé, ceinture autour des cuisses | Mini-bande | 5 × 30 s, repos 60 s (~7 min) | pathologie : Tendinopathie glutéale (douleur latérale de hanche) | expert |
+| 1 | Montée sur pointes, serviette sous les orteils (Rathleff) | 3/5 — Une jambe sur marche | Machine à mollets debout | 3 × 10–12 /côté, tempo 3-0-3-2, repos 120 s (~13 min) | pathologie : Talalgie plantaire (fasciite plantaire) | moderate |
+| 2 | Montée sur pointes genou fléchi | 2/4 — Une jambe, genou fléchi | Machine à mollets assis | 3 × 12–15 /côté, tempo 2-0-2, repos 75 s (~8 min) | pathologie : Talalgie plantaire (fasciite plantaire) | strong |
+| 3 | Abduction de hanche isométrique | 1/4 — Allongé, ceinture autour des cuisses | Mini-bande | 5 × 30 s, repos 60 s (~7 min) | pathologie : Tendinopathie glutéale (douleur latérale de hanche) | expert |
+| 4 | Maintien isométrique genou haut (psoas) | 1/4 — Assis, genou décollé | Poulie basse | 2 × 20 s /côté, repos 45 s (~3 min) | pathologie : Tendinopathie glutéale (douleur latérale de hanche) | expert |
 
 **Séance B** — 4 exercices, ~30 min
 

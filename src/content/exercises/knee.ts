@@ -132,8 +132,8 @@ export default [
         {
           refId: 'willy-2019',
           finding: {
-            fr: 'La recommandation JOSPT 2019 sur le syndrome fémoro-patellaire préconise un programme d’exercices ciblant à la fois la hanche et le genou ; le squat fait partie des exercices de renforcement du genou en charge proposés.',
-            en: 'The 2019 JOSPT patellofemoral pain guideline recommends exercise targeting both hip and knee; the squat is among the weight-bearing knee strengthening exercises it covers.',
+            fr: 'La recommandation JOSPT 2019 sur le syndrome fémoro-patellaire préconise des exercices ciblant à la fois la hanche et le genou pour réduire la douleur et améliorer la fonction ; elle ne recommande pas de programme ou d’exercice précis.',
+            en: 'The 2019 JOSPT patellofemoral pain guideline recommends exercise targeting both the hip and the knee to reduce pain and improve function; it does not recommend a specific programme or exercise.',
           },
         },
         {
@@ -280,13 +280,13 @@ export default [
     ],
     precautions: [caution.painFlare, caution.balanceSupport, anteriorKneeRange],
     evidence: {
-      level: 'strong',
+      level: 'moderate',
       citations: [
         {
           refId: 'willy-2019',
           finding: {
-            fr: 'La recommandation JOSPT 2019 préconise le renforcement combiné de la hanche et du genou ; les fentes font partie des exercices en charge proposés.',
-            en: 'The 2019 JOSPT guideline recommends combined hip and knee strengthening; lunge-type exercises are among the weight-bearing options covered.',
+            fr: 'La recommandation JOSPT 2019 sur le syndrome fémoro-patellaire préconise des exercices ciblant à la fois la hanche et le genou pour réduire la douleur et améliorer la fonction ; elle ne recommande pas de programme ou d’exercice précis.',
+            en: 'The 2019 JOSPT patellofemoral pain guideline recommends exercise targeting both the hip and the knee to reduce pain and improve function; it does not recommend a specific programme or exercise.',
           },
         },
         {
@@ -387,13 +387,13 @@ export default [
     ],
     precautions: [caution.painFlare, anteriorKneeRange],
     evidence: {
-      level: 'strong',
+      level: 'moderate',
       citations: [
         {
           refId: 'willy-2019',
           finding: {
-            fr: 'La recommandation JOSPT 2019 préconise des exercices ciblant hanche et genou ; les fentes font partie des exercices en charge cités, aussi efficaces que les exercices sans mise en charge.',
-            en: 'The 2019 JOSPT guideline recommends hip- and knee-targeted exercise; lunges are among the weight-bearing exercises cited, which work as well as non-weight-bearing ones.',
+            fr: 'La recommandation JOSPT 2019 sur le syndrome fémoro-patellaire préconise des exercices ciblant à la fois la hanche et le genou pour réduire la douleur et améliorer la fonction ; elle ne recommande pas de programme ou d’exercice précis.',
+            en: 'The 2019 JOSPT patellofemoral pain guideline recommends exercise targeting both the hip and the knee to reduce pain and improve function; it does not recommend a specific programme or exercise.',
           },
         },
       ],
@@ -498,8 +498,8 @@ export default [
         {
           refId: 'willy-2019',
           finding: {
-            fr: 'La recommandation JOSPT 2019 préconise des exercices de renforcement ciblant la hanche et le genou, en charge ou non, sans privilégier un exercice précis.',
-            en: 'The 2019 JOSPT guideline recommends strengthening targeting the hip and knee, weight-bearing or not, without favouring one specific exercise.',
+            fr: 'La recommandation JOSPT 2019 sur le syndrome fémoro-patellaire préconise des exercices ciblant à la fois la hanche et le genou pour réduire la douleur et améliorer la fonction ; elle ne recommande pas de programme ou d’exercice précis.',
+            en: 'The 2019 JOSPT patellofemoral pain guideline recommends exercise targeting both the hip and the knee to reduce pain and improve function; it does not recommend a specific programme or exercise.',
           },
         },
       ],
@@ -592,13 +592,13 @@ export default [
     ],
     precautions: [caution.painFlare, caution.balanceSupport, anteriorKneeRange],
     evidence: {
-      level: 'strong',
+      level: 'moderate',
       citations: [
         {
           refId: 'willy-2019',
           finding: {
-            fr: 'La recommandation JOSPT 2019 préconise le renforcement combiné de la hanche et du genou ; la descente de marche fait partie des exercices en charge cités.',
-            en: 'The 2019 JOSPT guideline recommends combined hip and knee strengthening; the step-down is among the weight-bearing exercises cited.',
+            fr: 'La recommandation JOSPT 2019 sur le syndrome fémoro-patellaire préconise des exercices ciblant à la fois la hanche et le genou pour réduire la douleur et améliorer la fonction ; elle ne recommande pas de programme ou d’exercice précis.',
+            en: 'The 2019 JOSPT patellofemoral pain guideline recommends exercise targeting both the hip and the knee to reduce pain and improve function; it does not recommend a specific programme or exercise.',
           },
         },
         {
@@ -699,13 +699,13 @@ export default [
     ],
     precautions: [caution.painFlare, caution.balanceSupport, anteriorKneeRange],
     evidence: {
-      level: 'strong',
+      level: 'moderate',
       citations: [
         {
           refId: 'willy-2019',
           finding: {
-            fr: 'La recommandation JOSPT 2019 préconise des exercices ciblant hanche et genou ; le squat unipodal fait partie des exercices en charge cités.',
-            en: 'The 2019 JOSPT guideline recommends hip- and knee-targeted exercise; the single-leg squat is among the weight-bearing exercises cited.',
+            fr: 'La recommandation JOSPT 2019 sur le syndrome fémoro-patellaire préconise des exercices ciblant à la fois la hanche et le genou pour réduire la douleur et améliorer la fonction ; elle ne recommande pas de programme ou d’exercice précis.',
+            en: 'The 2019 JOSPT patellofemoral pain guideline recommends exercise targeting both the hip and the knee to reduce pain and improve function; it does not recommend a specific programme or exercise.',
           },
         },
         {
@@ -815,13 +815,13 @@ export default [
     ],
     precautions: [caution.painFlare, anteriorKneeRange],
     evidence: {
-      level: 'strong',
+      level: 'moderate',
       citations: [
         {
           refId: 'willy-2019',
           finding: {
-            fr: 'La recommandation JOSPT 2019 préconise le renforcement de la hanche et du genou, les exercices en charge et sans mise en charge étant d’efficacité comparable.',
-            en: 'The 2019 JOSPT guideline recommends hip and knee strengthening, with weight-bearing and non-weight-bearing exercises being similarly effective.',
+            fr: 'La recommandation JOSPT 2019 sur le syndrome fémoro-patellaire préconise des exercices ciblant à la fois la hanche et le genou pour réduire la douleur et améliorer la fonction ; elle ne recommande pas de programme ou d’exercice précis.',
+            en: 'The 2019 JOSPT patellofemoral pain guideline recommends exercise targeting both the hip and the knee to reduce pain and improve function; it does not recommend a specific programme or exercise.',
           },
         },
         {
@@ -936,13 +936,13 @@ export default [
     ],
     precautions: [caution.painFlare, anteriorKneeRange],
     evidence: {
-      level: 'strong',
+      level: 'moderate',
       citations: [
         {
           refId: 'willy-2019',
           finding: {
-            fr: 'La recommandation JOSPT 2019 préconise le renforcement du genou associé à celui de la hanche, les exercices sans mise en charge comme l’extension de genou étant aussi efficaces que les exercices en charge.',
-            en: 'The 2019 JOSPT guideline recommends knee strengthening combined with hip work, with non-weight-bearing exercises such as knee extension being as effective as weight-bearing ones.',
+            fr: 'La recommandation JOSPT 2019 sur le syndrome fémoro-patellaire préconise des exercices ciblant à la fois la hanche et le genou pour réduire la douleur et améliorer la fonction ; elle ne recommande pas de programme ou d’exercice précis.',
+            en: 'The 2019 JOSPT patellofemoral pain guideline recommends exercise targeting both the hip and the knee to reduce pain and improve function; it does not recommend a specific programme or exercise.',
           },
         },
         {
@@ -1356,8 +1356,8 @@ export default [
         {
           refId: 'breda-2021',
           finding: {
-            fr: 'Chez 76 patients, un programme de charge progressive (isométrie, force, puis exercices de détente et spécifiques) a donné de meilleurs résultats à 24 semaines que l’excentrique seul.',
-            en: 'In 76 patients, a progressive tendon-loading programme (isometrics, strength, then energy-storage and sport-specific work) gave better 24-week results than eccentric training alone.',
+            fr: 'Chez 76 patients, un programme d’exercices de mise en charge progressive du tendon a donné de meilleurs résultats à 24 semaines que l’excentrique (squat sur plan incliné) seul.',
+            en: 'In 76 patients, a progressive tendon-loading exercise programme gave better 24-week results than eccentric (decline squat) training alone.',
           },
         },
       ],

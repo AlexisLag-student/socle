@@ -287,17 +287,19 @@ export function generateProgram(
   }
 
   // 3. Compléter les séances trop courtes (minimum 4 exercices), en réduisant le volume si besoin.
+  //    On privilégie d'abord un groupe musculaire absent de la séance (équilibre), même au prix d'un volume réduit.
   for (const slot of slots) {
-    for (const maxPerGroup of [2, 3, 99]) {
+    const fill = (pred: (x: (typeof optional)[number]) => boolean, opts: { force?: boolean; maxPerGroup: number }) => {
       for (const x of optional) {
-        if (slot.items.length >= MIN_ITEMS) break;
-        tryAdd(slot, x, { maxPerGroup });
+        if (slot.items.length >= MIN_ITEMS) return;
+        if (pred(x)) tryAdd(slot, x, opts);
       }
-    }
-    for (const x of optional) {
-      if (slot.items.length >= MIN_ITEMS) break;
-      tryAdd(slot, x, { force: true, maxPerGroup: 99 });
-    }
+    };
+    const newGroup = (x: (typeof optional)[number]) => !slot.groups.has(groupOf(x.c.exercise.id));
+    fill(newGroup, { maxPerGroup: 2 });
+    fill(newGroup, { force: true, maxPerGroup: 99 });
+    for (const maxPerGroup of [2, 3]) fill(() => true, { maxPerGroup });
+    fill(() => true, { force: true, maxPerGroup: 99 });
   }
 
   // 4. Si la séance dépasse le budget (exercices essentiels nombreux), réduire le volume des moins prioritaires.

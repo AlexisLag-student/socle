@@ -176,8 +176,8 @@ export default definePathology({
       {
         refId: 'paton-2023',
         finding: {
-          fr: 'Le consensus international de Londres recommande une rééducation individualisée, d’éviter les fortes tensions au début et d’exiger un sprint indolore avant le retour au sport.',
-          en: 'The London international consensus recommends individualised rehabilitation, avoiding high strain early on, and requiring pain-free sprinting before return to sport.',
+          fr: 'Le consensus international de Londres recommande une rééducation individualisée, d’éviter les fortes tensions au début et de progresser selon les capacités et les symptômes, le sprint devant rester indolore.',
+          en: 'The London international consensus recommends individualised rehabilitation, avoiding high strain early on, and progressing according to capacity and symptoms, with sprinting kept pain-free.',
         },
       },
       {

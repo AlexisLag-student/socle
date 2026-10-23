@@ -157,7 +157,7 @@ export default definePathology({
     level: 'low',
     citations: [
       {
-        refId: 'frans-jozef-2026',
+        refId: 'vandeputte-2026',
         finding: {
           fr: 'Cette revue de 71 études de traitement rapporte de bons résultats du traitement conservateur chez les sportifs (77 à 100 %), mais dans des études de qualité faible à moyenne, sans test diagnostique fiable.',
           en: 'This review of 71 treatment studies reports good results from conservative care in athletes (77 to 100%), but in studies of low to moderate quality and without a reliable diagnostic test.',

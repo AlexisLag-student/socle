@@ -481,8 +481,8 @@ export default [
         {
           refId: 'distefano-2009',
           finding: {
-            fr: 'La marche latérale avec élastique sollicite peu le grand fessier (environ 27 % de la contraction maximale) : c’est surtout un exercice du moyen fessier.',
-            en: 'The lateral band walk recruits the gluteus maximus little (about 27% of maximal contraction): it is mainly a gluteus medius exercise.',
+            fr: 'La marche latérale avec élastique sollicite moins le grand fessier (environ 27 % de la contraction maximale) que le squat ou le soulevé de terre sur une jambe (environ 59 %).',
+            en: 'The lateral band walk recruits the gluteus maximus less (about 27% of maximal contraction) than the single-leg squat or single-leg deadlift (about 59%).',
           },
         },
       ],
@@ -494,7 +494,7 @@ export default [
     id: 'hip-hike',
     family: 'pelvic-drop',
     name: { fr: 'Élévation du bassin sur une marche (hip hike)', en: 'Hip hike' },
-    sports: ['run'],
+    sports: ['run', 'bike'],
     zones: ['hip-glutes'],
     half: 'lower',
     muscles: {
@@ -504,10 +504,10 @@ export default [
     zoom: 'pelvis-back',
     qualities: ['strength', 'control'],
     objectives: ['prevention', 'return', 'pain'],
-    preventionFor: ['run'],
+    preventionFor: ['run', 'bike'],
     why: {
-      fr: 'À chaque appui de course, le moyen fessier de la jambe au sol empêche le bassin de tomber du côté opposé. Cet exercice reproduit exactement ce rôle, en appui sur une jambe.',
-      en: 'At every running step, the gluteus medius of the stance leg stops the pelvis dropping on the opposite side. This exercise reproduces exactly that role, standing on one leg.',
+      fr: 'À chaque appui de course, le moyen fessier de la jambe au sol empêche le bassin de tomber du côté opposé. Cet exercice reproduit exactement ce rôle, en appui sur une jambe. À vélo, ces mêmes muscles stabilisent le bassin sur la selle et aident à garder le genou dans l’axe quand vous poussez fort ou pédalez en danseuse.',
+      en: 'At every running step, the gluteus medius of the stance leg stops the pelvis dropping on the opposite side. This exercise reproduces exactly that role, standing on one leg. On the bike, the same muscles steady the pelvis on the saddle and help keep the knee in line when you push hard or ride out of the saddle.',
     },
     how: {
       setup: {
@@ -1176,8 +1176,8 @@ export default [
         {
           refId: 'boren-2011',
           finding: {
-            fr: 'La planche avec extension de hanche était l’exercice qui sollicitait le plus le grand fessier (106 % de la contraction maximale) parmi 18 exercices.',
-            en: 'The front plank with hip extension was the exercise recruiting the gluteus maximus the most (106% of maximal contraction) among 18 exercises.',
+            fr: 'La planche avec extension de hanche, un exercice voisin du kickback mais en appui sur les avant-bras, était l’exercice qui sollicitait le plus le grand fessier (106 % de la contraction maximale) parmi 18 exercices.',
+            en: 'The front plank with hip extension, a close relative of the kickback performed on the forearms, was the exercise recruiting the gluteus maximus the most (106% of maximal contraction) among 18 exercises.',
           },
         },
       ],

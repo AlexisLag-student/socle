@@ -424,8 +424,8 @@ export default [
         {
           refId: 'marques-2025',
           finding: {
-            fr: 'Dans une méta-analyse de 12 essais (8 197 participants), l’entraînement neuromusculaire réduisait le risque de syndrome de stress tibial médial (certitude élevée).',
-            en: 'In a meta-analysis of 12 trials (8,197 participants), neuromuscular training reduced the risk of medial tibial stress syndrome (high certainty).',
+            fr: 'Dans une méta-analyse d’essais de prévention, l’entraînement neuromusculaire réduisait le risque de syndrome de stress tibial médial (4 essais, 3 887 participants, certitude élevée).',
+            en: 'In a meta-analysis of prevention trials, neuromuscular training reduced the risk of medial tibial stress syndrome (4 trials, 3,887 participants, high certainty).',
           },
         },
       ],

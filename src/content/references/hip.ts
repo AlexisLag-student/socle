@@ -146,9 +146,13 @@ export default [
     verification: verified,
   }),
   defineReference({
-    // Auteurs tels qu'indexés par PubMed et Crossref (prénoms et noms semblent inversés à la source).
-    id: 'frans-jozef-2026',
-    authors: ['Frans-Jozef V', 'Abner S', 'Stijn R', 'Annick T', 'Kristoff C'],
+    // PubMed et Crossref indexent les prénoms à la place des noms (dépôt de l'éditeur inversé).
+    // Noms corrigés d'après le dépôt institutionnel (UHasselt, documentserver.uhasselt.be/handle/1942/49914) :
+    // Frans-Jozef Vandeputte, Abner Sergooris, Stijn Roose, Annick Timmermans, Kristoff Corten.
+    // Les noms sont donc écrits en entier, prénom puis nom (forme exacte, compatible avec le contrôle
+    // automatique du premier auteur). Voir docs/REVIEW_NOTES.md.
+    id: 'vandeputte-2026',
+    authors: ['Frans-Jozef Vandeputte', 'Abner Sergooris', 'Stijn Roose', 'Annick Timmermans', 'Kristoff Corten'],
     year: 2026,
     title: 'Clinical Diagnosis and Treatment of Iliopsoas-Related Groin Pain: A Systematic Review',
     journal: 'J Clin Med',

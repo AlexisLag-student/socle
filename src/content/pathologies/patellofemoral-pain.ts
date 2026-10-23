@@ -155,8 +155,8 @@ export default definePathology({
       {
         refId: 'willy-2019',
         finding: {
-          fr: 'La recommandation JOSPT 2019 préconise en priorité (grade A) un programme d’exercices ciblant à la fois la hanche et le genou ; strapping, semelles préfabriquées et rééducation de la foulée sont des options complémentaires de niveau plus faible.',
-          en: 'The 2019 JOSPT guideline primarily recommends (grade A) exercise targeting both hip and knee; taping, prefabricated orthoses and gait retraining are weaker, complementary options.',
+          fr: 'La recommandation JOSPT 2019 préconise en priorité des exercices ciblant à la fois la hanche et le genou ; strapping, semelles préfabriquées (pied très pronateur) et rééducation de la foulée y figurent comme des options complémentaires, formulées de façon moins affirmative.',
+          en: 'The 2019 JOSPT guideline primarily recommends exercise targeting both hip and knee; taping, prefabricated orthoses (for marked pronation) and gait retraining appear as complementary options with less firm wording.',
         },
       },
       {
@@ -176,8 +176,8 @@ export default definePathology({
       {
         refId: 'lenhart-2014',
         finding: {
-          fr: 'Chez 30 coureurs, augmenter la cadence de 10 % a réduit de 14 % la force maximale sur l’articulation de la rotule.',
-          en: 'In 30 runners, increasing step rate by 10% reduced peak patellofemoral joint force by 14%.',
+          fr: 'Chez 30 adultes sains courant sur tapis, augmenter la cadence de 10 % a réduit de 14 % la force maximale estimée sur l’articulation de la rotule (modélisation biomécanique).',
+          en: 'In 30 healthy adults running on a treadmill, increasing step rate by 10% reduced estimated peak patellofemoral joint force by 14% (biomechanical modelling).',
         },
       },
       {
