@@ -84,6 +84,11 @@ export const PropSchema = z.discriminatedUnion('kind', [
     size: vec2.optional(),
     /** Mur : maçonnerie à gauche du trait (personnage dos au mur, à droite du mur). */
     flip: z.boolean().optional(),
+    /**
+     * Obstacle franchi à l'aller (haie) : le retour à pied (passages `say: 'return'`) se fait à côté, dans la
+     * profondeur, sans contrôle de traversée.
+     */
+    beside: z.boolean().optional(),
   }),
 ]);
 export type Prop = z.infer<typeof PropSchema>;

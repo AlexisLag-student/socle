@@ -106,6 +106,10 @@ export const animationLoaders: Record<string, Loader> = {
   'sled-push': () => import('./data/sled-push'),
   'hang-pull': () => import('./data/hang-pull'),
   'broad-jump': () => import('./data/broad-jump'),
+  'box-jump': () => import('./data/box-jump'),
+  'drop-jump': () => import('./data/drop-jump'),
+  'hurdle-hops': () => import('./data/hurdle-hops'),
+  bounding: () => import('./data/bounding'),
 };
 
 /**

@@ -27,14 +27,14 @@ export const SCENERY_TOL = 2.5;
  * Parties pleines du mobilier que le corps ne doit pas traverser : plateau d'une chaise ou d'un banc,
  * volume d'une marche ou d'une box. Mur, tapis, cale et ballon ne sont pas contrôlés (appuis voulus).
  */
-type Solid = { kind: string; x0: number; x1: number; y0: number; y1: number };
+type Solid = { kind: string; x0: number; x1: number; y0: number; y1: number; beside?: boolean };
 export function solidRects(tl: Timeline): Solid[] {
   return tl.r.props.filter(isScenery).flatMap((p): Solid[] => {
     const [w, h] = p.size ?? PROP_SIZE[p.kind];
     const [x, y] = p.at;
     if (p.kind === 'chair') return [{ kind: p.kind, x0: x, x1: x + w, y0: y + h - 0.025 * H, y1: y + h }];
     if (p.kind === 'bench') return [{ kind: p.kind, x0: x, x1: x + w, y0: y + h - 0.035 * H, y1: y + h }];
-    if (p.kind === 'step' || p.kind === 'box') return [{ kind: p.kind, x0: x, x1: x + w, y0: y, y1: y + h }];
+    if (p.kind === 'step' || p.kind === 'box') return [{ kind: p.kind, x0: x, x1: x + w, y0: y, y1: y + h, beside: p.beside }];
     return [];
   });
 }
@@ -49,11 +49,14 @@ export function sceneryPenetration(tl: Timeline, fps = 60): { kind: string; dept
   const n = Math.max(1, Math.ceil(tl.total * fps));
   for (let i = 0; i <= n; i++) {
     sample(tl, Math.min(tl.total - 1e-9, (tl.total * i) / n), f);
+    // Retour à pied : on passe à côté des obstacles franchis à l'aller.
+    const seg = tl.segs.find((s) => f.t >= s.start && f.t < s.start + s.dur);
+    const solid = seg?.say === 'return' ? rects.filter((q) => !q.beside) : rects;
     for (let si = 0; si < N_SEGMENTS; si++)
       for (const [u0, v0, u1, v1, r] of strokesOf(SEGMENTS[si]!, tl.r.view))
         for (let k = 0; k <= 6; k++) {
           segPoint(f, si, u0 + ((u1 - u0) * k) / 6, v0 + ((v1 - v0) * k) / 6, pt);
-          for (const q of rects) {
+          for (const q of solid) {
             const dx = Math.max(q.x0 - pt.x, 0, pt.x - q.x1);
             const dy = Math.max(q.y0 - pt.y, 0, pt.y - q.y1);
             const inside = dx === 0 && dy === 0;
