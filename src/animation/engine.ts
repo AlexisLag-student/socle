@@ -268,7 +268,10 @@ export function buildTimeline(r: Resolved, opts: TimelineOptions = {}): Timeline
       return;
     }
     // Le nouvel appui reste là où il se trouvait à la fin du passage précédent (décalage de racine retiré).
-    posePose(tl, prev, 1, scratch);
+    // Passage précédent de durée nulle : la pose d'arrivée ne diffère que par le décalage de la racine, qui est
+    // ainsi recalé sans aucun mouvement visible (ex. retour à pied après un saut en longueur). On mesure alors l'appui
+    // sur la pose de départ du passage.
+    posePose(tl, prev, prev.dur > 0 ? 1 : 0, scratch);
     const c = contactWorld(scratch, r.view, s.anchor);
     const end = r.poses[prev.to]!;
     s.ax = c.x - end[CH.x]!;

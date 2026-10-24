@@ -102,6 +102,10 @@ export const animationLoaders: Record<string, Loader> = {
   'split-jump': () => import('./data/split-jump'),
   'lateral-bound': () => import('./data/lateral-bound'),
   'explosive-step-up': () => import('./data/explosive-step-up'),
+  'isometric-mid-thigh-pull': () => import('./data/isometric-mid-thigh-pull'),
+  'sled-push': () => import('./data/sled-push'),
+  'hang-pull': () => import('./data/hang-pull'),
+  'broad-jump': () => import('./data/broad-jump'),
 };
 
 /**

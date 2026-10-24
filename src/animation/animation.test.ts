@@ -27,6 +27,12 @@ const drawn = (() => {
   return new Set<MuscleId>([...d.front!, ...d.back!, ...d.sole!]);
 })();
 
+/**
+ * Exercices dont les muscles principaux ne se voient pas dans la seule vue possible : adducteurs de profil (allongé sur
+ * le dos), rotateurs profonds de la hanche, muscles du haut du dos de face (bras qui s'écartent devant le corps).
+ */
+const PRIMARY_HIDDEN = new Set(['adductor-squeeze', 'seated-hip-external-rotation', 'band-pull-apart']);
+
 const all: [string, Animation][] = await Promise.all(Object.entries(animationLoaders).map(async ([id, load]) => [id, (await load()).default] as [string, Animation]));
 
 describe('données d’animation', () => {
@@ -53,8 +59,9 @@ describe('données d’animation', () => {
       expect(exMuscles.has(m.id), m.id).toBe(true);
       expect(m.role).toBe(ex.muscles.primary.includes(m.id) ? 'primary' : 'secondary');
     }
-    // Au moins un muscle principal est visible sur le personnage.
-    expect(muscles.some((m) => m.role === 'primary')).toBe(true);
+    // Au moins un muscle principal est visible sur le personnage, sauf quand la vue imposée par la position les cache
+    // (ils restent sur le schéma musculaire de la fiche).
+    if (!PRIMARY_HIDDEN.has(id)) expect(muscles.some((m) => m.role === 'primary')).toBe(true);
   });
 
   it.each(all)('%s : les appuis déclarés restent au sol (échantillonnage à 120 i/s)', (id, anim) => {
@@ -118,23 +125,24 @@ describe('interpolation', () => {
     expect(Math.abs(Math.abs(values[10]!) - 180)).toBeLessThan(1);
   });
 
-  it('continuité : aucune articulation ne saute entre deux images (toutes les animations)', () => {
+  it.each(all)('%s : continuité, aucune articulation ne saute entre deux images', (id, anim) => {
     const f = createFrame();
     const prev = createFrame();
-    for (const [id, anim] of all)
-      for (const c of combinations(anim, exerciseById.get(id)!)) {
-        const tl = buildTimeline(c.r);
-        const n = Math.ceil(tl.total * 120);
-        for (let i = 0; i <= n; i++) {
-          sample(tl, i === n ? 0 : (tl.total * i) / n, f);
-          if (i > 0)
-            for (const ch of ['hipN', 'kneeN', 'ankleN', 'trunk', 'shoulderN', 'elbowN'] as const) {
-              const d = Math.abs(shortestDelta(prev.pose[CH[ch]]!, f.pose[CH[ch]]!));
-              expect(d, `${id} ${ch} t=${f.t}`).toBeLessThanOrEqual(MAX_ANGLE_STEP);
-            }
-          prev.pose.set(f.pose);
-        }
+    let worst = { d: 0, at: '' };
+    for (const c of combinations(anim, exerciseById.get(id)!)) {
+      const tl = buildTimeline(c.r);
+      const n = Math.ceil(tl.total * 120);
+      for (let i = 0; i <= n; i++) {
+        sample(tl, i === n ? 0 : (tl.total * i) / n, f);
+        if (i > 0)
+          for (const ch of ['hipN', 'kneeN', 'ankleN', 'trunk', 'shoulderN', 'elbowN'] as const) {
+            const d = Math.abs(shortestDelta(prev.pose[CH[ch]]!, f.pose[CH[ch]]!));
+            if (d > worst.d) worst = { d, at: `niveau ${c.level}, ${ch}, t = ${f.t.toFixed(2)}` };
+          }
+        prev.pose.set(f.pose);
       }
+    }
+    expect(worst.d, worst.at).toBeLessThanOrEqual(MAX_ANGLE_STEP);
   });
 
   it('les bornes du profil incluent celles du cahier des charges', () => {
