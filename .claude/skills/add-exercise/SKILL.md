@@ -73,11 +73,12 @@ La validation échoue si : un champ manque, une traduction est vide, il y a moin
 
 ## 6. Animation du mouvement
 
-Tout exercice ajouté reçoit son animation, selon les règles de la section « Animations des exercices » de `CLAUDE.md` :
+Tout exercice ajouté reçoit son animation, selon les règles de la section « Animations des exercices » de `CLAUDE.md`, sauf si le mouvement ne se dessine pas avec ce personnage 2D (orteils, doigts, omoplates, rotation dans l'axe de la vue) : le noter alors dans `DECISIONS.md` (liste du n° 67), le schéma musculaire reste seul. Si seuls certains niveaux se dessinent, les inscrire dans `animatedLevels`.
+- s'inspirer d'une animation proche déjà écrite (même position : debout, sur le dos, à quatre pattes, vue de face…) pour garder exactement le même rendu ;
 - créer `src/animation/data/<id>.ts` (`defineAnimation`) et l'inscrire dans `src/animation/loaders.ts` ;
 - poses tirées **uniquement** de « Mise en place », « Mouvement », « Consignes » et « Erreurs » (amplitude, alignements) ; en cas de doute, la version la plus prudente, notée dans `DECISIONS.md` ;
 - même mouvement avec un autre matériel ou à un autre niveau → `overrides` (matériel, retouche de pose) ; nouvelles poses clés seulement si le mouvement change ;
-- régler les appuis avec `npm run anim:probe -- <id> [niveau] [variante]`, vérifier dans `/dev/animations?id=<id>` ;
+- régler les appuis avec `npm run anim:probe -- <id> [niveau] [variante]`, vérifier dans `/dev/animations?id=<id>` (chaque niveau et chaque variante, image par image) ;
 - `npm run validate:content` et `npx vitest run src/animation` doivent passer (bornes, appuis, continuité, tempo).
 
 ## 7. Exercices partagés entre zones

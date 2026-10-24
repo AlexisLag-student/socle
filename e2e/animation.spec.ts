@@ -37,6 +37,13 @@ test('fiche exercice : l’animation joue toute seule, la pause et la vitesse fo
   await expect(page.getByRole('heading', { name: 'Muscles travaillés' })).toBeAttached();
 });
 
+test('exercice non dessinable : la fiche garde le schéma musculaire seul', async ({ page }) => {
+  await start(page, '/library/short-foot');
+  await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
+  await expect(page.getByRole('img', { name: /Animation du mouvement/ })).toHaveCount(0);
+  await expect(page.getByRole('heading', { name: 'Muscles travaillés' })).toBeAttached();
+});
+
 test('exercice unilatéral : bouton « Changer de côté » (figure en miroir)', async ({ page }) => {
   await start(page, '/library/split-squat');
   const fig = page.getByRole('img', { name: /Animation du mouvement/ });
@@ -87,8 +94,8 @@ test('séance guidée : l’animation suit l’horloge du tempo (pause, reprise,
   await createAthleteProgram(page);
   await page.getByRole('link', { name: 'Commencer' }).first().click();
   await expect(page.getByText(/Série 1 sur \d/)).toBeVisible();
-  // Exercice sans animation : rien ne change, le schéma musculaire reste disponible.
-  await expect(page.getByRole('img', { name: /Animation du mouvement/ })).toHaveCount(0);
+  // Premier exercice animé, le schéma musculaire reste disponible.
+  await expect(page.getByRole('img', { name: /Animation du mouvement/ })).toBeVisible();
   await expect(page.getByText('Schéma des muscles')).toBeVisible();
   await page.getByRole('button', { name: 'Passer l’exercice' }).click();
 

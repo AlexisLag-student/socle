@@ -4,6 +4,24 @@ Toutes les évolutions de Socle, de la plus récente à la plus ancienne. Versio
 
 Ce fichier est affiché dans l’app (Réglages › Nouveautés) : garder le format `## [x.y.z] — AAAA-MM-JJ`, puis `### Français` et `### English`, chacun avec une liste à puces.
 
+## [0.5.0] — 2026-10-24
+
+### Français
+
+- Presque tous les exercices sont maintenant animés : 103 sur 114 montrent leur mouvement, dans la fiche, la séance guidée, la bibliothèque et l’éditeur praticien, avec le même personnage que les premiers exercices.
+- Chaque niveau et chaque variante de matériel a son animation : banc, chaise, mur, marche, box, haltères, kettlebell, barre ou élastique sont dessinés quand l’exercice les utilise.
+- Les sauts qui avancent (saut en longueur, box jump, drop jump, haies) reviennent à leur point de départ en marchant ; les exercices qui se déplacent (marches, gammes, bondissements) sont montrés sur place.
+- Les exercices tenus qui bougent (marche sur les talons, porté de valise…) s’animent pendant le minuteur de la tenue.
+- Quelques exercices ou niveaux dont le mouvement ne se dessine pas bien (orteils, doigts, omoplates, rotations) gardent le schéma musculaire seul.
+
+### English
+
+- Almost every exercise is now animated: 103 out of 114 show their movement in the exercise page, the guided session, the library and the practitioner editor, with the same figure as the first exercises.
+- Every level and equipment variant has its own animation: bench, chair, wall, step, box, dumbbells, kettlebell, barbell or band are drawn when the exercise uses them.
+- Jumps that travel (broad jump, box jump, drop jump, hurdles) walk back to their starting point; exercises that move around (walks, drills, bounding) are shown on the spot.
+- Held exercises that move (heel walk, suitcase carry…) play during the hold timer.
+- A few exercises or levels whose movement can’t be drawn well (toes, fingers, shoulder blades, rotations) keep the muscle diagram only.
+
 ## [0.4.1] — 2026-10-23
 
 ### Français

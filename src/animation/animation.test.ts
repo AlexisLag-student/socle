@@ -5,6 +5,7 @@ import { tempoPhases } from '@/lib/device';
 import type { MuscleId } from '@/domain/ids';
 import {
   EXPLOSIVE_SEC,
+  UNTIMED_CON_SEC,
   applyTempo,
   buildTimeline,
   contactWorld,
@@ -91,6 +92,20 @@ describe('chargement', () => {
     expect(await loadAnimation('exercice-inconnu')).toBeNull();
     expect((await loadAnimation('squat'))?.exerciseId).toBe('squat');
   });
+
+  it('niveaux animés : un niveau non dessinable garde le seul schéma musculaire', () => {
+    expect(hasAnimation('front-plank', 1)).toBe(true);
+    expect(hasAnimation('front-plank', 5)).toBe(false);
+    expect(hasAnimation('front-plank')).toBe(true);
+    expect(hasAnimation('squat', 4)).toBe(true);
+    expect(hasAnimation('exercice-inconnu', 1)).toBe(false);
+  });
+
+  it('une surcharge sur un niveau non animé échoue à la validation', () => {
+    const plank = all.find(([id]) => id === 'front-plank')![1];
+    const bad = { ...plank, overrides: [...(plank.overrides ?? []), { levels: [5], pose: { tilt: 80 } }] };
+    expect(validateAnimation(bad, exerciseById).some((e) => e.includes('niveau 5 non animé'))).toBe(true);
+  });
 });
 
 /** Animation minimale pour tester le moteur. */
@@ -173,6 +188,48 @@ describe('interpolation', () => {
   });
 });
 
+describe('décalage de la racine et appuis', () => {
+  /** Saut vers l'avant de 50 unités, puis recalage du décalage sur un passage de durée nulle. */
+  const hop = defineAnimation({
+    exerciseId: 'squat',
+    view: 'profile',
+    loop: 'cycle',
+    side: 'bilateral',
+    anchor: { point: 'toeN' },
+    keyframes: [
+      { pose: { x: 0 }, dur: 1, phase: 'excentrique', ease: 'linear', anchor: 'toeN' },
+      { pose: { x: 50 }, dur: 0, phase: 'retour', anchor: 'toeN' },
+      { pose: { x: 0 }, dur: 1, phase: 'retour', anchor: 'heelN' },
+    ],
+    contacts: [],
+  });
+
+  it('le décalage déplace l’appui : la pointe avance de 50 unités', () => {
+    const tl = buildTimeline(resolve(hop));
+    const f = createFrame();
+    expect(contactWorld(sample(tl, 0, f), 'profile', 'toeN').x).toBeCloseTo(0);
+    expect(contactWorld(sample(tl, 0.5, f), 'profile', 'toeN').x).toBeCloseTo(25);
+  });
+
+  it('un passage de durée nulle avec changement d’appui recale le décalage sans mouvement visible', () => {
+    const tl = buildTimeline(resolve(hop));
+    const f = createFrame();
+    // Après le recalage, le décalage vaut 0 mais le pied reste là où le saut l'a posé.
+    expect(contactWorld(sample(tl, 1.5, f), 'profile', 'toeN').x).toBeCloseTo(50);
+    expect(contactWorld(sample(tl, 1 + 1e-6, f), 'profile', 'toeN').x).toBeCloseTo(50);
+  });
+
+  it('les obstacles « beside » ne sont pas contrôlés pendant le retour à pied', () => {
+    const r = resolve(all.find(([id]) => id === 'hurdle-hops')![1], { level: 3 });
+    expect(r.props.some((p) => 'beside' in p && p.beside)).toBe(true);
+    const tl = buildTimeline(r);
+    expect(tl.segs.some((s) => s.say === 'return')).toBe(true);
+    expect(sceneryPenetration(tl)?.depth ?? 0).toBeLessThanOrEqual(SCENERY_TOL);
+    const solid = { ...r, props: r.props.map((p) => ('beside' in p ? { ...p, beside: false } : p)) };
+    expect(sceneryPenetration(buildTimeline(solid))?.depth ?? 0).toBeGreaterThan(SCENERY_TOL);
+  });
+});
+
 describe('recalage du tempo du dosage', () => {
   const seg = (phase: Segment['phase'], dur: number): Segment => ({ from: 0, to: 1, dur, start: 0, ease: 0, phase, say: 'hold', anchor: 'midN', ax: 0, ay: 0, i0: 0, i1: 0 });
   const sum = (segs: Segment[], phase: Segment['phase']) => segs.filter((s) => s.phase === phase).reduce((n, s) => n + s.dur, 0);
@@ -215,6 +272,13 @@ describe('recalage du tempo du dosage', () => {
     expect(sum(tl.segs, 'pause')).toBeCloseTo(2);
     expect(tl.tempoOffset).toBeCloseTo(3);
     expect(timeOfKeyframe(tl, 0)).toBe(0);
+  });
+
+  it('concentrique à 0 (« 3-0-0 ») : remontée courte prise sur la descente, cycle inchangé', () => {
+    const segs = [seg('excentrique', 2), seg('concentrique', 1)];
+    applyTempo(segs, parseTempo('3-0-0'));
+    expect(sum(segs, 'excentrique')).toBeCloseTo(3 - UNTIMED_CON_SEC);
+    expect(sum(segs, 'concentrique')).toBeCloseTo(UNTIMED_CON_SEC);
   });
 
   it('un tempo mal formé est ignoré', () => {
