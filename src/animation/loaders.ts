@@ -84,6 +84,19 @@ export const animationLoaders: Record<string, Loader> = {
   'rollout': () => import('./data/rollout'),
   'suitcase-carry': () => import('./data/suitcase-carry'),
   'pallof-press': () => import('./data/pallof-press'),
+  'chin-tuck': () => import('./data/chin-tuck'),
+  'neck-isometric': () => import('./data/neck-isometric'),
+  'quadruped-neck-extension': () => import('./data/quadruped-neck-extension'),
+  'band-pull-apart': () => import('./data/band-pull-apart'),
+  'pec-minor-stretch': () => import('./data/pec-minor-stretch'),
+  'wrist-extension': () => import('./data/wrist-extension'),
+  'median-nerve-glide': () => import('./data/median-nerve-glide'),
+  'ulnar-nerve-glide': () => import('./data/ulnar-nerve-glide'),
+  'push-up': () => import('./data/push-up'),
+  'row': () => import('./data/row'),
+  'shoulder-external-rotation': () => import('./data/shoulder-external-rotation'),
+  'wall-slide': () => import('./data/wall-slide'),
+  'thoracic-extension': () => import('./data/thoracic-extension'),
 };
 
 /**
@@ -97,6 +110,10 @@ export const animatedLevels: Record<string, readonly number[]> = {
   'front-plank': [1, 2, 3, 4],
   'reverse-crunch': [1, 2],
   rollout: [1, 2, 3],
+  'median-nerve-glide': [2, 3],
+  'ulnar-nerve-glide': [2, 3],
+  'shoulder-external-rotation': [1, 3, 4, 5],
+  'thoracic-extension': [1, 3],
 };
 
 /** L'exercice est-il animé (à ce niveau, si on le précise) ? */
