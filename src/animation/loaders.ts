@@ -62,6 +62,18 @@ export const animationLoaders: Record<string, Loader> = {
   'glute-kickback': () => import('./data/glute-kickback'),
   'hip-abduction-isometric': () => import('./data/hip-abduction-isometric'),
   'seated-hip-external-rotation': () => import('./data/seated-hip-external-rotation'),
+  'single-leg-deadlift': () => import('./data/single-leg-deadlift'),
+  'leg-curl': () => import('./data/leg-curl'),
+  'hamstring-bridge': () => import('./data/hamstring-bridge'),
+  'askling-extender': () => import('./data/askling-extender'),
+  'askling-glider': () => import('./data/askling-glider'),
+  'adductor-squeeze': () => import('./data/adductor-squeeze'),
+  'hamstring-slider-curl': () => import('./data/hamstring-slider-curl'),
+  'hamstring-isometric-hold': () => import('./data/hamstring-isometric-hold'),
+  'copenhagen-adductor': () => import('./data/copenhagen-adductor'),
+  'side-lying-hip-adduction': () => import('./data/side-lying-hip-adduction'),
+  'standing-hip-adduction': () => import('./data/standing-hip-adduction'),
+  'lateral-lunge': () => import('./data/lateral-lunge'),
 };
 
 /**
