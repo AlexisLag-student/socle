@@ -34,10 +34,18 @@ jobs:
             echo "::error::Tag $GITHUB_REF_NAME, mais package.json est en $v : publier avec npm run release"
             exit 1
           fi
-          if ! git merge-base --is-ancestor "$GITHUB_SHA" origin/main; then
+          # Dans le conteneur, git refuse un dépôt qui appartient à un autre utilisateur (« dubious ownership ») :
+          # actions/checkout ne l'autorise que pour sa propre étape.
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          git fetch --no-tags origin main
+          # 0 = sur main, 1 = hors de main, autre = erreur de git (affichée telle quelle).
+          status=0
+          git merge-base --is-ancestor "$GITHUB_SHA" FETCH_HEAD || status=$?
+          if [ "$status" = 1 ]; then
             echo "::error::Le commit du tag $GITHUB_REF_NAME n'est pas sur main : pousser main avec le tag"
             exit 1
           fi
+          if [ "$status" != 0 ]; then exit "$status"; fi
       - uses: actions/setup-node@v4
         with:
           node-version: 22
