@@ -387,7 +387,10 @@
     },
     "doseStart": "To start: {{level}}",
     "doseYours": "Your level: {{level}}",
-    "movementAnim": "The movement"
+    "movementAnim": "The movement",
+    "doseLevel": "Level {{n}}: {{level}}",
+    "showLevel": "Show the animation",
+    "showLevelOf": "Show the animation for level {{n}}: {{level}}"
   },
   "library": {
     "subtitle": "Every exercise, with diagrams, dosage and references.",
@@ -417,7 +420,10 @@
     "openTarget": "Open the program",
     "noTarget": "Create your program or a practitioner draft first.",
     "draft": "Practitioner draft",
-    "myProgram": "My program"
+    "myProgram": "My program",
+    "preview": "Levels",
+    "previewOf": "See levels and equipment: {{name}}",
+    "openDetail": "Open the exercise page"
   },
   "pathology": {
     "listSubtitle": "Guides to understand and act, never replacing medical advice.",
@@ -647,6 +653,9 @@
       "step": "step",
       "lift": "lift",
       "flatBack": "back flat"
-    }
+    },
+    "levelPicker": "Level",
+    "variantPicker": "Equipment",
+    "noAnimLevel": "No animation for this level: follow the description and the muscle diagram."
   }
 }

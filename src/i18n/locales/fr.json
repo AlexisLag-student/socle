@@ -387,7 +387,10 @@
     },
     "doseStart": "Pour commencer : {{level}}",
     "doseYours": "Votre niveau : {{level}}",
-    "movementAnim": "Le mouvement"
+    "movementAnim": "Le mouvement",
+    "doseLevel": "Niveau {{n}} : {{level}}",
+    "showLevel": "Voir l’animation",
+    "showLevelOf": "Voir l’animation du niveau {{n}} : {{level}}"
   },
   "library": {
     "subtitle": "Tous les exercices, avec leurs schémas, dosages et références.",
@@ -417,7 +420,10 @@
     "openTarget": "Ouvrir le programme",
     "noTarget": "Créez d’abord votre programme ou un brouillon praticien.",
     "draft": "Brouillon praticien",
-    "myProgram": "Mon programme"
+    "myProgram": "Mon programme",
+    "preview": "Niveaux",
+    "previewOf": "Voir les niveaux et le matériel : {{name}}",
+    "openDetail": "Ouvrir la fiche"
   },
   "pathology": {
     "listSubtitle": "Des fiches pour comprendre et agir, sans jamais remplacer un avis médical.",
@@ -647,6 +653,9 @@
       "step": "on fait un pas",
       "lift": "on lève",
       "flatBack": "dos droit"
-    }
+    },
+    "levelPicker": "Niveau",
+    "variantPicker": "Matériel",
+    "noAnimLevel": "Pas d’animation pour ce niveau : suivez la description et le schéma des muscles."
   }
 }

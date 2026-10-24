@@ -342,3 +342,22 @@ ul.cues li::before {
     display: none;
   }
 }
+
+/* Animation et choix du niveau (fiche) */
+.anim {
+  scroll-margin-top: var(--space-4);
+}
+
+.levelShow {
+  margin-top: 2px;
+}
+
+/* Aperçu des niveaux depuis la liste */
+.previewBtn {
+  margin-left: auto;
+}
+
+.preview {
+  display: grid;
+  gap: var(--space-3);
+}

@@ -38,3 +38,20 @@ export function clampLevel(wanted: number, available: readonly number[]): number
   if (below.length) return Math.max(...below);
   return Math.min(...available);
 }
+
+/** Variantes possibles à ce niveau : un niveau lesté exclut les variantes sans charge. */
+export function levelVariants(ex: Exercise, level: ProgressionLevel): EquipmentVariant[] {
+  const ok = ex.variants.filter((v) => !level.loaded || v.loadable);
+  return ok.length ? ok : ex.variants;
+}
+
+/**
+ * Variante montrée à ce niveau : celle demandée (choix de l'utilisateur ou de son programme) si elle convient ; sinon,
+ * pour un niveau sans charge, la version au poids du corps (celle que décrivent ces niveaux) ; sinon la mieux adaptée
+ * à son matériel.
+ */
+export function shownVariant(ex: Exercise, level: ProgressionLevel, preferredId?: string, equipment?: EquipmentSet): EquipmentVariant {
+  const ok = levelVariants(ex, level);
+  const best = equipment ? pickVariant({ ...ex, variants: ok }, equipment) : undefined;
+  return ok.find((v) => v.id === preferredId) ?? (!level.loaded ? ok.find((v) => v.equipment.length === 0) : undefined) ?? best ?? ok[0]!;
+}

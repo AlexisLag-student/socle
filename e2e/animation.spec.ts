@@ -37,6 +37,43 @@ test('fiche exercice : l’animation joue toute seule, la pause et la vitesse fo
   await expect(page.getByRole('heading', { name: 'Muscles travaillés' })).toBeAttached();
 });
 
+test('fiche : choix du niveau et du matériel de l’animation, sans changer la progression', async ({ page }) => {
+  await start(page, '/library/squat');
+  const fig = page.getByRole('img', { name: 'Animation du mouvement : Squat' });
+  await expect(fig).toBeVisible();
+  const levels = page.getByRole('group', { name: 'Niveau' });
+  await expect(levels.getByRole('button', { name: '1' })).toHaveAttribute('aria-pressed', 'true');
+  await levels.getByRole('button', { name: '4' }).click();
+  await expect(page.getByText('Niveau 4 : Squat chargé, force')).toBeVisible();
+  // Niveau lesté : seules les variantes avec charge sont proposées.
+  const equipment = page.getByRole('group', { name: 'Matériel' });
+  await expect(equipment.getByRole('button', { name: 'Poids du corps' })).toHaveCount(0);
+  await equipment.getByRole('button', { name: 'Squat à la barre' }).click();
+  await expect(equipment.getByRole('button', { name: 'Squat à la barre' })).toHaveAttribute('aria-pressed', 'true');
+  await expectMoving(fig);
+  // Bouton de la liste des niveaux : l'animation passe au niveau 2.
+  await page.getByRole('button', { name: /Voir l’animation du niveau 2/ }).click();
+  await expect(levels.getByRole('button', { name: '2' })).toHaveAttribute('aria-pressed', 'true');
+  // Un niveau non dessiné garde le schéma seul, avec une mention.
+  await page.goto('/library/front-plank');
+  await page.getByRole('group', { name: 'Niveau' }).getByRole('button', { name: '5' }).click();
+  await expect(page.getByText(/Pas d’animation pour ce niveau/)).toBeVisible();
+  await expect(page.getByRole('img', { name: /Animation du mouvement/ })).toHaveCount(0);
+});
+
+test('bibliothèque : aperçu des niveaux et du matériel sans ouvrir la fiche', async ({ page }) => {
+  await start(page, '/library?q=squat');
+  await page.getByRole('button', { name: 'Voir les niveaux et le matériel : Squat', exact: true }).click();
+  const dialog = page.getByRole('dialog', { name: 'Squat' });
+  const fig = dialog.getByRole('img', { name: 'Animation du mouvement : Squat' });
+  await expect(fig).toBeVisible();
+  await expectMoving(fig);
+  await dialog.getByRole('group', { name: 'Niveau' }).getByRole('button', { name: '3' }).click();
+  await expect(dialog.getByText('Squat gobelet', { exact: true })).toBeVisible();
+  await dialog.getByRole('link', { name: 'Ouvrir la fiche' }).click();
+  await expect(page.getByRole('heading', { name: 'Squat', level: 1 })).toBeVisible();
+});
+
 test('exercice non dessinable : la fiche garde le schéma musculaire seul', async ({ page }) => {
   await start(page, '/library/short-foot');
   await expect(page.getByRole('heading', { level: 1 })).toBeVisible();

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Link, useParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import type { TFunction } from 'i18next';
@@ -19,7 +19,8 @@ import {
   ui,
 } from '@/components/ui';
 import { MuscleMap } from '@/components/anatomy/MuscleMap';
-import { ExerciseAnimation } from '@/components/animation/ExerciseAnimation';
+import { AnimationExplorer } from '@/components/animation/AnimationExplorer';
+import { usePrefersReducedMotion } from '@/components/animation/hooks';
 import { hasAnimation } from '@/animation/loaders';
 import { content, exerciseById, referenceById } from '@/content/index';
 import { formatAuthors, pathologiesForExercise, referenceLinks } from '@/content/query';
@@ -27,7 +28,7 @@ import { resolveExerciseId } from '@/content/aliases';
 import { useActiveProgram, useExerciseStates, usePrograms, useProfile } from '@/app/hooks';
 import { usePrefs } from '@/app/prefs';
 import { addItemToProgram } from '@/db/repo';
-import { equipmentSet, pickVariant } from '@/engine/availability';
+import { equipmentSet, pickVariant, shownVariant } from '@/engine/availability';
 import { formatDosage, formatDuration } from '@/features/exercise/format';
 import { useLocalized } from '@/i18n/useLocalized';
 import type { Dosage, Exercise, L } from '@/domain/schema';
@@ -121,6 +122,10 @@ export default function ExercisePage() {
   const states = useExerciseStates();
   const profile = useProfile();
   const [adding, setAdding] = useState(false);
+  // Niveau et matériel choisis pour voir l'animation (sans effet sur la progression) ; oubliés en changeant d'exercice.
+  const [pick, setPick] = useState<{ id: string; level?: number; variant?: string }>({ id });
+  const animRef = useRef<HTMLElement>(null);
+  const reduced = usePrefersReducedMotion();
 
   if (!ex)
     return (
@@ -131,15 +136,15 @@ export default function ExercisePage() {
     );
 
   const current = states?.get(ex.id)?.level;
-  const shown = ex.levels.find((x) => x.level === (current ?? 1)) ?? ex.levels[0]!;
-  // Variante montrée par l'animation : celle de l'utilisateur ; sinon, pour un niveau sans charge, la version au poids
-  // du corps (celle que décrivent ces niveaux) ; sinon la mieux adaptée à son matériel.
-  const storedVariant = ex.variants.find((v) => v.id === states?.get(ex.id)?.variantId);
-  const animVariant =
-    storedVariant ??
-    (!shown.loaded ? ex.variants.find((v) => v.equipment.length === 0) : undefined) ??
-    pickVariant(ex, equipmentSet(profile?.equipment ?? [])) ??
-    ex.variants[0]!;
+  const picked = pick.id === id ? pick : { id };
+  const shown = ex.levels.find((x) => x.level === (picked.level ?? current ?? 1)) ?? ex.levels[0]!;
+  // Variante montrée par l'animation : celle choisie, sinon celle de l'utilisateur ; sinon, pour un niveau sans charge,
+  // la version au poids du corps (celle que décrivent ces niveaux) ; sinon la mieux adaptée à son matériel.
+  const animVariant = shownVariant(ex, shown, picked.variant ?? states?.get(ex.id)?.variantId, equipmentSet(profile?.equipment ?? []));
+  const showLevel = (level: number) => {
+    setPick({ id, level, variant: picked.variant });
+    animRef.current?.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'start' });
+  };
   const pathologies = pathologiesForExercise(content, ex.id);
   const eqName = (e: string) => l(content.equipment.find((x) => x.id === e)?.name);
   const fn = (n: number) => `fn-${ex.id}-${n}`;
@@ -153,12 +158,19 @@ export default function ExercisePage() {
         subtitle={[l({ fr: ex.name.en, en: ex.name.fr }), ...ex.sports.map((s) => t(`sports.${s}`)), ...ex.qualities.map((q) => t(`qualities.${q}`))].join(' · ')}
       />
 
-      {hasAnimation(ex.id, shown.level) && (
-        <section aria-labelledby="anim-h">
+      {hasAnimation(ex.id) && (
+        <section ref={animRef} aria-labelledby="anim-h" className={css.anim}>
           <h2 id="anim-h" className="visually-hidden">
             {t('exercise.movementAnim')}
           </h2>
-          <ExerciseAnimation exerciseId={ex.id} level={shown.level} variant={animVariant.id} tempo={shown.dosage.tempo} />
+          <AnimationExplorer
+            ex={ex}
+            level={shown.level}
+            variant={animVariant.id}
+            userLevel={current}
+            onLevel={(level) => setPick({ id, level, variant: picked.variant })}
+            onVariant={(variant) => setPick({ id, level: shown.level, variant })}
+          />
         </section>
       )}
 
@@ -172,7 +184,8 @@ export default function ExercisePage() {
       <div className={css.dose}>
         <DosageBlock items={dosageItems(shown.dosage, t, l)} />
         <p className={css.doseNote}>
-          {t(current ? 'exercise.doseYours' : 'exercise.doseStart', { level: l(shown.name) })} · {l(shown.dosage.intensity.value)}
+          {t(shown.level === current ? 'exercise.doseYours' : !current && shown.level === 1 ? 'exercise.doseStart' : 'exercise.doseLevel', { level: l(shown.name), n: shown.level })} ·{' '}
+          {l(shown.dosage.intensity.value)}
         </p>
       </div>
 
@@ -237,6 +250,18 @@ export default function ExercisePage() {
                 <p className={css.mastery}>
                   {t('exercise.mastery')} {l(lv.mastery)}
                 </p>
+                {hasAnimation(ex.id, lv.level) && (
+                  <Button
+                    variant="ghost"
+                    size="small"
+                    icon="play"
+                    className={css.levelShow}
+                    aria-label={t('exercise.showLevelOf', { n: lv.level, level: l(lv.name) })}
+                    onClick={() => showLevel(lv.level)}
+                  >
+                    {t('exercise.showLevel')}
+                  </Button>
+                )}
               </div>
             </li>
           ))}

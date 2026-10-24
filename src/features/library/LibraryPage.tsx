@@ -22,7 +22,7 @@ export default function LibraryPage() {
   return (
     <>
       <PageHeader title={t('nav.library')} subtitle={t('library.subtitle')} />
-      <LibraryList filters={filters} onChange={onChange} />
+      <LibraryList filters={filters} onChange={onChange} preview />
     </>
   );
 }

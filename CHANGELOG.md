@@ -4,6 +4,22 @@ Toutes les évolutions de Socle, de la plus récente à la plus ancienne. Versio
 
 Ce fichier est affiché dans l’app (Réglages › Nouveautés) : garder le format `## [x.y.z] — AAAA-MM-JJ`, puis `### Français` et `### English`, chacun avec une liste à puces.
 
+## [0.6.0] — 2026-10-24
+
+### Français
+
+- Sur la fiche d’un exercice, choisissez le niveau et le matériel sous l’animation pour voir chaque version du mouvement. Le dosage affiché suit le niveau choisi ; votre progression et votre programme ne changent pas.
+- Dans la liste des niveaux, le bouton « Voir l’animation » montre directement ce niveau.
+- Dans la bibliothèque, le bouton « Niveaux » ouvre un aperçu de l’exercice avec le même choix de niveau et de matériel, sans quitter la liste.
+- Un niveau qui n’a pas d’animation l’indique clairement : suivez alors sa description et le schéma des muscles.
+
+### English
+
+- On an exercise page, pick the level and equipment under the animation to see every version of the movement. The dosage shown follows the chosen level; your progress and your program don’t change.
+- In the list of levels, the “Show the animation” button jumps straight to that level.
+- In the library, the “Levels” button opens a preview of the exercise with the same level and equipment choice, without leaving the list.
+- A level without an animation says so clearly: follow its description and the muscle diagram.
+
 ## [0.5.0] — 2026-10-24
 
 ### Français

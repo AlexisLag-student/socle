@@ -1,13 +1,15 @@
-import { useMemo, type ReactNode } from 'react';
+import { useMemo, useState, type ReactNode } from 'react';
 import { Link } from 'react-router';
 import { useTranslation } from 'react-i18next';
-import { EvidenceBadge, Field, Icon, Input, Select, ui } from '@/components/ui';
+import { Button, Dialog, EvidenceBadge, Field, Icon, Input, Select, ui } from '@/components/ui';
+import { hasAnimation } from '@/animation/loaders';
 import { AnimationThumb } from '@/components/animation/ExerciseAnimation';
 import { content } from '@/content/index';
 import { filterExercises, type ExerciseFilters } from '@/content/query';
 import { BODY_ZONES, EQUIPMENT, EVIDENCE_LEVELS, OBJECTIVES, SPORTS } from '@/domain/ids';
 import type { Exercise } from '@/domain/schema';
 import { useLocalized } from '@/i18n/useLocalized';
+import { LevelPreview } from './LevelPreview';
 import css from './library.module.css';
 
 /** Liste filtrable de la bibliothèque, réutilisée par la page Bibliothèque et le sélecteur du mode praticien. */
@@ -16,11 +18,14 @@ export function LibraryList({
   onChange,
   renderAction,
   linkToDetail = true,
+  preview = false,
 }: {
   filters: ExerciseFilters;
   onChange: (f: ExerciseFilters) => void;
   renderAction?: (ex: Exercise) => ReactNode;
   linkToDetail?: boolean;
+  /** Bouton « Niveaux » : aperçu de l'animation de chaque niveau et de chaque matériel. */
+  preview?: boolean;
 }) {
   const { t } = useTranslation();
   const l = useLocalized();
@@ -29,6 +34,7 @@ export function LibraryList({
   const sortedPathologies = useMemo(() => [...content.pathologies].sort((a, b) => l(a.name).localeCompare(l(b.name))), [l]);
   const active = Object.entries(filters).filter(([k, v]) => k !== 'q' && v).length;
   const set = (patch: Partial<ExerciseFilters>) => onChange({ ...filters, ...patch });
+  const [previewing, setPreviewing] = useState<Exercise | null>(null);
 
   const select = <K extends keyof ExerciseFilters>(key: K, label: string, options: { value: string; label: string }[]) => (
     <Field label={label} htmlFor={`f-${key}`}>
@@ -98,6 +104,11 @@ export function LibraryList({
                   {ex.sports.map((s) => (
                     <Icon key={s} name={s === 'bike' ? 'bike' : 'run'} size={16} title={t(`sports.${s}`)} />
                   ))}
+                  {preview && hasAnimation(ex.id) && (
+                    <Button variant="ghost" size="small" icon="play" className={css.previewBtn} aria-label={t('library.previewOf', { name: l(ex.name) })} onClick={() => setPreviewing(ex)}>
+                      {t('library.preview')}
+                    </Button>
+                  )}
                 </span>
               </div>
               {renderAction?.(ex)}
@@ -105,6 +116,9 @@ export function LibraryList({
           );
         })}
       </ul>
+      <Dialog open={!!previewing} onClose={() => setPreviewing(null)} title={previewing ? l(previewing.name) : ''}>
+        {previewing && <LevelPreview key={previewing.id} ex={previewing} linkToDetail={linkToDetail} />}
+      </Dialog>
     </div>
   );
 }
