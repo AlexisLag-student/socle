@@ -74,6 +74,16 @@ export const animationLoaders: Record<string, Loader> = {
   'side-lying-hip-adduction': () => import('./data/side-lying-hip-adduction'),
   'standing-hip-adduction': () => import('./data/standing-hip-adduction'),
   'lateral-lunge': () => import('./data/lateral-lunge'),
+  'bird-dog': () => import('./data/bird-dog'),
+  'cat-cow': () => import('./data/cat-cow'),
+  'front-plank': () => import('./data/front-plank'),
+  'dead-bug': () => import('./data/dead-bug'),
+  'back-extension': () => import('./data/back-extension'),
+  'mcgill-curl-up': () => import('./data/mcgill-curl-up'),
+  'reverse-crunch': () => import('./data/reverse-crunch'),
+  'rollout': () => import('./data/rollout'),
+  'suitcase-carry': () => import('./data/suitcase-carry'),
+  'pallof-press': () => import('./data/pallof-press'),
 };
 
 /**
@@ -84,6 +94,9 @@ export const animatedLevels: Record<string, readonly number[]> = {
   'plantar-fascia-stretch': [2, 3],
   'band-ankle-eversion': [4],
   'hip-abduction-isometric': [2, 3, 4],
+  'front-plank': [1, 2, 3, 4],
+  'reverse-crunch': [1, 2],
+  rollout: [1, 2, 3],
 };
 
 /** L'exercice est-il animé (à ce niveau, si on le précise) ? */
