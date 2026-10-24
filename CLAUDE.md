@@ -4,13 +4,14 @@ Socle est une PWA de renforcement musculaire pour coureurs et cyclistes : hors l
 
 ## Règle permanente : version et journal
 
-À chaque évolution : mets à jour la version dans package.json selon le versionnage sémantique (correctif = bug corrigé, mineur = fonctionnalité ou contenu ajouté sans rien casser, majeur = changement qui casse l'existant, par exemple les liens de partage) et ajoute une entrée datée dans CHANGELOG.md, en français et en anglais.
+À chaque évolution visible par l'utilisateur : ajoute des puces en français et en anglais dans la section `## [À venir]` en tête de [CHANGELOG.md](CHANGELOG.md), **sans changer la version**. Une version n'est publiée que lorsque l'utilisateur le demande (« publie une version »), pour regrouper les évolutions (`DECISIONS.md` n° 86).
 
-- `npm version <patch|minor|major> --no-git-tag-version` (package-lock suit), puis tag git `vX.Y.Z` sur le commit.
-- Entrée en tête de [CHANGELOG.md](CHANGELOG.md), format lu par l'app (Réglages › Nouveautés) : `## [x.y.z] — AAAA-MM-JJ`, puis `### Français` et `### English`, chacun avec des puces `- …` écrites pour l'utilisateur (pas de jargon technique). `src/lib/changelog.test.ts` échoue si la première entrée ne correspond pas à `package.json`.
-- Le contenu (exercices, pathologies, références) a en plus son propre `CONTENT_VERSION` (`AAAA.MM.n`) dans `src/content/index.ts`.
+- Puces écrites pour l'utilisateur (pas de jargon technique), sous `### Français` et `### English`. La section « À venir » n'est jamais affichée dans l'app (Réglages › Nouveautés) ; un changement purement technique (CI, outils, tests) n'y figure pas.
+- Publier : `npm run release -- <patch|minor|major> [--message "résumé"]` (essai sans rien modifier : `--dry-run`). Niveau selon le versionnage sémantique, d'après tout ce qui s'est accumulé : majeur si quelque chose casse l'existant (par exemple les liens de partage), sinon mineur si une fonctionnalité ou du contenu est ajouté, sinon correctif. Le script transforme « À venir » en `## [x.y.z] — AAAA-MM-JJ`, met à jour package.json et package-lock, crée le commit « Version x.y.z : … » et le tag `vX.Y.Z`. Un correctif urgent peut être publié seul.
+- `src/lib/changelog.test.ts` échoue si la première version du journal ne correspond pas à `package.json`.
+- Le contenu (exercices, pathologies, références) a en plus son propre `CONTENT_VERSION` (`AAAA.MM.n`) dans `src/content/index.ts`, augmenté à chaque modification du contenu (indépendant des publications).
 - La version est injectée au build (`__APP_VERSION__`, `define` dans `vite.config.ts`) : ne jamais l'écrire en dur.
-- Un push sur `main` déploie en production (Vercel) : ne jamais pousser soi-même, donner à l'utilisateur la commande à lancer (ex. `git push origin main vX.Y.Z`).
+- Seul le push d'un tag `vX.Y.Z` déploie en production (Vercel) ; un push sur `main` ne fait que tester. Ne jamais pousser soi-même : donner à l'utilisateur la commande à lancer (`git push origin main vX.Y.Z`).
 - La CI tourne dans l'image `mcr.microsoft.com/playwright:v<version>-noble` : toute mise à jour de `@playwright/test` doit changer cette image dans `.github/workflows/ci-deploy.yml`.
 
 ## Architecture

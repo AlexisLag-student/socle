@@ -16,7 +16,8 @@
     "validate:content": "tsx --tsconfig tsconfig.node.json scripts/validate-content.ts",
     "refs:check": "tsx --tsconfig tsconfig.node.json scripts/verify-references.ts",
     "profiles:report": "tsx --tsconfig tsconfig.node.json scripts/profiles-report.ts",
-    "anim:probe": "tsx --tsconfig tsconfig.node.json scripts/animation-probe.ts"
+    "anim:probe": "tsx --tsconfig tsconfig.node.json scripts/animation-probe.ts",
+    "release": "tsx --tsconfig tsconfig.node.json scripts/release.ts"
   },
   "license": "UNLICENSED",
   "type": "module",

@@ -126,7 +126,23 @@ npm run refs:check -- --abstract 26018970
 
 ## Déployer (Vercel)
 
-Le déploiement est fait par la GitHub Action [`.github/workflows/ci-deploy.yml`](.github/workflows/ci-deploy.yml). À chaque push sur `main`, elle enchaîne typecheck → lint → validation du contenu → Vitest → build → Playwright → `vercel deploy --prebuilt --prod`. Le déploiement Git automatique de Vercel est désactivé (`vercel.json`), pour que seul du code testé parte en production.
+Le déploiement est fait par la GitHub Action [`.github/workflows/ci-deploy.yml`](.github/workflows/ci-deploy.yml). Elle enchaîne typecheck → lint → validation du contenu → Vitest → build → Playwright à chaque push sur `main` et à chaque pull request, mais ne lance `vercel deploy --prebuilt --prod` que pour le tag d'une version (`vX.Y.Z`). Le déploiement Git automatique de Vercel est désactivé (`vercel.json`), pour que seul du code testé parte en production.
+
+### Publier une version
+
+Les évolutions s'accumulent dans la section « À venir » de [CHANGELOG.md](CHANGELOG.md), sans changer la version. Quand elles méritent une mise en ligne :
+
+```bash
+npm run release -- minor --message "résumé de la version"
+```
+
+Le niveau est `patch` (corrections seulement), `minor` (fonctionnalité ou contenu ajouté) ou `major` (changement qui casse l'existant). Le script refuse un dépôt avec des changements non validés ou une section « À venir » vide. Il date l'entrée du journal, met à jour `package.json`, puis crée le commit et le tag. `--dry-run` montre le résultat sans rien modifier. Pour mettre en ligne :
+
+```bash
+git push origin main v0.8.0
+```
+
+La CI vérifie que le tag correspond à `package.json` et que son commit est sur `main`, puis teste et déploie. Les utilisateurs voient alors le bandeau « Nouvelle version disponible ».
 
 Mise en place, une seule fois :
 
@@ -137,6 +153,6 @@ Mise en place, une seule fois :
    - `VERCEL_TOKEN` (le jeton) ;
    - `VERCEL_ORG_ID` (identifiant d'équipe/compte, dans les réglages Vercel) ;
    - `VERCEL_PROJECT_ID` (*Project Settings → General*).
-5. Pousser sur `main` : la CI teste puis déploie.
+5. Publier une version (ci-dessus) : la CI teste puis déploie.
 
 `vercel.json` gère la réécriture SPA (routes React) et les en-têtes de cache. `sw.js` et `index.html` ne sont jamais mis en cache, ce qui garantit les mises à jour de la PWA.

@@ -4,6 +4,14 @@ Toutes les évolutions de Socle, de la plus récente à la plus ancienne. Versio
 
 Ce fichier est affiché dans l’app (Réglages › Nouveautés) : garder le format `## [x.y.z] — AAAA-MM-JJ`, puis `### Français` et `### English`, chacun avec une liste à puces.
 
+Les évolutions s’ajoutent au fur et à mesure dans la section « À venir », jamais affichée dans l’app. Une version n’est publiée que sur demande : `npm run release -- <patch|minor|major>` transforme cette section en entrée datée (voir README, section Déployer).
+
+## [À venir]
+
+### Français
+
+### English
+
 ## [0.7.0] — 2026-10-24
 
 ### Français
