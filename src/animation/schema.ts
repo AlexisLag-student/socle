@@ -145,6 +145,11 @@ export const AnimationSchema = z
     keyframes: z.array(KeyframeSchema).min(2),
     contacts: z.array(ContactSchema),
     props: z.array(PropSchema).optional(),
+    /**
+     * Vue de face, cuisse hors du plan (couché sur le côté, assis face à l'observateur) : l'angle du genou dessiné est
+     * une projection, la borne frontale du genou (genou dans l'axe du pied, debout) ne s'applique pas.
+     */
+    projectedKnee: z.boolean().optional(),
     /** Restreint les muscles dessinés (sous-ensemble des muscles de l'exercice ; rôles repris de l'exercice). */
     muscles: z.array(MuscleIdSchema).optional(),
     overrides: z.array(OverrideSchema).optional(),

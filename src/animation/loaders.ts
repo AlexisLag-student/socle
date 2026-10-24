@@ -52,6 +52,16 @@ export const animationLoaders: Record<string, Loader> = {
   'straight-leg-raise': () => import('./data/straight-leg-raise'),
   'reverse-nordic': () => import('./data/reverse-nordic'),
   'backward-sled-drag': () => import('./data/backward-sled-drag'),
+  'side-lying-hip-abduction': () => import('./data/side-lying-hip-abduction'),
+  'side-plank-hip-abduction': () => import('./data/side-plank-hip-abduction'),
+  'clamshell': () => import('./data/clamshell'),
+  'hip-hike': () => import('./data/hip-hike'),
+  'hip-flexor-march': () => import('./data/hip-flexor-march'),
+  'hip-flexor-isometric': () => import('./data/hip-flexor-isometric'),
+  'hip-flexor-stretch': () => import('./data/hip-flexor-stretch'),
+  'glute-kickback': () => import('./data/glute-kickback'),
+  'hip-abduction-isometric': () => import('./data/hip-abduction-isometric'),
+  'seated-hip-external-rotation': () => import('./data/seated-hip-external-rotation'),
 };
 
 /**
@@ -61,6 +71,7 @@ export const animationLoaders: Record<string, Loader> = {
 export const animatedLevels: Record<string, readonly number[]> = {
   'plantar-fascia-stretch': [2, 3],
   'band-ankle-eversion': [4],
+  'hip-abduction-isometric': [2, 3, 4],
 };
 
 /** L'exercice est-il animé (à ce niveau, si on le précise) ? */

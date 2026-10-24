@@ -130,9 +130,10 @@ const JOINTS: { ch: Channel; joint: (typeof CENTRAL_JOINTS)[number] | (typeof SI
   ]),
 ];
 
-function checkTimeline(tl: Timeline, label: string, errors: string[], tempo?: string) {
+function checkTimeline(tl: Timeline, label: string, errors: string[], tempo?: string, projectedKnee = false) {
   const view = tl.r.view;
-  const bounds = JOINT_BOUNDS[view];
+  // Genou vu en projection (cuisse hors du plan) : l'angle dessiné peut aller jusqu'à la flexion maximale, dans les deux sens.
+  const bounds = projectedKnee && view === 'face' ? { ...JOINT_BOUNDS.face, knee: [-150, 150] as const } : JOINT_BOUNDS[view];
   if (tempo) {
     const bad = tl.segs.filter((s) => s.phase === 'retour' || s.phase === 'isométrique');
     if (bad.length) errors.push(`${label} : avec un tempo (${tempo}), seules les phases excentrique / pause / concentrique sont permises (trouvé ${bad[0]!.phase})`);
@@ -231,8 +232,8 @@ export function validateAnimation(raw: unknown, exercises: Map<string, Exercise>
 
   for (const c of combinations(anim, ex)) {
     const label = `${pre} (niveau ${c.level}, variante ${c.variant})`;
-    checkTimeline(buildTimeline(c.r), label, errors);
-    if (c.tempo) checkTimeline(buildTimeline(c.r, { tempo: c.tempo }), `${label}, tempo ${c.tempo}`, errors, c.tempo);
+    checkTimeline(buildTimeline(c.r), label, errors, undefined, anim.projectedKnee);
+    if (c.tempo) checkTimeline(buildTimeline(c.r, { tempo: c.tempo }), `${label}, tempo ${c.tempo}`, errors, c.tempo, anim.projectedKnee);
   }
   return [...new Set(errors)];
 }
