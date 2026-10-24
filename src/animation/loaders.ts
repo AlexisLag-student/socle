@@ -97,6 +97,11 @@ export const animationLoaders: Record<string, Loader> = {
   'shoulder-external-rotation': () => import('./data/shoulder-external-rotation'),
   'wall-slide': () => import('./data/wall-slide'),
   'thoracic-extension': () => import('./data/thoracic-extension'),
+  'deadlift': () => import('./data/deadlift'),
+  'kettlebell-swing': () => import('./data/kettlebell-swing'),
+  'split-jump': () => import('./data/split-jump'),
+  'lateral-bound': () => import('./data/lateral-bound'),
+  'explosive-step-up': () => import('./data/explosive-step-up'),
 };
 
 /**
@@ -114,6 +119,7 @@ export const animatedLevels: Record<string, readonly number[]> = {
   'ulnar-nerve-glide': [2, 3],
   'shoulder-external-rotation': [1, 3, 4, 5],
   'thoracic-extension': [1, 3],
+  'explosive-step-up': [1, 2, 4],
 };
 
 /** L'exercice est-il animé (à ce niveau, si on le précise) ? */
