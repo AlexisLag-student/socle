@@ -108,7 +108,8 @@
     "no": "No",
     "seconds": "{{count}} s",
     "minutes": "{{count}} min",
-    "perSide": "per side"
+    "perSide": "per side",
+    "oneHour": "60 min"
   },
   "pwa": {
     "updateAvailable": "New version available",
@@ -251,14 +252,15 @@
       "subtitle": "How many sessions a week, and how long?",
       "perWeek": "Sessions per week",
       "duration": "Session length",
-      "hint": "Two sessions a week are enough to progress; consistency matters more than duration."
+      "hint": "Two sessions a week are enough to progress; consistency matters more than duration.",
+      "alternate": "From 4 sessions on, the program alternates the areas worked from one session to the next and gives a recovery day to the exercises that need one."
     },
     "summary": {
       "title": "Summary",
       "subtitle": "Check your choices before generating your program.",
       "noPain": "None",
-      "availability_one": "{{count}} session of {{minutes}} min per week",
-      "availability_other": "{{count}} sessions of {{minutes}} min per week",
+      "availability_one": "{{count}} session of {{duration}} per week",
+      "availability_other": "{{count}} sessions of {{duration}} per week",
       "generate": "Generate my program",
       "regenerate": "Update my program",
       "historyKept": "Your history and earned levels are kept."
@@ -356,7 +358,24 @@
     "loadNote": "load: {{load}}",
     "noteSets": "Log reps and loads",
     "holding": "Hold the position…",
-    "restFor": "rest {{rest}}"
+    "restFor": "rest {{rest}}",
+    "nextExercise": "Next: {{name}}",
+    "nextUp": "Next exercise",
+    "addRest": "+15 s",
+    "addRestLabel": "Add 15 seconds of rest",
+    "restLeft": "Rest remaining: {{time}}",
+    "switchSide": "Side 1 done: switch sides.",
+    "startSide": "Side 2 · Start",
+    "quotaDone": "{{n}} reps: that’s the planned number.",
+    "announce": {
+      "work": "Your turn: set {{n}} of {{total}}{{side}}.",
+      "sidePart": ", side {{n}}",
+      "restSet": "Rest for {{rest}}, then set {{n}} of {{total}}.",
+      "restExercise": "Rest for {{rest}}, then {{name}}.",
+      "tenLeft": "10 seconds of rest left.",
+      "side": "Switch sides, then start side 2.",
+      "feedback": "Exercise done. How was it?"
+    }
   },
   "exercise": {
     "muscles": "Muscles worked",
@@ -538,7 +557,11 @@
     "shareError": "Could not generate the link: check the program.",
     "tooLong": "This link is long: some messaging apps may cut it. Prefer the QR code or shorten the notes.",
     "qrAlt": "QR code of the share link",
-    "sharePrivacy": "The link contains the whole program. It goes through no server."
+    "sharePrivacy": "The link contains the whole program. It goes through no server.",
+    "targetDuration": "Target session length",
+    "targetNone": "Open",
+    "estimate": "Estimated length of session {{key}}: ~{{minutes}} min, rest included",
+    "estimateOver": "Longer than the target length ({{target}}): remove an exercise or a set."
   },
   "import": {
     "title": "Shared program",

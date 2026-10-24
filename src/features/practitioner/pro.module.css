@@ -214,3 +214,8 @@
   display: grid;
   gap: var(--space-3);
 }
+
+/* Séance plus longue que la durée visée : avertissement au stylo rouge. */
+.over {
+  color: var(--red);
+}

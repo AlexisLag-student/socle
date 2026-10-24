@@ -15,6 +15,13 @@ import {
 
 export const FeedbackSchema = z.enum(FEEDBACK);
 
+/** Séances par semaine proposées (1 à 5). */
+export const MAX_SESSIONS_PER_WEEK = 5;
+/** Durées de séance proposées, en minutes. */
+export const DURATIONS = [15, 30, 45, 60] as const;
+export type SessionMinutes = (typeof DURATIONS)[number];
+export const SessionMinutesSchema = z.union([z.literal(15), z.literal(30), z.literal(45), z.literal(60)]);
+
 export const ProfileSchema = z.object({
   id: z.literal('me'),
   sports: z.array(SportSchema).min(1),
@@ -22,8 +29,8 @@ export const ProfileSchema = z.object({
   perfGoals: z.array(PerfGoalSchema),
   pathologies: z.array(z.object({ id: z.string(), phase: PhaseSchema })),
   equipment: z.array(EquipmentIdSchema),
-  sessionsPerWeek: z.number().int().min(1).max(4),
-  minutes: z.union([z.literal(15), z.literal(30), z.literal(45)]),
+  sessionsPerWeek: z.number().int().min(1).max(MAX_SESSIONS_PER_WEEK),
+  minutes: SessionMinutesSchema,
   updatedAt: z.number(),
 });
 export type Profile = z.infer<typeof ProfileSchema>;
@@ -47,7 +54,7 @@ export const ProgramItemSchema = z.object({
 });
 export type ProgramItem = z.infer<typeof ProgramItemSchema>;
 
-export const SESSION_KEYS = ['A', 'B', 'C', 'D'] as const;
+export const SESSION_KEYS = ['A', 'B', 'C', 'D', 'E'] as const;
 export const ProgramSessionSchema = z.object({
   key: z.enum(SESSION_KEYS),
   title: z.string().max(80).optional(),
@@ -64,7 +71,9 @@ export const ProgramSchema = z.object({
   author: z.string().max(120).optional(),
   notes: z.string().max(4000).optional(),
   sessions: z.array(ProgramSessionSchema).min(1),
-  sessionsPerWeek: z.number().int().min(1).max(4).optional(),
+  sessionsPerWeek: z.number().int().min(1).max(MAX_SESSIONS_PER_WEEK).optional(),
+  /** Durée visée d'une séance (mode praticien), en minutes. */
+  minutes: SessionMinutesSchema.optional(),
   createdAt: z.number(),
   updatedAt: z.number(),
   archivedAt: z.number().optional(),

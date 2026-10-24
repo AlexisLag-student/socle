@@ -18,12 +18,10 @@ import {
   pickVariant,
   type EquipmentSet,
 } from './availability';
-import { exerciseSeconds, reduceDosage } from './duration';
-import { orderSession } from './balance';
+import { itemBounds, reduceDosage, sessionSeconds } from './duration';
+import { orderSession, sessionCategory } from './balance';
 
-export const ENGINE_VERSION = 1;
-export const MIN_ITEMS = 4;
-export const MAX_ITEMS = 8;
+export const ENGINE_VERSION = 2;
 
 export type EngineProfile = Pick<
   Profile,
@@ -219,10 +217,42 @@ function toItem(
   };
 }
 
-const sessionSeconds = (items: readonly ProgramItem[]) => items.reduce((s, i) => s + exerciseSeconds(i.dosage), 0);
+/** Fréquences du contenu qui permettent l'exercice tous les jours (comparées sur le libellé anglais, stable). */
+const DAILY_FREQUENCIES = new Set(['Daily', 'Twice a day']);
+/** Nombre maximal de séances par semaine selon la fréquence du contenu. */
+const WEEKLY_MAX: Record<string, number> = { 'Every other day': 3, '3 times a week': 3, '2 times a week': 2 };
+
+/**
+ * Un exercice « demande de la récupération » si sa fréquence (dans le contenu) n'est pas quotidienne ;
+ * sans fréquence, s'il développe la force, la puissance ou la raideur du tendon.
+ */
+export function needsRecovery(ex: Exercise, dosage: Dosage): boolean {
+  const f = dosage.frequency?.en;
+  if (f) return !DAILY_FREQUENCIES.has(f);
+  return ex.qualities.some((q) => q === 'strength' || q === 'power' || q === 'tendon-stiffness');
+}
+
+function weeklyMax(dosage: Dosage): number {
+  return WEEKLY_MAX[dosage.frequency?.en ?? ''] ?? 2;
+}
+
+/** Séances voisines dans la rotation (la dernière précède la première de la semaine suivante). */
+export function neighbours(index: number, count: number): number[] {
+  if (count < 2) return [];
+  return [...new Set([(index - 1 + count) % count, (index + 1) % count])].filter((k) => k !== index);
+}
+
+/** Nombre de séances types : une par séance hebdomadaire jusqu'à 3, puis 4 ou 5 séances distinctes. */
+export function sessionTypeCount(sessionsPerWeek: number): number {
+  return Math.min(Math.max(Math.round(sessionsPerWeek), 1), SESSION_KEYS.length);
+}
 
 /**
  * Génère un programme pour un profil. Fonction pure : mêmes entrées → même sortie.
+ *
+ * À partir de 4 séances par semaine, les séances voisines dans la rotation sont traitées comme deux jours
+ * de suite : un exercice qui demande de la récupération n'y figure jamais deux fois, et deux séances voisines
+ * ne sollicitent pas en charge le même groupe musculaire principal (voir DECISIONS.md).
  */
 export function generateProgram(
   profile: EngineProfile,
@@ -233,7 +263,9 @@ export function generateProgram(
   const { candidates, warnings, pathologies } = collectCandidates(profile, content);
   const muscleGroups = new Map(content.muscles.map((m) => [m.id as string, m.group]));
   const budget = profile.minutes * 60;
-  const sessionCount = Math.min(Math.max(profile.sessionsPerWeek, 1), 3);
+  const bounds = itemBounds(profile.minutes);
+  const sessionCount = sessionTypeCount(profile.sessionsPerWeek);
+  const spread = sessionCount >= 4;
 
   // Candidats réalisables avec le matériel.
   const pool = candidates
@@ -243,56 +275,101 @@ export function generateProgram(
   const mandatory = pool.filter((x) => x.c.mandatory);
   const optional = pool.filter((x) => !x.c.mandatory);
 
-  type Slot = { items: ProgramItem[]; families: Set<string>; groups: Map<string, number> };
-  const slots: Slot[] = Array.from({ length: sessionCount }, () => ({ items: [], families: new Set(), groups: new Map() }));
+  type Slot = { items: ProgramItem[]; families: Set<string>; groups: Map<string, number>; heavy: Set<string> };
+  const slots: Slot[] = Array.from({ length: sessionCount }, () => ({ items: [], families: new Set(), groups: new Map(), heavy: new Set() }));
 
-  const groupOf = (id: string) => {
-    const ex = content.exercises.find((e) => e.id === id)!;
-    return primaryGroup(ex, muscleGroups) ?? 'other';
+  const exById = new Map(content.exercises.map((e) => [e.id, e]));
+  const groupOf = (id: string) => primaryGroup(exById.get(id)!, muscleGroups) ?? 'other';
+  const uses = (id: string) => slots.filter((s) => s.items.some((i) => i.exerciseId === id)).length;
+
+  /** Règles de récupération (4 et 5 séances) : jamais deux séances voisines lourdes sur le même exercice ou le même groupe. */
+  const recoveryOk = (k: number, x: { c: Candidate; item: ProgramItem }) => {
+    if (!spread || !needsRecovery(x.c.exercise, x.item.dosage)) return true;
+    const id = x.c.exercise.id;
+    const g = groupOf(id);
+    if (uses(id) >= weeklyMax(x.item.dosage)) return false;
+    return neighbours(k, sessionCount).every((n) => !slots[n]!.items.some((i) => i.exerciseId === id) && !slots[n]!.heavy.has(g));
   };
 
-  const tryAdd = (slot: Slot, x: { c: Candidate; item: ProgramItem }, opts: { force?: boolean; maxPerGroup: number }) => {
+  const tryAdd = (k: number, x: { c: Candidate; item: ProgramItem }, opts: { force?: boolean; maxPerGroup: number }) => {
+    const slot = slots[k]!;
     const ex = x.c.exercise;
-    if (slot.items.length >= MAX_ITEMS) return false;
+    if (slot.items.length >= bounds.max) return false;
     if (slot.items.some((i) => i.exerciseId === ex.id) || slot.families.has(ex.family)) return false;
+    if (!recoveryOk(k, x)) return false;
     const g = groupOf(ex.id);
     if (!opts.force && (slot.groups.get(g) ?? 0) >= opts.maxPerGroup) return false;
     let item = { ...x.item };
-    const remaining = budget - sessionSeconds(slot.items);
-    while (exerciseSeconds(item.dosage) > remaining) {
+    const over = (it: ProgramItem) => sessionSeconds([...slot.items, it]) > budget;
+    while (over(item)) {
       const reduced = reduceDosage(item.dosage);
       if (!reduced) break;
       item = { ...item, dosage: reduced };
     }
-    if (!opts.force && exerciseSeconds(item.dosage) > remaining) return false;
+    if (!opts.force && over(item)) return false;
     slot.items.push(item);
     slot.families.add(ex.family);
     slot.groups.set(g, (slot.groups.get(g) ?? 0) + 1);
+    if (spread && needsRecovery(ex, item.dosage)) slot.heavy.add(g);
     return true;
   };
 
-  // 1. Exercices essentiels des pathologies : dans chaque séance.
-  for (const slot of slots) for (const x of mandatory) tryAdd(slot, x, { force: true, maxPerGroup: 99 });
+  // 1. Exercices essentiels des pathologies : dans chaque séance. À partir de 4 séances, ceux qui demandent
+  //    de la récupération vont dans deux séances non voisines (A et C, B et D…), en choisissant la paire
+  //    la moins chargée pour que les séances restent différentes.
+  const pairs: number[][] = [];
+  for (let a = 0; a < sessionCount; a++)
+    for (let b = a + 2; b < sessionCount; b++) if (!neighbours(a, sessionCount).includes(b)) pairs.push([a, b]);
+  const load = (k: number) => sessionSeconds(slots[k]!.items);
+  for (const x of mandatory) {
+    if (!(spread && needsRecovery(x.c.exercise, x.item.dosage))) {
+      slots.forEach((_, k) => tryAdd(k, x, { force: true, maxPerGroup: 99 }));
+      continue;
+    }
+    const pair = pairs
+      .filter((pr) => pr.every((k) => recoveryOk(k, x)))
+      .sort((p1, p2) => load(p1[0]!) + load(p1[1]!) - (load(p2[0]!) + load(p2[1]!)))[0];
+    for (const k of pair ?? [0]) tryAdd(k, x, { force: true, maxPerGroup: 99 });
+  }
 
   // 2. Autres candidats, par ordre de priorité, répartis pour varier les séances.
   let cursor = 0;
   for (const x of optional) {
-    for (let k = 0; k < sessionCount; k++) {
-      const slot = slots[(cursor + k) % sessionCount]!;
-      if (tryAdd(slot, x, { maxPerGroup: 2 })) {
-        cursor = (cursor + k + 1) % sessionCount;
+    for (let j = 0; j < sessionCount; j++) {
+      const k = (cursor + j) % sessionCount;
+      if (tryAdd(k, x, { maxPerGroup: 2 })) {
+        cursor = (k + 1) % sessionCount;
         break;
       }
     }
   }
 
-  // 3. Compléter les séances trop courtes (minimum 4 exercices), en réduisant le volume si besoin.
+  // 3. Séances de 45 min et plus : un exercice léger (tronc, contrôle, mobilité) pour finir, s'il en manque un.
+  if (profile.minutes >= 45)
+    slots.forEach((slot, k) => {
+      const light = (id: string) => sessionCategory(exById.get(id)!) >= 3;
+      if (slot.items.some((i) => light(i.exerciseId))) return;
+      for (const x of optional) if (light(x.c.exercise.id) && tryAdd(k, x, { maxPerGroup: 2 })) return;
+    });
+
+  // 3 bis. Séance nettement plus courte que la durée choisie (choix réparti sur 4 ou 5 séances, plafond
+  //        d'exercices) : la compléter avec les exercices les moins utilisés, règles de récupération comprises.
+  slots.forEach((slot, k) => {
+    const byUse = [...optional].sort((a, b) => uses(a.c.exercise.id) - uses(b.c.exercise.id));
+    for (const x of byUse) {
+      if (sessionSeconds(slot.items) >= budget * 0.95 || slot.items.length >= bounds.max) return;
+      tryAdd(k, x, { maxPerGroup: 2 });
+    }
+  });
+
+  // 4. Compléter les séances trop courtes (minimum selon la durée), en réduisant le volume si besoin.
   //    On privilégie d'abord un groupe musculaire absent de la séance (équilibre), même au prix d'un volume réduit.
-  for (const slot of slots) {
+  //    Les règles de récupération ne sont jamais levées.
+  slots.forEach((slot, k) => {
     const fill = (pred: (x: (typeof optional)[number]) => boolean, opts: { force?: boolean; maxPerGroup: number }) => {
       for (const x of optional) {
-        if (slot.items.length >= MIN_ITEMS) return;
-        if (pred(x)) tryAdd(slot, x, opts);
+        if (slot.items.length >= bounds.min) return;
+        if (pred(x)) tryAdd(k, x, opts);
       }
     };
     const newGroup = (x: (typeof optional)[number]) => !slot.groups.has(groupOf(x.c.exercise.id));
@@ -300,9 +377,37 @@ export function generateProgram(
     fill(newGroup, { force: true, maxPerGroup: 99 });
     for (const maxPerGroup of [2, 3]) fill(() => true, { maxPerGroup });
     fill(() => true, { force: true, maxPerGroup: 99 });
-  }
+  });
 
-  // 4. Si la séance dépasse le budget (exercices essentiels nombreux), réduire le volume des moins prioritaires.
+  // 4 bis. Deux séances types identiques (exercices essentiels qui remplissent tout) : ajouter à la seconde
+  //       l'exercice le plus court qui la distingue, en respectant les règles de récupération.
+  const signature = (items: readonly ProgramItem[]) => items.map((i) => i.exerciseId).sort().join(',');
+  const duplicates = (k: number, items: readonly ProgramItem[]) => slots.some((o, j) => j !== k && signature(o.items) === signature(items));
+  //       Séance pleine : son dernier exercice facultatif est remplacé (ou retiré).
+  const isMandatory = (id: string) => mandatory.some((m) => m.c.exercise.id === id);
+  slots.forEach((slot, k) => {
+    const twin = slots.find((o, j) => j < k && signature(o.items) === signature(slot.items));
+    if (!twin) return;
+    const shortest = [...optional]
+      .filter((x) => !twin.items.some((i) => i.exerciseId === x.c.exercise.id))
+      .sort((a, b) => sessionSeconds([a.item]) - sessionSeconds([b.item]));
+    const distinct = (x: (typeof optional)[number]) => !duplicates(k, [...slot.items, x.item]);
+    for (const x of shortest) if (distinct(x) && tryAdd(k, x, { force: true, maxPerGroup: 99 })) return;
+    const last = [...slot.items].reverse().find((i) => !isMandatory(i.exerciseId));
+    if (!last) return; // séance faite des seuls exercices essentiels : le protocole l'impose
+    const ex = exById.get(last.exerciseId)!;
+    const g = groupOf(ex.id);
+    slot.items.splice(slot.items.indexOf(last), 1);
+    slot.families.delete(ex.family);
+    slot.groups.set(g, (slot.groups.get(g) ?? 1) - 1);
+    if (!slot.items.some((i) => needsRecovery(exById.get(i.exerciseId)!, i.dosage) && groupOf(i.exerciseId) === g)) slot.heavy.delete(g);
+    for (const x of shortest) if (x.c.exercise.id !== last.exerciseId && distinct(x) && tryAdd(k, x, { force: true, maxPerGroup: 99 })) return;
+    // Aucun remplaçant possible : la séance, plus courte d'un exercice, reste distincte si le minimum est tenu.
+    if (slot.items.length >= bounds.min && !duplicates(k, slot.items)) return;
+    tryAdd(k, { c: optional.find((o) => o.c.exercise.id === last.exerciseId)!.c, item: last }, { force: true, maxPerGroup: 99 });
+  });
+
+  // 5. Si la séance dépasse le budget (exercices essentiels nombreux), réduire le volume des moins prioritaires.
   for (const slot of slots) {
     for (let guard = 0; guard < 40 && sessionSeconds(slot.items) > budget * 1.1; guard++) {
       let changed = false;
@@ -315,16 +420,18 @@ export function generateProgram(
       }
       if (!changed) {
         // Retirer le dernier exercice non essentiel au-delà du minimum.
-        const removable = [...slot.items].reverse().find((it) => !mandatory.some((m) => m.c.exercise.id === it.exerciseId));
-        if (slot.items.length > MIN_ITEMS && removable) slot.items.splice(slot.items.indexOf(removable), 1);
+        const k = slots.indexOf(slot);
+        const removable = [...slot.items]
+          .reverse()
+          .find((it) => !isMandatory(it.exerciseId) && !duplicates(k, slot.items.filter((x) => x !== it)));
+        if (slot.items.length > bounds.min && removable) slot.items.splice(slot.items.indexOf(removable), 1);
         else break;
       }
     }
   }
 
-  if (slots.some((s) => s.items.length < MIN_ITEMS)) warnings.push({ kind: 'few-exercises' });
+  if (slots.some((s) => s.items.length < bounds.min)) warnings.push({ kind: 'few-exercises' });
 
-  const exById = new Map(content.exercises.map((e) => [e.id, e]));
   const sessions: GeneratedSession[] = slots.map((slot, i) => {
     const items = orderSession(slot.items, exById, muscleGroups);
     return { key: SESSION_KEYS[i]!, items, estimatedSec: sessionSeconds(items) };

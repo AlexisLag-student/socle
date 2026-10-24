@@ -5,9 +5,9 @@ import { Button, ButtonLink, CheckBox, Empty, HandNote, Icon, Notice, PageHeader
 import { useActiveProgram, useExerciseStates, useLogs, useProfile, useProgram } from '@/app/hooks';
 import { exerciseById, pathologyById } from '@/content/index';
 import { activateProgram, decideAndApply, nextSessionKey } from '@/db/repo';
-import { exerciseSeconds } from '@/engine/duration';
+import { sessionSeconds } from '@/engine/duration';
 import { ExerciseCard } from '@/features/exercise/ExerciseCard';
-import { formatMinutes, formatVolume } from '@/features/exercise/format';
+import { formatMinutes, formatSessionLength, formatVolume } from '@/features/exercise/format';
 import { doneExercises, lastNote, programWeek, todaysLog, weekDays } from '@/features/exercise/notebook';
 import { useLocalized } from '@/i18n/useLocalized';
 import type { Program, ProgramItem, SessionLog } from '@/domain/user';
@@ -103,7 +103,7 @@ function ExerciseRow({
 
 function SessionBlock({ program, s, logs, todayKey, isActive }: { program: Program; s: Program['sessions'][number]; logs: SessionLog[]; todayKey?: SessionKey; isActive: boolean }) {
   const { t } = useTranslation();
-  const minutes = formatMinutes(s.items.reduce((acc, i) => acc + exerciseSeconds(i.dosage), 0));
+  const minutes = formatMinutes(sessionSeconds(s.items));
   const log = isActive ? todaysLog(logs, program.id, s.key) : undefined;
   const done = doneExercises(log);
   const isToday = isActive && s.key === todayKey && !log?.finishedAt;
@@ -188,6 +188,7 @@ export default function ProgramPage() {
             {program.author ? t('program.by', { author: program.author }) + ' · ' : ''}
             {t('program.createdOn', { date })}
             {program.sessionsPerWeek ? ` · ${t('program.perWeek', { count: program.sessionsPerWeek })}` : ''}
+            {program.minutes ? ` · ${formatSessionLength(program.minutes, t)}` : ''}
           </>
         }
       />

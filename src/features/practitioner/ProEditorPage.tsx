@@ -7,12 +7,13 @@ import { setPrefs } from '@/app/prefs';
 import { exerciseById } from '@/content/index';
 import type { ExerciseFilters } from '@/content/query';
 import type { Dosage, Exercise } from '@/domain/schema';
-import { SESSION_KEYS, type Program, type ProgramItem } from '@/domain/user';
+import { DURATIONS, MAX_SESSIONS_PER_WEEK, SESSION_KEYS, type Program, type ProgramItem } from '@/domain/user';
 import { saveProgram } from '@/db/repo';
 import { LibraryList } from '@/features/library/LibraryList';
 import { ExerciseAnimation } from '@/components/animation/ExerciseAnimation';
 import { hasAnimation } from '@/animation/loaders';
-import { formatDosage } from '@/features/exercise/format';
+import { formatDosage, formatMinutes, formatSessionLength } from '@/features/exercise/format';
+import { sessionSeconds } from '@/engine/duration';
 import { useLocalized } from '@/i18n/useLocalized';
 import { ShareDialog } from './ShareDialog';
 import css from './pro.module.css';
@@ -208,6 +209,9 @@ export default function ProEditorPage() {
     setDragFrom(null);
   };
   const total = draft.sessions.reduce((n, s) => n + s.items.length, 0);
+  // Durée estimée de la séance affichée, repos entre séries et entre exercices compris.
+  const estimate = sessionSeconds(session.items);
+  const over = !!draft.minutes && estimate > draft.minutes * 60 * 1.1;
 
   return (
     <div className={css.editorPage}>
@@ -238,7 +242,18 @@ export default function ProEditorPage() {
             label={t('pro.perWeek')}
             value={draft.sessionsPerWeek ?? 2}
             onChange={(v) => update({ ...draft, sessionsPerWeek: v })}
-            options={[1, 2, 3, 4].map((n) => ({ value: n, label: String(n) }))}
+            options={Array.from({ length: MAX_SESSIONS_PER_WEEK }, (_, i) => i + 1).map((n) => ({ value: n, label: String(n) }))}
+          />
+        </Field>
+        <Field label={t('pro.targetDuration')}>
+          <Segmented<number>
+            label={t('pro.targetDuration')}
+            value={draft.minutes ?? 0}
+            onChange={(v) => {
+              const { minutes: _m, ...rest } = draft;
+              update(v ? { ...rest, minutes: v as Program['minutes'] } : rest);
+            }}
+            options={[{ value: 0, label: t('pro.targetNone') }, ...DURATIONS.map((n) => ({ value: n, label: formatSessionLength(n, t) }))]}
           />
         </Field>
         <Field label={t('pro.notes')} hint={t('pro.notesHint')} htmlFor="p-notes">
@@ -271,6 +286,17 @@ export default function ProEditorPage() {
         </Field>
 
         {session.items.length === 0 && <Empty>{t('pro.emptySession')}</Empty>}
+        {session.items.length > 0 && (
+          <p className={ui.muted} aria-live="polite">
+            {t('pro.estimate', { key: session.key, minutes: formatMinutes(estimate) })}
+            {over && (
+              <>
+                {' '}
+                <strong className={css.over}>{t('pro.estimateOver', { target: formatSessionLength(draft.minutes!, t) })}</strong>
+              </>
+            )}
+          </p>
+        )}
         <ol className={css.items}>
           {session.items.map((item, i) => {
             const ex = exerciseById.get(item.exerciseId);

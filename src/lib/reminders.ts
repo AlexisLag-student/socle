@@ -7,6 +7,22 @@ import { useEffect } from 'react';
 import type { Reminders, SessionLog } from '@/domain/user';
 import { dayKey } from '@/features/history/stats';
 
+/**
+ * Jours proposés par défaut (0 = dimanche) selon le nombre de séances par semaine, tant qu'aucun rappel
+ * n'a été enregistré : dimanche libre et, jusqu'à 4 séances, jamais trois jours de suite (à 5 séances c'est
+ * inévitable ; le programme alterne alors les zones travaillées d'une séance à l'autre).
+ */
+export function defaultReminderDays(sessionsPerWeek: number | undefined): number[] {
+  switch (sessionsPerWeek) {
+    case 4:
+      return [1, 2, 4, 5];
+    case 5:
+      return [1, 2, 3, 5, 6];
+    default:
+      return [1, 3, 5];
+  }
+}
+
 export function notificationsSupported(): boolean {
   return typeof window !== 'undefined' && 'Notification' in window;
 }

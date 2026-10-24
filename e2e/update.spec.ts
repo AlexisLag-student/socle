@@ -120,6 +120,13 @@ test.describe('mise à jour de l’app', () => {
     await expect.poll(pose, { timeout: 3000 }).not.toBe(before);
     await page.getByRole('button', { name: /Série terminée/ }).click();
     await expect(page.getByText(/Série 2 sur \d|Repos/).first()).toBeVisible();
+    // Repos entre deux exercices : toujours ni bandeau ni rechargement.
+    await page.getByRole('button', { name: 'Terminer l’exercice' }).click();
+    await page.getByRole('button', { name: 'Correct' }).click();
+    await expect(page.getByText('Exercice suivant')).toBeVisible();
+    await page.waitForTimeout(500);
+    await expect(banner(page)).toHaveCount(0);
+    expect(await page.evaluate(() => (window as unknown as { __sameSession?: boolean }).__sameSession)).toBe(true);
 
     await page.getByRole('button', { name: 'Quitter la séance' }).click();
     await expect(page.getByRole('heading', { name: 'Séance terminée !' })).toBeVisible();

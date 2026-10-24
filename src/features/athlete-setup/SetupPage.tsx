@@ -17,7 +17,8 @@ import {
   type Phase,
   type Sport,
 } from '@/domain/ids';
-import type { Profile } from '@/domain/user';
+import { DURATIONS, MAX_SESSIONS_PER_WEEK, type Profile } from '@/domain/user';
+import { formatSessionLength } from '@/features/exercise/format';
 import { useProfile } from '@/app/hooks';
 import { regenerateProgram, saveProfile } from '@/db/repo';
 import { useLocalized } from '@/i18n/useLocalized';
@@ -267,7 +268,7 @@ export default function SetupPage() {
                 label={t('setup.availability.perWeek')}
                 value={draft.sessionsPerWeek}
                 onChange={(v) => set({ sessionsPerWeek: v })}
-                options={[1, 2, 3, 4].map((n) => ({ value: n, label: String(n) }))}
+                options={Array.from({ length: MAX_SESSIONS_PER_WEEK }, (_, i) => i + 1).map((n) => ({ value: n, label: String(n) }))}
               />
             </Field>
             <Field label={t('setup.availability.duration')}>
@@ -275,10 +276,11 @@ export default function SetupPage() {
                 label={t('setup.availability.duration')}
                 value={draft.minutes}
                 onChange={(v) => set({ minutes: v })}
-                options={([15, 30, 45] as const).map((n) => ({ value: n, label: t('common.minutes', { count: n }) }))}
+                options={DURATIONS.map((n) => ({ value: n, label: formatSessionLength(n, t) }))}
               />
             </Field>
             <p className={ui.muted}>{t('setup.availability.hint')}</p>
+            {draft.sessionsPerWeek >= 4 && <p className={ui.muted}>{t('setup.availability.alternate')}</p>}
           </div>
         )}
 
@@ -304,7 +306,7 @@ export default function SetupPage() {
                 .join(', ')}
             </dd>
             <dt>{t('setup.availability.title')}</dt>
-            <dd>{t('setup.summary.availability', { count: draft.sessionsPerWeek, minutes: draft.minutes })}</dd>
+            <dd>{t('setup.summary.availability', { count: draft.sessionsPerWeek, duration: formatSessionLength(draft.minutes, t) })}</dd>
           </dl>
         )}
       </div>

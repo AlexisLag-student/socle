@@ -4,6 +4,26 @@ Toutes les évolutions de Socle, de la plus récente à la plus ancienne. Versio
 
 Ce fichier est affiché dans l’app (Réglages › Nouveautés) : garder le format `## [x.y.z] — AAAA-MM-JJ`, puis `### Français` et `### English`, chacun avec une liste à puces.
 
+## [0.7.0] — 2026-10-24
+
+### Français
+
+- Jusqu’à 5 séances par semaine, en mode sportif comme en mode praticien. À partir de 4 séances, le programme alterne les zones travaillées d’une séance à l’autre et laisse un jour de récupération aux exercices qui en ont besoin.
+- Nouvelle durée de séance : 1 h. La durée estimée compte désormais les repos entre les séries et entre les exercices ; une séance de 15 min peut donc comporter un exercice de moins.
+- Repos guidé entre les exercices : un minuteur, l’aperçu de l’exercice suivant, « +15 s » et « Passer le repos ». Un signal discret (son ou vibration, selon vos réglages) annonce la fin du repos.
+- Avec le rythme affiché, le compteur s’arrête au nombre de répétitions prévu, puis la série se valide seule et le repos démarre. Vous pouvez toujours terminer une série plus tôt.
+- Mode praticien : indiquez une durée visée et voyez la durée estimée de chaque séance, repos compris.
+- Les liens de partage existants s’ouvrent comme avant. Un lien de 5 séances ou avec une durée visée demande de mettre l’app à jour s’il est ouvert avec une ancienne version.
+
+### English
+
+- Up to 5 sessions per week, in both athlete and practitioner modes. From 4 sessions on, the program alternates the areas worked from one session to the next and gives a recovery day to the exercises that need one.
+- New session length: 1 hour. The estimated length now includes rest between sets and between exercises, so a 15-minute session may have one exercise fewer.
+- Guided rest between exercises: a timer, a preview of the next exercise, “+15 s” and “Skip rest”. A discreet signal (sound or vibration, depending on your settings) marks the end of the rest.
+- With the rhythm shown, the counter stops at the planned number of reps, then the set is ticked off and the rest starts. You can still end a set early.
+- Practitioner mode: set a target length and see the estimated length of each session, rest included.
+- Existing share links open as before. A link with 5 sessions or a target length asks to update the app if opened in an older version.
+
 ## [0.6.0] — 2026-10-24
 
 ### Français

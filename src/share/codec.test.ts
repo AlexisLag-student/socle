@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { exerciseById } from '@/content/index';
 import type { Program } from '@/domain/user';
 import { decodeProgram, encodeProgram, shareUrl, ShareError, tokenFromHash } from './codec';
-import { V1_ACHILLES } from './fixtures/v1';
+import { V1_ACHILLES, V1_FOUR_SESSIONS, V1_HOLD_TEMPO } from './fixtures/v1';
 
 const lookup = (id: string) => exerciseById.get(id);
 const calf = exerciseById.get('calf-raise-straight-knee')!;
@@ -79,6 +79,69 @@ describe('liens de partage', () => {
     const a = p.sessions[0]!.items;
     expect(a[0]).toMatchObject({ exerciseId: 'calf-isometric-hold', level: 2, note: 'Avant la course' });
     expect(a[1]!.dosage).toMatchObject({ sets: 4, reps: [6, 8], intensity: { kind: 'load', value: { fr: '12 kg', en: '12 kg' } } });
+  });
+
+  it('décode les autres liens v1 figés à l’identique', () => {
+    const four = decodeProgram(V1_FOUR_SESSIONS, lookup);
+    expect(four.version).toBe(1);
+    expect(four.program).toMatchObject({ title: 'Genou — 4 séances', author: 'Cabinet Martin', notes: 'Alternez les séances.', sessionsPerWeek: 4, sharedAt: 1792000000000 });
+    expect(four.program.minutes).toBeUndefined();
+    expect(four.program.sessions.map((s) => [s.key, s.title, s.items.map((i) => i.exerciseId)])).toEqual([
+      ['A', 'Force', ['squat', 'glute-bridge']],
+      ['B', undefined, ['calf-raise-straight-knee']],
+      ['C', 'Léger', ['calf-isometric-hold']],
+      ['D', undefined, ['copenhagen-adductor']],
+    ]);
+    expect(four.program.sessions[1]!.items[0]!.dosage.sets).toBe(4);
+    expect(four.program.sessions[3]!.items[0]!.note).toBe('Levier court');
+
+    const mixed = decodeProgram(V1_HOLD_TEMPO, lookup).program.sessions[0]!.items;
+    expect(mixed[0]!.dosage).toMatchObject({ holdSec: 30, sets: 5, perSide: true });
+    expect(mixed[1]!.dosage).toMatchObject({ tempo: '4-1-2', reps: [6, 8], restSec: 120, intensity: { kind: 'load', value: { fr: '20 kg' } } });
+  });
+
+  it('un programme qui tient dans la v1 produit toujours un lien v1 (lisible par les anciennes versions)', () => {
+    expect(encodeProgram({ ...program, sessionsPerWeek: 4 }, lookup).startsWith('1.')).toBe(true);
+  });
+
+  describe('v2 : 5 séances et durée visée', () => {
+    const five = {
+      ...program,
+      sessionsPerWeek: 5,
+      minutes: 60 as const,
+      sessions: (['A', 'B', 'C', 'D', 'E'] as const).map((key) => ({ key, items: [program.sessions[0]!.items[(key.charCodeAt(0) % 2)]!] })),
+    };
+
+    it('aller-retour sans perte', () => {
+      const token = encodeProgram(five, lookup);
+      expect(token.startsWith('2.')).toBe(true);
+      const { program: p, version } = decodeProgram(token, lookup);
+      expect(version).toBe(2);
+      expect(p.sessionsPerWeek).toBe(5);
+      expect(p.minutes).toBe(60);
+      expect(p.sessions.map((s) => s.key)).toEqual(['A', 'B', 'C', 'D', 'E']);
+      expect(p.sessions[4]!.items[0]!.dosage).toEqual(five.sessions[4]!.items[0]!.dosage);
+    });
+
+    it.each([
+      ['5 par semaine', { ...program, sessionsPerWeek: 5 }],
+      ['durée visée', { ...program, minutes: 45 as const }],
+      ['séance E', { ...program, sessions: [...program.sessions, { key: 'E' as const, items: program.sessions[0]!.items }] }],
+    ])('passe en v2 dès qu’une nouvelle valeur est utilisée (%s)', (_label, p) => {
+      expect(encodeProgram(p, lookup).startsWith('2.')).toBe(true);
+    });
+
+    it('une app qui ne lit que la v1 refuse un lien v2 avec « mettez l’app à jour »', () => {
+      // Ancienne app = décodeur sans entrée pour la version 2 : même chemin que « 9.xxx » ci-dessous.
+      const token = encodeProgram(five, lookup).replace(/^2\./, '9.');
+      expect(() => decodeProgram(token, lookup)).toThrow(expect.objectContaining({ code: 'bad-version' }));
+    });
+
+    it('le décodeur v1 refuse toujours 5 séances (la v1 n’est pas élargie)', async () => {
+      const LZ = (await import('lz-string')).default;
+      const token = '1.' + LZ.compressToEncodedURIComponent(JSON.stringify({ t: 'x', w: 5, s: [{ k: 'E', i: [] }] }));
+      expect(() => decodeProgram(token, lookup)).toThrow(expect.objectContaining({ code: 'invalid' }));
+    });
   });
 
   it('signale les exercices inconnus sans casser le programme', () => {

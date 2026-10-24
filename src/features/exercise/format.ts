@@ -30,6 +30,11 @@ export function formatDosage(d: Dosage, t: TFunction, l: (x: L | undefined) => s
   ];
 }
 
+/** Durée d'une séance choisie (15, 30, 45 min, « 1 h »). */
+export function formatSessionLength(minutes: number, t: TFunction): string {
+  return minutes === 60 ? t('common.oneHour') : t('common.minutes', { count: minutes });
+}
+
 export function formatMinutes(sec: number): number {
   return Math.max(1, Math.round(sec / 60));
 }

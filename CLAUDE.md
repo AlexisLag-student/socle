@@ -39,6 +39,13 @@ e2e/           Playwright (mobile Chromium + WebKit) ; visual.spec.ts = captures
 
 PWA : vite-plugin-pwa (Workbox, `generateSW`) en `registerType: 'prompt'`. Une nouvelle version affiche le bandeau « Nouvelle version disponible » (Recharger / Plus tard), jamais pendant une séance guidée, et l'app vérifie les mises à jour au retour au premier plan.
 
+## Planification et séance guidée
+
+- **Disponibilité** : 1 à 5 séances par semaine (`MAX_SESSIONS_PER_WEEK`), durées `DURATIONS` = 15, 30, 45 min, 1 h (`src/domain/user.ts`) ; une séance type par séance hebdomadaire (`SESSION_KEYS` A–E). À partir de 4 séances, règles de récupération du moteur (`needsRecovery`, séances voisines dans la rotation) : `DECISIONS.md` n° 76.
+- **Durée estimée** : toujours `sessionSeconds` (`src/engine/duration.ts`), repos entre séries et entre exercices compris ; bornes d'exercices par durée `itemBounds`.
+- **Liens de partage** : v1 produit dès que le programme y tient (lisible par les anciennes versions), v2 sinon (5 séances, durée visée) ; ne jamais élargir le schéma v1 (n° 80).
+- **Séance guidée** : logique pure dans `src/features/guided-session/flow.ts` (quota = haut de la fourchette, enchaînement série → côté → repos → retour → repos entre exercices) ; annonces pour lecteur d'écran dans une région dédiée, jamais à chaque seconde (n° 82, 83).
+
 ## Animations des exercices
 
 Chaque exercice animé montre son mouvement : personnage au trait (squelette 2D en cinématique directe), interpolé entre quelques poses clés à la fréquence d'affichage. Choix justifiés : `DECISIONS.md` n° 51 à 75. 103 exercices sur 114 sont animés ; les 11 autres (orteils, doigts, omoplates, rotations dans l'axe de la vue) gardent le schéma musculaire seul (n° 67).

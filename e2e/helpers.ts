@@ -10,8 +10,11 @@ export async function start(page: Page, path = '/') {
   if (await accept.isVisible().catch(() => false)) await accept.click();
 }
 
-/** Parcours sportif complet : course, prévention + douleur, Achille portion moyenne en reconstruction, haltères, 2 × 30 min. */
-export async function createAthleteProgram(page: Page) {
+/**
+ * Parcours sportif complet : course, prévention + douleur, Achille portion moyenne en reconstruction, haltères,
+ * 2 × 30 min par défaut (ou la disponibilité demandée, ex. `{ perWeek: 5, duration: '1 h' }`).
+ */
+export async function createAthleteProgram(page: Page, availability: { perWeek?: number; duration?: string } = {}) {
   await start(page, '/setup');
   await page.getByRole('radio', { name: 'Course à pied' }).click();
   await page.getByRole('button', { name: 'Suivant' }).click();
@@ -25,6 +28,10 @@ export async function createAthleteProgram(page: Page) {
   await page.getByRole('button', { name: 'Suivant' }).click();
   await page.getByRole('checkbox', { name: /Haltères ou kettlebell/ }).click();
   await page.getByRole('button', { name: 'Suivant' }).click();
+  if (availability.perWeek)
+    await page.getByRole('group', { name: 'Séances par semaine' }).getByRole('button', { name: String(availability.perWeek), exact: true }).click();
+  if (availability.duration)
+    await page.getByRole('group', { name: 'Durée d’une séance' }).getByRole('button', { name: availability.duration, exact: true }).click();
   await page.getByRole('button', { name: 'Suivant' }).click();
   await page.getByRole('button', { name: 'Générer mon programme' }).click();
   await expect(page.getByRole('heading', { name: 'Mon programme', level: 1 })).toBeVisible();

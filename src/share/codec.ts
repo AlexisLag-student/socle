@@ -1,6 +1,11 @@
 /**
  * Liens de partage d'un programme (mode praticien → patient).
  *
+ * Versions : v1 (jusqu'à 4 séances A–D, 4 par semaine) ; v2 (jusqu'à 5 séances A–E, 5 par semaine,
+ * durée visée `m`). L'encodeur produit un lien v1 dès que le programme tient dans v1, pour qu'il s'ouvre
+ * aussi dans les versions de l'app antérieures à la v2 ; sinon un lien v2, qu'une ancienne app refuse
+ * avec le message « créé avec une version plus récente de Socle, mettez l'app à jour ».
+ *
  * Format : `<origine>/#share=<version>.<charge utile>` où la charge utile est un JSON compact
  * compressé avec lz-string (compressToEncodedURIComponent). Le fragment `#` n'est jamais envoyé au serveur.
  *
@@ -12,11 +17,12 @@ import LZString from 'lz-string';
 import { z } from 'zod';
 import { INTENSITY_KINDS } from '@/domain/ids';
 import type { Dosage, Exercise } from '@/domain/schema';
-import { SESSION_KEYS, type Program, type ProgramItem } from '@/domain/user';
+import { SESSION_KEYS, SessionMinutesSchema, type Program, type ProgramItem } from '@/domain/user';
 import { resolveExerciseId } from '@/content/aliases';
 
 export const SHARE_PARAM = 'share';
-export const CURRENT_SHARE_VERSION = 1;
+/** Version la plus récente lue par cette app. */
+export const CURRENT_SHARE_VERSION = 2;
 /** Au-delà, certains navigateurs ou messageries tronquent les liens. */
 export const SHARE_URL_WARN_LENGTH = 8000;
 
@@ -39,6 +45,9 @@ const ItemV1 = z.tuple([
   z.union([z.literal(0), z.tuple([z.enum(INTENSITY_KINDS), z.string().max(200)])]),
 ]);
 
+/** Clés de séance de la v1, figées (SESSION_KEYS a depuis gagné « E »). */
+const V1_SESSION_KEYS = ['A', 'B', 'C', 'D'] as const;
+
 const PayloadV1 = z.object({
   t: z.string().max(120),
   a: z.string().max(120).optional(),
@@ -49,7 +58,7 @@ const PayloadV1 = z.object({
   s: z
     .array(
       z.object({
-        k: z.enum(SESSION_KEYS),
+        k: z.enum(V1_SESSION_KEYS),
         l: z.string().max(80).optional(),
         i: z.array(ItemV1).max(20),
       }),
@@ -58,6 +67,27 @@ const PayloadV1 = z.object({
     .max(4),
 });
 type PayloadV1 = z.infer<typeof PayloadV1>;
+
+// ---------------------------------------------------------------------------
+// Version 2 : v1 + 5 séances (A–E), 5 par semaine, durée visée
+// ---------------------------------------------------------------------------
+
+const PayloadV2 = PayloadV1.extend({
+  w: z.number().int().min(1).max(5).optional(),
+  /** Durée visée d'une séance, en minutes. */
+  m: SessionMinutesSchema.optional(),
+  s: z
+    .array(
+      z.object({
+        k: z.enum(SESSION_KEYS),
+        l: z.string().max(80).optional(),
+        i: z.array(ItemV1).max(20),
+      }),
+    )
+    .min(1)
+    .max(5),
+});
+type PayloadV2 = z.infer<typeof PayloadV2>;
 
 export type ShareErrorCode = 'empty' | 'bad-version' | 'corrupt' | 'invalid';
 export class ShareError extends Error {
@@ -140,14 +170,15 @@ function decodeItemV1(t: z.infer<typeof ItemV1>, lookup: ExerciseLookup): { item
 // ---------------------------------------------------------------------------
 
 export function encodeProgram(
-  program: Pick<Program, 'title' | 'author' | 'notes' | 'sessions' | 'sessionsPerWeek' | 'createdAt'>,
+  program: Pick<Program, 'title' | 'author' | 'notes' | 'sessions' | 'sessionsPerWeek' | 'minutes' | 'createdAt'>,
   lookup: ExerciseLookup,
 ): string {
-  const payload: PayloadV1 = {
+  const payload: PayloadV2 = {
     t: program.title,
     ...(program.author ? { a: program.author } : {}),
     ...(program.notes ? { n: program.notes } : {}),
     ...(program.sessionsPerWeek ? { w: program.sessionsPerWeek } : {}),
+    ...(program.minutes ? { m: program.minutes } : {}),
     d: program.createdAt,
     s: program.sessions.map((s) => ({
       k: s.key,
@@ -155,8 +186,10 @@ export function encodeProgram(
       i: s.items.map((it) => encodeItem(it, lookup)),
     })),
   };
-  PayloadV1.parse(payload);
-  return `${CURRENT_SHARE_VERSION}.${LZString.compressToEncodedURIComponent(JSON.stringify(payload))}`;
+  // Lien v1 quand le programme y tient (lisible par les versions antérieures de l'app), sinon v2.
+  const version = payload.m === undefined && PayloadV1.safeParse(payload).success ? 1 : 2;
+  if (version === 2) PayloadV2.parse(payload);
+  return `${version}.${LZString.compressToEncodedURIComponent(JSON.stringify(payload))}`;
 }
 
 export function shareUrl(origin: string, token: string): string {
@@ -193,34 +226,45 @@ export function decodeProgram(rawToken: string, lookup: ExerciseLookup): Decoded
   return decoder(json, lookup);
 }
 
+/** Programme décodé à partir d'une charge utile v1 ou v2 (même structure, v2 plus large). */
+function programFromPayload(p: PayloadV2, version: number, lookup: ExerciseLookup): DecodedProgram {
+  const unknown = new Set<string>();
+  const sessions = p.s.map((s) => ({
+    key: s.k,
+    ...(s.l ? { title: s.l } : {}),
+    items: s.i.map((t) => {
+      const { item, known } = decodeItemV1(t, lookup);
+      if (!known) unknown.add(item.exerciseId);
+      return item;
+    }),
+  }));
+  return {
+    version,
+    unknownExercises: [...unknown],
+    program: {
+      origin: 'imported',
+      title: p.t,
+      ...(p.a ? { author: p.a } : {}),
+      ...(p.n ? { notes: p.n } : {}),
+      ...(p.w ? { sessionsPerWeek: p.w } : {}),
+      ...(p.m ? { minutes: p.m } : {}),
+      ...(p.d ? { sharedAt: p.d } : {}),
+      sessions,
+    },
+  };
+}
+
 const DECODERS: Record<number, (json: unknown, lookup: ExerciseLookup) => DecodedProgram> = {
   1: (json, lookup) => {
     const r = PayloadV1.safeParse(json);
     if (!r.success) throw new ShareError('invalid');
-    const p = r.data;
-    const unknown = new Set<string>();
-    const sessions = p.s.map((s) => ({
-      key: s.k,
-      ...(s.l ? { title: s.l } : {}),
-      items: s.i.map((t) => {
-        const { item, known } = decodeItemV1(t, lookup);
-        if (!known) unknown.add(item.exerciseId);
-        return item;
-      }),
-    }));
-    return {
-      version: 1,
-      unknownExercises: [...unknown],
-      program: {
-        origin: 'imported',
-        title: p.t,
-        ...(p.a ? { author: p.a } : {}),
-        ...(p.n ? { notes: p.n } : {}),
-        ...(p.w ? { sessionsPerWeek: p.w } : {}),
-        ...(p.d ? { sharedAt: p.d } : {}),
-        sessions,
-      },
-    };
+    // La v1 n'a pas de durée visée : Zod écarte une clé inconnue, comme dans les versions antérieures.
+    return programFromPayload(r.data, 1, lookup);
+  },
+  2: (json, lookup) => {
+    const r = PayloadV2.safeParse(json);
+    if (!r.success) throw new ShareError('invalid');
+    return programFromPayload(r.data, 2, lookup);
   },
 };
 

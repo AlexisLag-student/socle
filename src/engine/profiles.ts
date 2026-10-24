@@ -23,8 +23,8 @@ export const TEST_PROFILES: NamedProfile[] = [
   },
   {
     id: 'road-cyclist-sprint',
-    label: 'Cycliste sur route, performance (force, sprint / force-vélocité), salle + barre, 2 × 45 min',
-    profile: { sports: ['bike'], objectives: ['performance'], perfGoals: ['strength', 'sprint-fv'], pathologies: [], equipment: ['gym', 'barbell'], sessionsPerWeek: 2, minutes: 45 },
+    label: 'Cycliste sur route, performance (force, sprint / force-vélocité), salle + barre, 4 × 45 min',
+    profile: { sports: ['bike'], objectives: ['performance'], perfGoals: ['strength', 'sprint-fv'], pathologies: [], equipment: ['gym', 'barbell'], sessionsPerWeek: 4, minutes: 45 },
   },
   {
     id: 'trail-achilles-irritable',
@@ -43,8 +43,8 @@ export const TEST_PROFILES: NamedProfile[] = [
   },
   {
     id: 'triathlete-prevention-performance',
-    label: 'Triathlète (course + vélo), prévention + puissance, haltères + élastique + TRX, 4 × 45 min',
-    profile: { sports: ['run', 'bike'], objectives: ['prevention', 'performance'], perfGoals: ['power'], pathologies: [], equipment: ['dumbbells', 'band', 'suspension'], sessionsPerWeek: 4, minutes: 45 },
+    label: 'Triathlète (course + vélo), prévention + puissance, haltères + élastique + TRX, 5 × 1 h',
+    profile: { sports: ['run', 'bike'], objectives: ['prevention', 'performance'], perfGoals: ['power'], pathologies: [], equipment: ['dumbbells', 'band', 'suspension'], sessionsPerWeek: 5, minutes: 60 },
   },
   {
     id: 'runner-bone-stress-return',

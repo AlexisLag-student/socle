@@ -32,7 +32,7 @@ import { equipmentSet, pickVariant, shownVariant } from '@/engine/availability';
 import { formatDosage, formatDuration } from '@/features/exercise/format';
 import { useLocalized } from '@/i18n/useLocalized';
 import type { Dosage, Exercise, L } from '@/domain/schema';
-import type { Program } from '@/domain/user';
+import { SESSION_KEYS, type Program } from '@/domain/user';
 import css from './library.module.css';
 
 function AddDialog({ ex, open, onClose }: { ex: Exercise; open: boolean; onClose: () => void }) {
@@ -85,7 +85,7 @@ function AddDialog({ ex, open, onClose }: { ex: Exercise; open: boolean; onClose
           </Field>
           <Field label={t('library.session')} htmlFor="add-session">
             <Select id="add-session" value={sessionKey} onChange={(e) => setSessionKey(e.target.value as typeof sessionKey)}>
-              {(['A', 'B', 'C', 'D'] as const)
+              {SESSION_KEYS
                 .filter((k) => target?.sessions.some((s) => s.key === k) || k === 'A')
                 .map((k) => (
                   <option key={k} value={k}>

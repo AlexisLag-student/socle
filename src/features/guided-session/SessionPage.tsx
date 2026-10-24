@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import { Button, Card, Empty, ButtonLink, HandNote, Icon, Notice, ui } from '@/components/ui';
 import { MuscleMap } from '@/components/anatomy/MuscleMap';
-import { ExerciseAnimation, type AnimSync } from '@/components/animation/ExerciseAnimation';
+import { AnimationThumb, ExerciseAnimation, type AnimSync } from '@/components/animation/ExerciseAnimation';
 import { hasAnimation, loadAnimation } from '@/animation/loaders';
 import { useActiveProgram, useExerciseStates, useProfile } from '@/app/hooks';
 import { setPrefs, usePrefs } from '@/app/prefs';
@@ -13,29 +13,35 @@ import type { Feedback } from '@/domain/ids';
 import type { ProgramItem, SessionEntry, SessionLog, SetLog } from '@/domain/user';
 import { applyFeedback, decideAndApply, newLog, saveLog } from '@/db/repo';
 import { availableLevels, equipmentSet, pickVariant } from '@/engine/availability';
+import { restBetweenExercises } from '@/engine/duration';
 import { beep, keepScreenOn, tempoPhases, vibrate } from '@/lib/device';
 import { formatClock, useCountdown } from '@/lib/useCountdown';
 import { formatDosage, formatDuration } from '@/features/exercise/format';
 import { useLocalized } from '@/i18n/useLocalized';
 import { tempoPosition, useTempoClock, type TempoClock } from './tempoClock';
+import { afterFeedback, afterWork, clampElapsed, clampReps, cycleSeconds, quotaReached, repQuota, repsDone } from './flow';
 import css from './session.module.css';
 
-type Stage = 'work' | 'rest' | 'feedback';
+/** work → (rest → work)… → feedback → between (repos avant l'exercice suivant) → work. */
+type Stage = 'work' | 'rest' | 'feedback' | 'between';
 
 /**
  * Rythme d'une répétition : consigne de la phase en cours, secondes restantes en très grand,
  * barre en segments (phase en cours en rouge) et compteur de répétitions noté à la main.
  */
-function TempoIndicator({ tempo, sound, reps, clock }: { tempo: string; sound: boolean; reps?: number; clock: TempoClock }) {
+function TempoIndicator({ tempo, sound, reps, side, clock }: { tempo: string; sound: boolean; reps?: number; side?: 1 | 2; clock: TempoClock }) {
   const { t } = useTranslation();
   const phases = useMemo(() => tempoPhases(tempo), [tempo]);
-  const [pos, setPos] = useState(() => tempoPosition(phases, clock.elapsed()));
+  // Au quota, l'indicateur reste figé sur la dernière répétition (jamais « 13 / 12 »).
+  const cycle = useMemo(() => cycleSeconds(tempo), [tempo]);
+  const elapsed = useCallback(() => clampElapsed(clock.elapsed(), cycle, reps), [clock, cycle, reps]);
+  const [pos, setPos] = useState(() => tempoPosition(phases, elapsed()));
   // Remplissage du segment en cours : départ décalé si l'indicateur s'affiche en cours de phase.
   const [fill, setFill] = useState({ key: '', delay: 0 });
   useEffect(() => {
     let last = '';
     const tick = () => {
-      const p = tempoPosition(phases, clock.elapsed());
+      const p = tempoPosition(phases, elapsed());
       const key = `${p.rep}-${p.index}`;
       if (key !== last) {
         if (clock.running && sound) beep(p.index === 0 ? 'tick' : 'phase');
@@ -47,7 +53,7 @@ function TempoIndicator({ tempo, sound, reps, clock }: { tempo: string; sound: b
     tick();
     const id = setInterval(tick, 100);
     return () => clearInterval(id);
-  }, [phases, sound, clock]);
+  }, [phases, sound, clock, elapsed]);
   const i = pos.index;
   const rep = pos.rep;
   const left = pos.left;
@@ -77,8 +83,33 @@ function TempoIndicator({ tempo, sound, reps, clock }: { tempo: string; sound: b
           </span>
         ))}
       </div>
-      <HandNote className={css.repCount}>{reps ? t('session.repOf', { n: rep, total: reps }) : t('session.tempo.rep', { n: rep })}</HandNote>
+      <HandNote className={css.repCount}>
+        {reps ? t('session.repOf', { n: rep, total: reps }) : t('session.tempo.rep', { n: rep })}
+        {side ? ` · ${t('session.side', { n: side })}` : ''}
+      </HandNote>
     </div>
+  );
+}
+
+/**
+ * Carte de repos, commune au repos entre séries et au repos entre exercices : minuteur, réglette qui se vide
+ * (sans transition si les animations sont réduites) et ce qui suit. Le minuteur n'est pas lu à chaque seconde :
+ * les annonces passent par la région dédiée de l'écran de séance.
+ */
+function RestCard({ remaining, total, next }: { remaining: number; total: number; next: string }) {
+  const { t } = useTranslation();
+  const ratio = total > 0 ? Math.min(1, Math.max(0, remaining / total)) : 0;
+  return (
+    <>
+      <span className="kicker">{t('session.rest')}</span>
+      <p className={css.clock} role="timer" aria-label={t('session.restLeft', { time: formatClock(remaining) })}>
+        {formatClock(remaining)}
+      </p>
+      <div className={css.ruler} aria-hidden>
+        <span style={{ transform: `scaleX(${ratio})` }} />
+      </div>
+      <p className={css.sub}>{next}</p>
+    </>
   );
 }
 
@@ -103,6 +134,12 @@ function GuidedSession() {
   const [finished, setFinished] = useState(false);
   const [showMap, setShowMap] = useState(false);
   const [tempoOn, setTempoOn] = useState(false);
+  /** Durée totale du repos en cours (pour la réglette ; « +15 s » l'allonge). */
+  const [restTotal, setRestTotal] = useState(0);
+  /** Côté 1 terminé au rythme : le côté 2 attend que l'utilisateur démarre. */
+  const [awaitingSide, setAwaitingSide] = useState(false);
+  /** Annonce « 10 secondes » du repos en cours (lecteur d'écran). */
+  const [tenLeft, setTenLeft] = useState(false);
   const started = useRef(false);
   const clock = useTempoClock();
   useMarkSessionRunning(!finished);
@@ -137,6 +174,9 @@ function GuidedSession() {
   const ex = item ? exerciseById.get(item.exerciseId) : undefined;
   const entry = log?.entries[idx];
   const isReps = !!item && !item.dosage.holdSec;
+  const quota = item ? repQuota(item.dosage) : undefined;
+  const nextItem: ProgramItem | undefined = items[idx + 1];
+  const nextEx = nextItem ? exerciseById.get(nextItem.exerciseId) : undefined;
 
   // Horloge du tempo : tourne pendant chaque série de répétitions, à l'arrêt pendant le repos.
   useEffect(() => {
@@ -176,17 +216,13 @@ function GuidedSession() {
     () => {
       signalEnd();
       if (stage === 'rest') setStage('work');
-      else if (stage === 'work' && item?.dosage.holdSec) {
-        if (item.dosage.perSide && side === 1) {
-          setSide(2);
-          return;
-        }
-        updateSet(setNo, { done: true });
-        nextSet();
-      }
+      else if (stage === 'between') advance();
+      // Maintien : le minuteur s'arrête à la durée prévue, la série (ou le côté) est validée.
+      else if (stage === 'work' && item?.dosage.holdSec) workDone({}, true);
     },
     (left) => {
       if (prefs.tempoSound && left <= 3 && left > 0) beep('tick');
+      if ((stage === 'rest' || stage === 'between') && left === 10) setTenLeft(true);
     },
   );
 
@@ -205,18 +241,53 @@ function GuidedSession() {
     if (prefs.vibration) vibrate([200, 100, 200]);
   }
 
-  function nextSet() {
+  function startRest(sec: number) {
+    setRestTotal(sec);
+    setTenLeft(false);
+    timer.start(sec);
+  }
+
+  /**
+   * Série (ou côté) terminée : côté 2, repos entre séries ou retour sur l'exercice.
+   * `bySide` : les côtés s'enchaînent séparément (maintien par côté, rythme affiché).
+   */
+  function workDone(patch: Partial<SetLog>, bySide: boolean) {
     if (!item) return;
-    if (setNo + 1 >= item.dosage.sets) {
-      setStage('feedback');
-      timer.stop();
-    } else {
-      setSetNo((s) => s + 1);
+    const next = afterWork(item.dosage, setNo, side, bySide);
+    if (next.kind === 'side') {
+      setSide(2);
+      if (!item.dosage.holdSec) setAwaitingSide(true);
+      return;
+    }
+    updateSet(setNo, { done: true, ...patch });
+    setAwaitingSide(false);
+    if (next.kind === 'rest') {
+      setSetNo(next.nextSet);
       setSide(1);
       setStage('rest');
-      timer.start(item.dosage.restSec);
+      startRest(item.dosage.restSec);
+    } else {
+      setStage('feedback');
+      timer.stop();
     }
   }
+
+  // Quota de répétitions au rythme affiché : l'horloge s'arrête à la dernière répétition prévue,
+  // puis la série est validée et le repos démarre (ou le côté 2 attend son départ).
+  const tempo = item?.dosage.tempo;
+  useEffect(() => {
+    if (stage !== 'work' || !tempoOn || !tempo || !quota || awaitingSide) return;
+    const cycle = cycleSeconds(tempo);
+    const id = setInterval(() => {
+      if (!clock.running || !quotaReached(clock.elapsed(), cycle, quota)) return;
+      clock.pause();
+      signalEnd();
+      workDone({ reps: quota }, true);
+    }, 100);
+    return () => clearInterval(id);
+    // workDone et signalEnd lisent l'état courant à chaque rendu ; l'intervalle est recréé quand il change.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [stage, tempoOn, tempo, quota, awaitingSide, clock, setNo, side, log]);
 
   /** Afficher le tempo repart du début d'une répétition (indicateur et animation ensemble). */
   const toggleTempo = () => {
@@ -224,9 +295,15 @@ function GuidedSession() {
     setTempoOn(!tempoOn);
   };
 
+  /** « Série terminée » (possible avant le quota) : au rythme affiché, les répétitions faites sont notées. */
   const completeSet = () => {
-    updateSet(setNo, { done: true });
-    nextSet();
+    const patch = tempoOn && tempo && quota ? { reps: repsDone(clock.elapsed(), cycleSeconds(tempo), quota) } : {};
+    workDone(patch, false);
+  };
+
+  const startSide = () => {
+    setAwaitingSide(false);
+    clock.restart();
   };
 
   const giveFeedback = async (fb: Feedback) => {
@@ -245,19 +322,40 @@ function GuidedSession() {
       { availableLevels: (variant ? availableLevels(ex, variant, eq) : [item.level]).filter((lv) => !item.maxLevel || lv <= item.maxLevel), loadable: !!variant?.loadable },
       loads.length ? Math.max(...loads) : undefined,
     );
-    goNext(updated);
+    if (afterFeedback(idx, items.length) === 'between') startBetween();
+    else finish(updated);
   };
 
-  /** Passe à l'exercice suivant ; « current » = journal le plus récent (évite d'écraser le dernier retour). */
-  const goNext = (current: SessionLog | null = log) => {
+  /** Repos entre deux exercices, d'après le repos entre séries de l'exercice terminé (60 à 120 s). */
+  const startBetween = () => {
+    if (!item) return;
+    setStage('between');
+    startRest(restBetweenExercises(item.dosage));
+  };
+
+  const addRest = () => {
+    timer.add(15);
+    setRestTotal((r) => r + 15);
+  };
+
+  /** Fin du repos entre exercices (minuteur écoulé ou « Passer le repos ») : exercice suivant. */
+  function advance() {
     timer.stop();
     setSetNo(0);
     setSide(1);
     setStage('work');
     setShowMap(false);
     setTempoOn(false);
-    if (idx + 1 >= items.length) finish(current);
-    else setIdx((i) => i + 1);
+    setAwaitingSide(false);
+    setIdx((i) => i + 1);
+  }
+
+  /** Exercice passé : exercice suivant sans repos ; « current » = journal le plus récent (évite d'écraser le dernier retour). */
+  const goNext = (current: SessionLog | null = log) => {
+    if (idx + 1 >= items.length) {
+      timer.stop();
+      finish(current);
+    } else advance();
   };
 
   const skip = () => {
@@ -336,34 +434,109 @@ function GuidedSession() {
   const lastSet = setNo + 1 >= d.sets;
   const loadNote = entry.sets.find((s) => s.loadKg)?.loadKg;
   const holdStarted = timer.running || timer.paused;
+  const doneCount = stage === 'between' ? idx + 1 : idx;
+
+  // Annonces pour les lecteurs d'écran : au changement d'étape et 10 s avant la fin d'un repos, jamais à chaque seconde.
+  const rest = formatDuration(restTotal, t);
+  const announce =
+    stage === 'rest' || stage === 'between'
+      ? tenLeft
+        ? t('session.announce.tenLeft')
+        : stage === 'between' && nextEx
+          ? t('session.announce.restExercise', { rest, name: l(nextEx.name) })
+          : t('session.announce.restSet', { rest, n: setNo + 1, total: d.sets })
+      : stage === 'feedback'
+        ? t('session.announce.feedback')
+        : awaitingSide
+          ? t('session.announce.side')
+          : t('session.announce.work', {
+              n: setNo + 1,
+              total: d.sets,
+              side: d.perSide && (d.holdSec || tempoOn) ? t('session.announce.sidePart', { n: side }) : '',
+            });
+  const announcer = (
+    <p className="visually-hidden" aria-live="polite" aria-atomic="true">
+      {announce}
+    </p>
+  );
+
+  const top = (
+    <div className={css.top}>
+      <Button
+        variant="ghost"
+        icon="x"
+        iconOnly
+        label={t('session.quit')}
+        onClick={() => {
+          if (log && log.entries.some((e) => e.sets.some((s) => s.done))) finish();
+          else navigate('/program');
+        }}
+      />
+      <span className={css.count}>{t('session.progress', { n: Math.min(doneCount + 1, items.length), total: items.length })}</span>
+      <div
+        className={css.progress}
+        role="progressbar"
+        aria-valuemin={0}
+        aria-valuemax={items.length}
+        aria-valuenow={doneCount}
+        aria-label={t('session.progressLabel')}
+      >
+        {items.map((_, k) => (
+          <span key={k} className={k < doneCount ? css.pDone : k === doneCount ? css.pNow : undefined} />
+        ))}
+      </div>
+    </div>
+  );
+
+  // --- Repos entre deux exercices : minuteur, aperçu de l'exercice suivant, « Passer le repos » ---------------
+  if (stage === 'between' && nextItem && nextEx) {
+    const nLevel = nextEx.levels.find((x) => x.level === nextItem.level);
+    const nVariant = nextEx.variants.find((v) => v.id === nextItem.variantId);
+    return (
+      <div className={css.page}>
+        {top}
+        {announcer}
+        <Card featured as="section" className={css.action} aria-label={t('session.rest')}>
+          <div className={css.actionInner}>
+            <RestCard remaining={timer.remaining} total={restTotal} next={t('session.nextExercise', { name: l(nextEx.name) })} />
+          </div>
+        </Card>
+        <section className={css.nextUp} aria-labelledby="next-up">
+          <span className="kicker" id="next-up">
+            {t('session.nextUp')}
+          </span>
+          <div className={css.nextBody}>
+            <div className={css.nextVisual}>
+              {hasAnimation(nextEx.id, nextItem.level) ? (
+                <AnimationThumb exerciseId={nextEx.id} />
+              ) : (
+                <MuscleMap name={l(nextEx.name)} primary={nextEx.muscles.primary} secondary={nextEx.muscles.secondary} zoom={nextEx.zoom} compact showLegend={false} />
+              )}
+            </div>
+            <div className={css.nextText}>
+              <h2 className={css.nextName}>{l(nextEx.name)}</h2>
+              <p>
+                {nLevel && l(nLevel.name)}
+                {nVariant ? ` · ${l(nVariant.name)}` : ''}
+              </p>
+              <p className={css.doseLine}>{formatDosage(nextItem.dosage, t, l).slice(0, 3).join(' · ')}</p>
+            </div>
+          </div>
+        </section>
+        <div className={css.bar}>
+          <Button variant="secondary" className={css.addRest} onClick={addRest} aria-label={t('session.addRestLabel')}>
+            {t('session.addRest')}
+          </Button>
+          <Button onClick={advance}>{t('session.skipRest')}</Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={css.page}>
-      <div className={css.top}>
-        <Button
-          variant="ghost"
-          icon="x"
-          iconOnly
-          label={t('session.quit')}
-          onClick={() => {
-            if (log && log.entries.some((e) => e.sets.some((s) => s.done))) finish();
-            else navigate('/program');
-          }}
-        />
-        <span className={css.count}>{t('session.progress', { n: idx + 1, total: items.length })}</span>
-        <div
-          className={css.progress}
-          role="progressbar"
-          aria-valuemin={0}
-          aria-valuemax={items.length}
-          aria-valuenow={idx}
-          aria-label={t('session.progressLabel')}
-        >
-          {items.map((_, k) => (
-            <span key={k} className={k < idx ? css.pDone : k === idx ? css.pNow : undefined} />
-          ))}
-        </div>
-      </div>
+      {top}
+      {announcer}
 
       <header className={css.head}>
         <h1 className={css.name}>{l(ex.name)}</h1>
@@ -398,14 +571,8 @@ function GuidedSession() {
 
       {/* --- Carte du minuteur --- */}
       <Card featured as="section" className={css.action}>
-        <div aria-live="polite" className={css.actionInner}>
-          {stage === 'rest' && (
-            <>
-              <span className="kicker">{t('session.rest')}</span>
-              <p className={css.clock}>{formatClock(timer.remaining)}</p>
-              <p className={css.sub}>{t('session.nextSet', { n: setNo + 1, total: d.sets })}</p>
-            </>
-          )}
+        <div className={css.actionInner}>
+          {stage === 'rest' && <RestCard remaining={timer.remaining} total={restTotal} next={t('session.nextSet', { n: setNo + 1, total: d.sets })} />}
 
           {stage === 'work' && d.holdSec && (
             <>
@@ -421,7 +588,7 @@ function GuidedSession() {
           {stage === 'work' && !d.holdSec && (
             <>
               {tempoOn && d.tempo ? (
-                <TempoIndicator tempo={d.tempo} sound={prefs.tempoSound} reps={d.reps?.[1]} clock={clock} />
+                <TempoIndicator tempo={d.tempo} sound={prefs.tempoSound} reps={quota} side={d.perSide ? side : undefined} clock={clock} />
               ) : (
                 <>
                   <span className="kicker">{t('session.set', { n: setNo + 1, total: d.sets })}</span>
@@ -433,6 +600,7 @@ function GuidedSession() {
                   </p>
                 </>
               )}
+              {awaitingSide && <p className={css.sub}>{t('session.switchSide')}</p>}
               {d.tempo && (
                 <div className={css.tempoTools}>
                   <Button size="small" variant="ghost" onClick={toggleTempo}>
@@ -492,7 +660,14 @@ function GuidedSession() {
                 {d.reps && (
                   <label className={css.setField}>
                     <span className="visually-hidden">{t('session.reps')}</span>
-                    <input type="number" inputMode="numeric" min={0} value={s.reps ?? ''} onChange={(e) => updateSet(i, { reps: e.target.value === '' ? undefined : Number(e.target.value) })} />
+                    <input
+                      type="number"
+                      inputMode="numeric"
+                      min={0}
+                      max={quota}
+                      value={s.reps ?? ''}
+                      onChange={(e) => updateSet(i, { reps: e.target.value === '' ? undefined : clampReps(Number(e.target.value), quota) })}
+                    />
                     <span>{t('session.repsShort')}</span>
                   </label>
                 )}
@@ -553,8 +728,8 @@ function GuidedSession() {
         <div className={css.bar}>
           {stage === 'rest' && (
             <>
-              <Button variant="secondary" onClick={() => timer.add(15)}>
-                +15 s
+              <Button variant="secondary" className={css.addRest} onClick={addRest} aria-label={t('session.addRestLabel')}>
+                {t('session.addRest')}
               </Button>
               <Button
                 onClick={() => {
@@ -579,7 +754,12 @@ function GuidedSession() {
               )}
             </>
           )}
-          {stage === 'work' && !d.holdSec && (
+          {stage === 'work' && !d.holdSec && awaitingSide && (
+            <Button icon="play" onClick={startSide}>
+              {t('session.startSide')}
+            </Button>
+          )}
+          {stage === 'work' && !d.holdSec && !awaitingSide && (
             <>
               <Button variant="secondary" icon={tempoOn ? 'pause' : 'play'} iconOnly label={tempoOn ? t('session.tempo.hide') : t('session.tempo.show')} onClick={toggleTempo} disabled={!d.tempo} />
               <Button onClick={completeSet}>

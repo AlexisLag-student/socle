@@ -6,7 +6,7 @@ En ligne : https://socle-rcvo.vercel.app
 
 Socle est une Progressive Web App (PWA) hors ligne, sans compte ni serveur :
 
-- **Mode sportif** : l'utilisateur indique son sport, ses objectifs, ses douleurs (carte du corps cliquable ou liste), sa phase, son matériel et sa disponibilité. Un moteur de recommandation génère un programme personnalisé (séances A/B/C).
+- **Mode sportif** : l'utilisateur indique son sport, ses objectifs, ses douleurs (carte du corps cliquable ou liste), sa phase, son matériel et sa disponibilité. Un moteur de recommandation génère un programme personnalisé (1 à 5 séances par semaine, de 15 min à 1 h, séances A à E).
 - **Mode praticien** : un kiné ou un préparateur compose un programme depuis la bibliothèque, ajuste les dosages, ajoute des notes et le partage par un **lien** (ou un QR code). Le patient ouvre le lien et le programme s'enregistre sur son appareil.
 - **Séance guidée** : minuteur lisible de loin, indicateur de tempo visuel et sonore, suivi des séries et des charges, retour facile / correct / trop dur, puis **propositions de progression** que l'utilisateur accepte ou refuse.
 - **Contenu** : 114 exercices et 25 pathologies, avec **172 références scientifiques vérifiées** sur PubMed/Crossref et un badge de niveau de preuve. Chaque exercice a un schéma musculaire SVG original (silhouette, zoom et légende).

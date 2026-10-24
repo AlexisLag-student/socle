@@ -108,7 +108,8 @@
     "no": "Non",
     "seconds": "{{count}} s",
     "minutes": "{{count}} min",
-    "perSide": "par côté"
+    "perSide": "par côté",
+    "oneHour": "1 h"
   },
   "pwa": {
     "updateAvailable": "Nouvelle version disponible",
@@ -251,14 +252,15 @@
       "subtitle": "Combien de séances par semaine, et combien de temps ?",
       "perWeek": "Séances par semaine",
       "duration": "Durée d’une séance",
-      "hint": "Deux séances par semaine suffisent pour progresser ; la régularité compte plus que la durée."
+      "hint": "Deux séances par semaine suffisent pour progresser ; la régularité compte plus que la durée.",
+      "alternate": "À partir de 4 séances, le programme alterne les zones travaillées d’une séance à l’autre et laisse un jour de récupération aux exercices qui en ont besoin."
     },
     "summary": {
       "title": "Récapitulatif",
       "subtitle": "Vérifiez vos choix avant de générer votre programme.",
       "noPain": "Aucune",
-      "availability_one": "{{count}} séance de {{minutes}} min par semaine",
-      "availability_other": "{{count}} séances de {{minutes}} min par semaine",
+      "availability_one": "{{count}} séance de {{duration}} par semaine",
+      "availability_other": "{{count}} séances de {{duration}} par semaine",
       "generate": "Générer mon programme",
       "regenerate": "Mettre à jour mon programme",
       "historyKept": "Votre historique et vos niveaux acquis sont conservés."
@@ -356,7 +358,24 @@
     "loadNote": "charge : {{load}}",
     "noteSets": "Noter répétitions et charges",
     "holding": "Tenez la position…",
-    "restFor": "repos {{rest}}"
+    "restFor": "repos {{rest}}",
+    "nextExercise": "Ensuite : {{name}}",
+    "nextUp": "Exercice suivant",
+    "addRest": "+15 s",
+    "addRestLabel": "Ajouter 15 secondes de repos",
+    "restLeft": "Repos restant : {{time}}",
+    "switchSide": "Côté 1 terminé : changez de côté.",
+    "startSide": "Côté 2 · Démarrer",
+    "quotaDone": "{{n}} répétitions : c’est le nombre prévu.",
+    "announce": {
+      "work": "À vous : série {{n}} sur {{total}}{{side}}.",
+      "sidePart": ", côté {{n}}",
+      "restSet": "Repos de {{rest}}, puis série {{n}} sur {{total}}.",
+      "restExercise": "Repos de {{rest}}, puis {{name}}.",
+      "tenLeft": "Encore 10 secondes de repos.",
+      "side": "Changez de côté, puis démarrez le côté 2.",
+      "feedback": "Exercice terminé. Comment c’était ?"
+    }
   },
   "exercise": {
     "muscles": "Muscles travaillés",
@@ -538,7 +557,11 @@
     "shareError": "Impossible de générer le lien : vérifiez le programme.",
     "tooLong": "Ce lien est long : certaines messageries pourraient le couper. Préférez le QR code ou raccourcissez les notes.",
     "qrAlt": "QR code du lien de partage",
-    "sharePrivacy": "Le lien contient tout le programme. Il ne passe par aucun serveur."
+    "sharePrivacy": "Le lien contient tout le programme. Il ne passe par aucun serveur.",
+    "targetDuration": "Durée visée d’une séance",
+    "targetNone": "Libre",
+    "estimate": "Durée estimée de la séance {{key}} : ~{{minutes}} min, repos compris",
+    "estimateOver": "Plus longue que la durée visée ({{target}}) : retirez un exercice ou une série."
   },
   "import": {
     "title": "Programme partagé",

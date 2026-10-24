@@ -191,6 +191,76 @@
   padding: 0 var(--space-2);
 }
 
+/* Réglette du repos : se vide jusqu'à la fin du repos (entre séries comme entre exercices). */
+.ruler {
+  width: 100%;
+  height: 10px;
+  margin-top: 6px;
+  box-shadow: inset 0 0 0 1.5px var(--ink);
+  overflow: hidden;
+}
+
+.ruler span {
+  display: block;
+  height: 100%;
+  background: var(--red);
+  transform-origin: left;
+  transition: transform 0.1s linear;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ruler span {
+    transition: none;
+  }
+}
+
+/* --- Aperçu de l'exercice suivant (repos entre exercices) --- */
+.nextUp {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.nextBody {
+  display: grid;
+  grid-template-columns: 112px minmax(0, 1fr);
+  gap: var(--space-3);
+  align-items: center;
+}
+
+.nextVisual {
+  border: var(--stroke) solid var(--ink);
+  border-radius: var(--radius);
+  background: var(--surface);
+  overflow: hidden;
+}
+
+.nextVisual > * {
+  width: 100%;
+}
+
+.nextVisual svg {
+  max-height: 112px;
+}
+
+.nextText p {
+  margin: 0;
+  font-size: 15px;
+  line-height: 24px;
+  color: var(--text-2);
+}
+
+.nextText .doseLine {
+  font-size: 13px;
+  line-height: 20px;
+  color: var(--text-muted);
+}
+
+.nextName {
+  margin: 0;
+  font-size: 24px;
+  line-height: 32px;
+}
+
 /* --- Retour sur l'exercice --- */
 .feedback {
   border: 0;
@@ -381,6 +451,12 @@
 
 .bar button[aria-label] {
   width: 52px;
+}
+
+/* « +15 s » porte un nom accessible explicite mais garde la largeur de son texte. */
+.bar button.addRest {
+  width: auto;
+  white-space: nowrap;
 }
 
 .barNote {

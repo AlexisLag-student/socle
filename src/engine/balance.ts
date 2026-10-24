@@ -43,5 +43,19 @@ export function orderSession(
     out.push(pick);
     remaining.splice(remaining.indexOf(pick), 1);
   }
+  // Triplé inévitable dans l'ordre glouton (ex. trois exercices de cheville en fin de séance) :
+  // déplacer l'exercice fautif à la première place qui supprime le triplé sans en créer d'autre.
+  const tripleAt = (list: typeof info) => list.findIndex((x, i) => i >= 2 && list[i - 1]!.group === x.group && list[i - 2]!.group === x.group);
+  for (let guard = 0; guard < out.length; guard++) {
+    const i = tripleAt(out);
+    if (i < 0) break;
+    const moved = out[i]!;
+    const rest = out.filter((_, k) => k !== i);
+    const fixed = rest
+      .map((_, p) => [...rest.slice(0, p), moved, ...rest.slice(p)])
+      .find((list) => tripleAt(list) < 0);
+    if (!fixed) break;
+    out.splice(0, out.length, ...fixed);
+  }
   return out.map((x) => x.item);
 }

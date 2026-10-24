@@ -6,7 +6,7 @@ import { writeFileSync } from 'node:fs';
 import { content, CONTENT_VERSION, exerciseById, pathologyById } from '../src/content/index';
 import { ENGINE_VERSION, generateProgram } from '../src/engine/generate';
 import { checkInvariants } from '../src/engine/invariants';
-import { exerciseSeconds } from '../src/engine/duration';
+import { exerciseWorkSeconds } from '../src/engine/duration';
 import { TEST_PROFILES } from '../src/engine/profiles';
 import type { Dosage } from '../src/domain/schema';
 import type { ItemReason } from '../src/domain/user';
@@ -26,10 +26,11 @@ const lines: string[] = [
   '',
   `Généré par \`npm run profiles:report\` le ${new Date().toISOString().slice(0, 10)} — moteur v${ENGINE_VERSION}, contenu ${CONTENT_VERSION} (${content.exercises.length} exercices, ${content.pathologies.length} pathologies).`,
   '',
-  'Pour chaque profil, le moteur (fonction pure `generateProgram`) produit les séances types ; les **invariants** suivants sont vérifiés automatiquement (et dans `src/engine/real-content.test.ts`, avec 45 profils supplémentaires) :',
+  'Pour chaque profil, le moteur (fonction pure `generateProgram`) produit les séances types ; les **invariants** suivants sont vérifiés automatiquement (et dans `src/engine/real-content.test.ts`, avec 60 profils supplémentaires) :',
   '',
-  '- nombre de séances types conforme (1 → A, 2 → A/B, 3–4 → A/B/C) ;',
-  '- 4 à 8 exercices par séance, durée estimée ≤ durée choisie + 10 % ;',
+  '- une séance type par séance hebdomadaire (1 → A … 5 → A à E) ;',
+  '- nombre d’exercices selon la durée (15 min : 3–4, 30 min : 4–6, 45 min : 4–8, 1 h : 6–12), durée estimée repos compris (entre les séries et entre les exercices) ≤ durée choisie + 10 % ;',
+  '- à partir de 4 séances : deux séances voisines dans la rotation (E précède A) ne partagent ni un exercice qui demande de la récupération, ni son groupe musculaire principal ; séances types toutes différentes ;',
   '- matériel respecté (variante et niveau accessibles), sport respecté ;',
   '- pas deux exercices de la même famille dans une séance, pas trois de suite sur le même groupe musculaire ;',
   '- exercices « à éviter » de la phase exclus, plafond de niveau de la phase respecté ;',
@@ -59,7 +60,7 @@ for (const { label, profile } of TEST_PROFILES) {
       const lvl = ex.levels.find((l) => l.level === it.level)!;
       const v = ex.variants.find((x) => x.id === it.variantId)!;
       lines.push(
-        `| ${i + 1} | ${ex.name.fr} | ${it.level}/${ex.levels.length} — ${lvl.name.fr} | ${v.name.fr} | ${dose(it.dosage)} (~${Math.round(exerciseSeconds(it.dosage) / 60)} min) | ${reason(it.reason)} | ${ex.evidence.level} |`,
+        `| ${i + 1} | ${ex.name.fr} | ${it.level}/${ex.levels.length} — ${lvl.name.fr} | ${v.name.fr} | ${dose(it.dosage)} (~${Math.round(exerciseWorkSeconds(it.dosage) / 60)} min) | ${reason(it.reason)} | ${ex.evidence.level} |`,
       );
     });
     lines.push('');

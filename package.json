@@ -1,6 +1,6 @@
 {
   "name": "socle",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "description": "Socle — renforcement musculaire pour coureurs et cyclistes (PWA)",
   "scripts": {
     "dev": "vite",

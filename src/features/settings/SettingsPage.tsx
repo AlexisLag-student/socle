@@ -8,7 +8,7 @@ import { content, CONTENT_VERSION } from '@/content/index';
 import { setReminders } from '@/db/db';
 import { clearAll, exportBackup, importBackup } from '@/db/repo';
 import { buildIcs, downloadIcs } from '@/lib/ics';
-import { permission, requestPermission } from '@/lib/reminders';
+import { defaultReminderDays, permission, requestPermission } from '@/lib/reminders';
 import type { Reminders } from '@/domain/user';
 import { LanguageSwitch } from './LanguageSwitch';
 
@@ -20,7 +20,7 @@ export default function SettingsPage() {
   const stored = useReminders();
   const profile = useProfile();
   const program = useActiveProgram();
-  const reminders: Reminders = stored ?? { enabled: false, days: [1, 3, 5], time: '18:00' };
+  const reminders: Reminders = stored ?? { enabled: false, days: defaultReminderDays(profile?.sessionsPerWeek), time: '18:00' };
   const [perm, setPerm] = useState(permission());
   const [message, setMessage] = useState<{ tone: 'info' | 'danger'; text: string } | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);

@@ -9,6 +9,12 @@ test('séance guidée : séries, minuteur, retour de séance, historique', async
 
   for (let guard = 0; guard < 80; guard++) {
     if (await page.getByRole('heading', { name: 'Séance terminée !' }).isVisible().catch(() => false)) break;
+    // Repos entre deux exercices (après le retour) : on le passe.
+    const skipBetween = page.getByRole('button', { name: 'Passer le repos' });
+    if (await skipBetween.isVisible().catch(() => false)) {
+      await skipBetween.click({ timeout: 3000 }).catch(() => {});
+      continue;
+    }
     const facile = page.getByRole('button', { name: /Facile/ });
     if (await facile.isVisible().catch(() => false)) {
       await facile.click({ timeout: 3000 }).catch(() => {});

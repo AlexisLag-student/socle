@@ -235,3 +235,74 @@ test.describe('animations', () => {
     }
   });
 });
+
+/**
+ * Version 0.7.0 : choix fréquence / durée (5 séances, 1 h), compteur au quota et écran de repos entre exercices.
+ * L'horloge de la page est avancée (page.clock) jusqu'à la dernière répétition prévue.
+ */
+test.describe('fréquence, quota et repos', () => {
+  const T = {
+    fr: { next: 'Suivant', perWeek: 'Séances par semaine', duration: 'Durée d’une séance', hour: '1 h', rhythm: 'Afficher le rythme', skipEx: 'Passer l’exercice', end: 'Terminer l’exercice', ok: 'Correct', rep: /répétition (\d+) \/ (\d+)/ },
+    en: { next: 'Next', perWeek: 'Sessions per week', duration: 'Session length', hour: '60 min', rhythm: 'Show the rhythm', skipEx: 'Skip exercise', end: 'Finish exercise', ok: 'Right', rep: /rep (\d+) \/ (\d+)/ },
+  };
+
+  async function screens(page: Page, prefix: string, lang: 'fr' | 'en') {
+    const tx = T[lang];
+    // Choix fréquence / durée : 5 séances, 1 h (le profil préparé a une douleur : 5 étapes avant la disponibilité).
+    await page.goto('/setup');
+    await page.locator('main h1').waitFor();
+    for (let i = 0; i < 5; i++) await page.getByRole('button', { name: tx.next, exact: true }).click();
+    await page.getByRole('group', { name: tx.perWeek }).getByRole('button', { name: '5', exact: true }).click();
+    await page.getByRole('group', { name: tx.duration }).getByRole('button', { name: tx.hour, exact: true }).click();
+    await page.evaluate(() => document.fonts.ready);
+    await page.screenshot({ path: `${OUT}/${prefix}-frequence-duree.png` });
+
+    // Compteur au quota : premier exercice au tempo de la séance A, rythme affiché.
+    await page.goto('/session/A');
+    await page.locator('main h1').waitFor();
+    for (let guard = 0; guard < 10 && !(await page.getByRole('button', { name: tx.rhythm }).first().isVisible()); guard++) {
+      await page.getByRole('button', { name: tx.skipEx }).click();
+      await page.getByRole('button', { name: /Passer le repos|Skip rest/ }).click({ timeout: 2000 }).catch(() => {});
+    }
+    await page.getByRole('button', { name: tx.rhythm }).first().click();
+    for (let guard = 0; guard < 200; guard++) {
+      const m = (await page.getByText(tx.rep).first().textContent())?.match(tx.rep);
+      if (m && m[1] === m[2]) break;
+      await page.clock.fastForward(1000);
+    }
+    // Compteur visible au-dessus de la barre d'action.
+    await page.getByText(tx.rep).first().evaluate((el) => el.scrollIntoView({ block: 'center' }));
+    await page.screenshot({ path: `${OUT}/${prefix}-compteur-quota.png` });
+
+    // Repos entre exercices, aperçu du suivant.
+    await page.getByRole('button', { name: tx.end }).click();
+    await page.getByRole('button', { name: tx.ok, exact: true }).click();
+    await page.getByRole('timer').waitFor();
+    await page.evaluate(() => document.fonts.ready);
+    await page.waitForTimeout(300);
+    await page.screenshot({ path: `${OUT}/${prefix}-repos-entre-exercices.png` });
+  }
+
+  test.use({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2 });
+  test('mobile clair FR', async ({ page }) => {
+    await page.clock.install();
+    await seed(page);
+    await screens(page, 'mobile-12', 'fr');
+  });
+  test('mobile sombre FR', async ({ page }) => {
+    await page.clock.install();
+    await seed(page, { theme: 'dark' });
+    await screens(page, 'sombre-12', 'fr');
+  });
+  test('mobile EN', async ({ page }) => {
+    await page.clock.install();
+    await seed(page, { lang: 'en' });
+    await screens(page, 'en-12', 'en');
+  });
+  test('ordinateur 1280', async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 860 });
+    await page.clock.install();
+    await seed(page);
+    await screens(page, 'bureau-12', 'fr');
+  });
+});

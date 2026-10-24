@@ -6,7 +6,7 @@ import { useActiveProgram, useExerciseStates, useLogs, useReminders } from '@/ap
 import { setPrefs } from '@/app/prefs';
 import { content, exerciseById } from '@/content/index';
 import { nextSessionKey } from '@/db/repo';
-import { exerciseSeconds } from '@/engine/duration';
+import { sessionSeconds } from '@/engine/duration';
 import { formatMinutes } from '@/features/exercise/format';
 import { doneExercises, isSameDay, todaysLog } from '@/features/exercise/notebook';
 import { startOfWeek } from '@/features/history/stats';
@@ -25,7 +25,7 @@ function TodayCard({ program, logs }: { program: Program; logs: readonly Session
     void nextSessionKey(program).then(setKey);
   }, [program, logs]);
   const session = program.sessions.find((s) => s.key === key) ?? program.sessions[0]!;
-  const minutes = formatMinutes(session.items.reduce((s, i) => s + exerciseSeconds(i.dosage), 0));
+  const minutes = formatMinutes(sessionSeconds(session.items));
   const log = todaysLog(logs, program.id, session.key);
   const done = doneExercises(log);
   const started = !!log && !log.finishedAt && done.size > 0;

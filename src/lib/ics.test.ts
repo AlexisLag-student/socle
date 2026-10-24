@@ -45,6 +45,13 @@ describe('export .ics', () => {
     expect(ics.endsWith('END:VCALENDAR\r\n')).toBe(true);
   });
 
+  it('5 jours par semaine et séance d’1 h', () => {
+    const lines = buildIcs({ days: [6, 1, 2, 3, 5], time: '18:30', durationMin: 60, summary: 's', description: 'd', now, uid: 'u@socle' }).split('\r\n');
+    expect(lines).toContain('RRULE:FREQ=WEEKLY;BYDAY=MO,TU,WE,FR,SA');
+    expect(lines).toContain('DTSTART:20261021T183000');
+    expect(lines).toContain('DTEND:20261021T193000');
+  });
+
   it('refuse une liste de jours vide', () => {
     expect(() => buildIcs({ days: [], time: '18:00', durationMin: 30, summary: 's', description: 'd' })).toThrow();
   });

@@ -3,7 +3,8 @@
  */
 import type { Exercise, Muscle, Pathology } from '@/domain/schema';
 import { availableLevels, equipmentSet, variantAvailable } from './availability';
-import { MAX_ITEMS, MIN_ITEMS, type EngineProfile, type GenerationResult } from './generate';
+import { itemBounds } from './duration';
+import { needsRecovery, primaryGroup, sessionTypeCount, type EngineProfile, type GenerationResult } from './generate';
 
 export interface InvariantReport {
   ok: boolean;
@@ -20,7 +21,8 @@ export function checkInvariants(
   const exById = new Map(content.exercises.map((e) => [e.id, e]));
   const groups = new Map(content.muscles.map((m) => [m.id as string, m.group]));
   const budget = profile.minutes * 60;
-  const expectedSessions = Math.min(Math.max(profile.sessionsPerWeek, 1), 3);
+  const expectedSessions = sessionTypeCount(profile.sessionsPerWeek);
+  const { min, max } = itemBounds(profile.minutes);
 
   if (result.sessions.length !== expectedSessions) issues.push(`${result.sessions.length} séance(s) au lieu de ${expectedSessions}`);
 
@@ -32,7 +34,7 @@ export function checkInvariants(
 
   for (const s of result.sessions) {
     const tag = `séance ${s.key}`;
-    if (s.items.length < MIN_ITEMS || s.items.length > MAX_ITEMS) issues.push(`${tag} : ${s.items.length} exercices (attendu ${MIN_ITEMS}–${MAX_ITEMS})`);
+    if (s.items.length < min || s.items.length > max) issues.push(`${tag} : ${s.items.length} exercices (attendu ${min}–${max})`);
     if (s.estimatedSec > budget * 1.1) issues.push(`${tag} : ${Math.round(s.estimatedSec / 60)} min estimées pour ${profile.minutes} min`);
     const families = new Set<string>();
     s.items.forEach((it, i) => {
@@ -51,6 +53,30 @@ export function checkInvariants(
         if (g(i) && g(i) === g(i - 1) && g(i) === g(i - 2)) issues.push(`${tag} : trois exercices de suite sur ${g(i)}`);
       }
     });
+  }
+
+  // À partir de 4 séances : deux séances voisines dans la rotation (la dernière précède la première) ne partagent
+  // ni un exercice qui demande de la récupération, ni le groupe musculaire principal d'un tel exercice.
+  // Deux séances types ne sont jamais identiques.
+  if (result.sessions.length >= 4) {
+    const heavy = result.sessions.map((s) =>
+      s.items
+        .map((it) => ({ it, ex: exById.get(it.exerciseId) }))
+        .filter((x): x is { it: (typeof s.items)[number]; ex: Exercise } => !!x.ex && needsRecovery(x.ex, x.it.dosage))
+        .map(({ it, ex }) => ({ id: it.exerciseId, group: primaryGroup(ex, groups) ?? 'other' })),
+    );
+    result.sessions.forEach((s, k) => {
+      const n = (k + 1) % result.sessions.length;
+      const other = result.sessions[n]!;
+      for (const h of heavy[k]!) {
+        if (heavy[n]!.some((o) => o.id === h.id)) issues.push(`séances ${s.key} et ${other.key} voisines : ${h.id} deux fois de suite`);
+        else if (heavy[n]!.some((o) => o.group === h.group)) issues.push(`séances ${s.key} et ${other.key} voisines : ${h.group} chargé deux fois de suite`);
+      }
+    });
+    // Exception : une séance faite des seuls exercices des pathologies (le protocole impose son contenu).
+    const varied = result.sessions.filter((s) => s.items.some((i) => i.reason.kind !== 'pathology'));
+    const signature = varied.map((s) => s.items.map((i) => i.exerciseId).sort().join(','));
+    if (new Set(signature).size !== signature.length) issues.push('deux séances types identiques');
   }
 
   // Les exercices essentiels (priorité 1) réalisables des pathologies déclarées doivent être présents

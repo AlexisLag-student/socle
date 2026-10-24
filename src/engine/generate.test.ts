@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { generateProgram, resolvePhase, collectCandidates, MAX_ITEMS, MIN_ITEMS, type EngineProfile } from './generate';
+import { generateProgram, needsRecovery, neighbours, resolvePhase, collectCandidates, type EngineProfile } from './generate';
 import { availableLevels, clampLevel, equipmentSet, pickVariant } from './availability';
-import { exerciseSeconds, reduceDosage, repSeconds } from './duration';
+import { exerciseSeconds, itemBounds, reduceDosage, repSeconds, restBetweenExercises, sessionSeconds } from './duration';
 import { dose, fixtureContent, mkExercise } from './fixtures';
 
 const content = fixtureContent();
@@ -49,9 +49,25 @@ describe('durée', () => {
     expect(repSeconds('3-0-3')).toBe(6);
     expect(repSeconds()).toBe(3);
   });
-  it('estime la durée d’un exercice', () => {
-    // 3 séries × 11 reps × 4 s + 2 repos × 60 s + 30 s de transition
-    expect(exerciseSeconds(dose(3, [10, 12], 60))).toBe(3 * 44 + 120 + 30);
+  it('estime la durée d’un exercice, repos avant l’exercice suivant compris', () => {
+    // 3 séries × 11 reps × 4 s + 2 repos de 60 s + 60 s de repos avant l’exercice suivant
+    expect(exerciseSeconds(dose(3, [10, 12], 60))).toBe(3 * 44 + 120 + 60);
+  });
+  it('repos entre exercices : le repos entre séries, borné entre 60 et 120 s', () => {
+    expect(restBetweenExercises({ restSec: 30 })).toBe(60);
+    expect(restBetweenExercises({ restSec: 90 })).toBe(90);
+    expect(restBetweenExercises({ restSec: 180 })).toBe(120);
+  });
+  it('une séance compte les repos entre exercices, sauf après le dernier', () => {
+    const a = dose(3, [10, 12], 60);
+    const b = dose(2, [8, 8], 120);
+    const work = (d: typeof a) => exerciseSeconds(d) - restBetweenExercises(d);
+    expect(sessionSeconds([{ dosage: a }, { dosage: b }])).toBe(work(a) + 60 + work(b));
+    expect(sessionSeconds([])).toBe(0);
+  });
+  it('nombre d’exercices selon la durée', () => {
+    expect(itemBounds(15)).toEqual({ min: 3, max: 4 });
+    expect(itemBounds(60)).toEqual({ min: 6, max: 12 });
   });
   it('réduit le volume jusqu’à un plancher', () => {
     let d: ReturnType<typeof reduceDosage> = dose(4, [8, 8], 120);
@@ -138,16 +154,18 @@ describe('structure des séances', () => {
     [1, 1],
     [2, 2],
     [3, 3],
-    [4, 3],
+    [4, 4],
+    [5, 5],
   ])('%i séance(s)/semaine → %i séance(s) type', (perWeek, expected) => {
     expect(generateProgram({ ...base, sessionsPerWeek: perWeek }, content).sessions).toHaveLength(expected);
   });
 
-  it.each([15, 30, 45] as const)('%i min : 4 à 8 exercices et durée respectée (±10 %%)', (minutes) => {
+  it.each([15, 30, 45, 60] as const)('%i min : nombre d’exercices et durée respectés (±10 %%)', (minutes) => {
     const r = generateProgram({ ...base, sports: ['run', 'bike'], minutes, sessionsPerWeek: 2 }, content);
+    const { min, max } = itemBounds(minutes);
     for (const s of r.sessions) {
-      expect(s.items.length).toBeGreaterThanOrEqual(MIN_ITEMS);
-      expect(s.items.length).toBeLessThanOrEqual(MAX_ITEMS);
+      expect(s.items.length).toBeGreaterThanOrEqual(min);
+      expect(s.items.length).toBeLessThanOrEqual(max);
       expect(s.estimatedSec).toBeLessThanOrEqual(minutes * 60 * 1.1);
     }
   });
@@ -181,6 +199,54 @@ describe('structure des séances', () => {
     const r = generateProgram({ ...base, minutes: 45, sessionsPerWeek: 1 }, many);
     const groups = r.sessions[0]!.items.map((i) => many.exercises.find((e) => e.id === i.exerciseId)!.muscles.primary[0]);
     for (let i = 2; i < groups.length; i++) expect(groups[i] === groups[i - 1] && groups[i] === groups[i - 2]).toBe(false);
+  });
+});
+
+describe('4 et 5 séances par semaine', () => {
+  const freq = (en: string) => ({ fr: en, en });
+  it('séances voisines dans la rotation, la dernière précédant la première', () => {
+    expect(neighbours(0, 5)).toEqual([4, 1]);
+    expect(neighbours(4, 5)).toEqual([3, 0]);
+    expect(neighbours(0, 1)).toEqual([]);
+  });
+
+  it('un exercice demande de la récupération selon la fréquence du contenu, sinon selon ses qualités', () => {
+    const strength = mkExercise('s');
+    const control = mkExercise('c', { qualities: ['control'] });
+    expect(needsRecovery(strength, dose())).toBe(true);
+    expect(needsRecovery(control, dose())).toBe(false);
+    expect(needsRecovery(strength, dose(3, [10, 12], 60, { frequency: freq('Daily') }))).toBe(false);
+    expect(needsRecovery(control, dose(3, [10, 12], 60, { frequency: freq('2 times a week') }))).toBe(true);
+  });
+
+  it.each([4, 5])('%i séances : jamais le même muscle chargé deux séances de suite, séances toutes différentes', (n) => {
+    const r = generateProgram({ ...base, sports: ['run', 'bike'], objectives: ['prevention', 'performance'], minutes: 30, sessionsPerWeek: n }, content);
+    expect(r.sessions.map((s) => s.key)).toEqual(['A', 'B', 'C', 'D', 'E'].slice(0, n));
+    const exById = new Map(content.exercises.map((e) => [e.id, e]));
+    const heavyGroups = r.sessions.map(
+      (s) => new Set(s.items.filter((i) => needsRecovery(exById.get(i.exerciseId)!, i.dosage)).map((i) => exById.get(i.exerciseId)!.muscles.primary[0])),
+    );
+    heavyGroups.forEach((g, k) => {
+      const next = heavyGroups[(k + 1) % n]!;
+      expect([...g].filter((m) => next.has(m))).toEqual([]);
+    });
+    const signatures = r.sessions.map((s) => s.items.map((i) => i.exerciseId).sort().join());
+    expect(new Set(signatures).size).toBe(n);
+  });
+
+  it('un exercice essentiel qui demande de la récupération va une séance sur deux ; quotidien, dans chaque séance', () => {
+    const c = fixtureContent();
+    const ph = c.pathologies[0]!.phases[0]!;
+    const daily = ph.exercises.find((e) => e.exerciseId === 'rehab-iso')!;
+    const r = generateProgram({ ...base, objectives: ['pain'], pathologies: [{ id: 'knee-pain', phase: 'irritable' }], sessionsPerWeek: 4 }, c);
+    const withIso = r.sessions.filter((s) => s.items.some((i) => i.exerciseId === 'rehab-iso'));
+    const isoDosage = r.sessions[0]!.items.find((i) => i.exerciseId === 'rehab-iso')?.dosage ?? daily.dosage!;
+    const iso = c.exercises.find((e) => e.id === 'rehab-iso')!;
+    if (needsRecovery(iso, isoDosage)) {
+      expect(withIso.length).toBe(2);
+      const [a, b] = withIso.map((s) => r.sessions.indexOf(s));
+      expect(neighbours(a!, 4)).not.toContain(b);
+    } else expect(withIso.length).toBe(4);
   });
 });
 
