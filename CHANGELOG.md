@@ -10,6 +10,12 @@ Les évolutions s’ajoutent au fur et à mesure dans la section « À venir »,
 
 ### Français
 
+### English
+
+## [0.7.1] — 2026-10-27
+
+### Français
+
 - Séance guidée : les exercices en répétitions maintenues (pied court, renforcement des orteils, mobilité de cheville genou au mur) enchaînent désormais toutes les répétitions prévues : maintien, court repos de 5 s, répétition suivante, jusqu’au bout de la série. Auparavant, la série s’arrêtait après le premier maintien.
 - Ces exercices affichent maintenant le nombre de répétitions avec la durée de maintien (par exemple « 3 × 10 × 5 s par côté »), et la durée estimée de la séance en tient compte.
 - Mode praticien : un exercice ajouté ouvre aussitôt ses paramètres, le curseur dans « Séries ». Chaque valeur (séries, répétitions, maintien, repos) s’efface et se retape librement au clavier ; les répétitions sont modifiables aussi pour les exercices maintenus.
