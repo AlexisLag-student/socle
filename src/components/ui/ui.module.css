@@ -262,6 +262,16 @@
   line-height: 20px;
   color: var(--text-muted);
 }
+/* Message d'erreur sous un champ : stylo rouge, gras pour ne pas reposer sur la couleur seule. */
+.fieldError {
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 700;
+  color: var(--red);
+}
+.input[aria-invalid='true'] {
+  border-color: var(--red);
+}
 .input,
 .select,
 .textarea {

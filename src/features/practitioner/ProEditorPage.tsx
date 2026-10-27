@@ -16,17 +16,35 @@ import { formatDosage, formatMinutes, formatSessionLength } from '@/features/exe
 import { sessionSeconds } from '@/engine/duration';
 import { useLocalized } from '@/i18n/useLocalized';
 import { ShareDialog } from './ShareDialog';
+import { FIELD_BOUNDS, applyTexts, digitsOnly, fieldErrors, toTexts, visibleFields, type DosageField } from './dosageFields';
 import css from './pro.module.css';
 
 type Key = Program['sessions'][number]['key'];
 
-function num(v: string, min: number, max: number): number {
-  const n = Math.round(Number(v));
-  return Number.isFinite(n) ? Math.min(max, Math.max(min, n)) : min;
+/** Champ numérique libre : texte (`inputMode="numeric"`), jamais réécrit ni borné pendant la frappe. */
+function NumberInput({ id, value, error, label, onText }: { id: string; value: string; error?: string; label?: string; onText: (v: string) => void }) {
+  return (
+    <Input
+      id={id}
+      type="text"
+      inputMode="numeric"
+      pattern="[0-9]*"
+      autoComplete="off"
+      maxLength={3}
+      value={value}
+      aria-label={label}
+      aria-invalid={error ? true : undefined}
+      aria-describedby={error}
+      onChange={(e) => onText(digitsOnly(e.target.value))}
+    />
+  );
 }
 
-/** Édition d'un exercice du programme : variante, niveau, dosage, note. */
-function ItemEditor({ item, onChange }: { item: ProgramItem; onChange: (i: ProgramItem) => void }) {
+/**
+ * Édition d'un exercice du programme : variante, niveau, dosage, note. Les valeurs valides sont reportées
+ * au fil de la saisie ; « Valider » referme l'éditeur, sauf si un champ est vide, à 0 ou hors bornes.
+ */
+function ItemEditor({ item, onChange, onDone, focusFirst }: { item: ProgramItem; onChange: (i: ProgramItem) => void; onDone: () => void; focusFirst: boolean }) {
   const { t } = useTranslation();
   const l = useLocalized();
   const ex = exerciseById.get(item.exerciseId)!;
@@ -35,6 +53,43 @@ function ItemEditor({ item, onChange }: { item: ProgramItem; onChange: (i: Progr
   const levelDefault = ex.levels.find((x) => x.level === item.level)?.dosage;
   const customIntensity = levelDefault && (d.intensity.value.fr !== levelDefault.intensity.value.fr || d.intensity.kind !== levelDefault.intensity.kind);
   const uid = `${item.exerciseId}-${item.level}`;
+  const ids: Record<DosageField, string> = { sets: `${uid}-s`, repsMin: `${uid}-r`, repsMax: `${uid}-r2`, hold: `${uid}-h`, rest: `${uid}-rest` };
+  // Texte tapé dans les champs numériques ; seules les valeurs valides passent dans le dosage.
+  const [texts, setTexts] = useState(() => toTexts(d));
+  // Messages affichés à partir du premier « Valider », puis mis à jour à chaque frappe.
+  const [checked, setChecked] = useState(false);
+  const fields = visibleFields(d);
+  const errors = checked ? fieldErrors(texts, fields) : {};
+  const setText = (field: DosageField, value: string) => {
+    const next = { ...texts, [field]: value };
+    setTexts(next);
+    onChange({ ...item, dosage: applyTexts(d, next, fields) });
+  };
+  const message = (field: DosageField) => {
+    const e = errors[field];
+    if (!e) return undefined;
+    const [min, max] = FIELD_BOUNDS[field];
+    return e === 'range' ? t('pro.errorRange', { min, max }) : t(`pro.error.${e}`);
+  };
+  const errorId = (field: DosageField) => (errors[field] ? `${ids[field]}-error` : undefined);
+  const validate = () => {
+    const found = fieldErrors(texts, fields);
+    setChecked(true);
+    const first = fields.find((f) => found[f]);
+    if (first) document.getElementById(ids[first])?.focus();
+    else onDone();
+  };
+
+  // Ouvert juste après un ajout : curseur dans « Séries », une fois le sélecteur d'exercices refermé
+  // (sa fermeture rend le focus au bouton « Ajouter un exercice »).
+  const setsId = ids.sets;
+  useEffect(() => {
+    if (!focusFirst) return;
+    const raf = requestAnimationFrame(() => document.getElementById(setsId)?.focus());
+    return () => cancelAnimationFrame(raf);
+  }, [focusFirst, setsId]);
+  const repsMessage = message('repsMin') ?? message('repsMax');
+  const repsErrorId = repsMessage ? `${ids.repsMin}-error` : undefined;
 
   return (
     <div className={css.editor}>
@@ -56,6 +111,8 @@ function ItemEditor({ item, onChange }: { item: ProgramItem; onChange: (i: Progr
             value={item.level}
             onChange={(e) => {
               const lv = ex.levels.find((x) => x.level === Number(e.target.value))!;
+              setTexts(toTexts(lv.dosage));
+              setChecked(false);
               onChange({ ...item, level: lv.level, dosage: lv.dosage });
             }}
           >
@@ -66,26 +123,25 @@ function ItemEditor({ item, onChange }: { item: ProgramItem; onChange: (i: Progr
             ))}
           </Select>
         </Field>
-        <Field label={t('pro.sets')} htmlFor={`${uid}-s`}>
-          <Input id={`${uid}-s`} type="number" inputMode="numeric" min={1} max={10} value={d.sets} onChange={(e) => setD({ sets: num(e.target.value, 1, 10) })} />
+        <Field label={t('pro.sets')} htmlFor={ids.sets} error={message('sets')}>
+          <NumberInput id={ids.sets} value={texts.sets} error={errorId('sets')} onText={(v) => setText('sets', v)} />
         </Field>
-        {d.holdSec ? (
-          <Field label={t('pro.hold')} htmlFor={`${uid}-h`}>
-            <Input id={`${uid}-h`} type="number" inputMode="numeric" min={5} max={600} value={d.holdSec} onChange={(e) => setD({ holdSec: num(e.target.value, 5, 600) })} />
-          </Field>
-        ) : (
-          <Field label={t('pro.reps')} htmlFor={`${uid}-r`}>
+        {fields.includes('repsMin') && (
+          <Field label={t('pro.reps')} htmlFor={ids.repsMin} error={repsMessage}>
             <div className={css.pair}>
-              <Input id={`${uid}-r`} type="number" inputMode="numeric" min={1} max={200} value={d.reps?.[0] ?? 10} aria-label={t('pro.repsMin')}
-                onChange={(e) => { const a = num(e.target.value, 1, 200); setD({ reps: [a, Math.max(a, d.reps?.[1] ?? a)] }); }} />
-              <span>–</span>
-              <Input type="number" inputMode="numeric" min={1} max={200} value={d.reps?.[1] ?? 10} aria-label={t('pro.repsMax')}
-                onChange={(e) => { const b = num(e.target.value, 1, 200); setD({ reps: [Math.min(b, d.reps?.[0] ?? b), b] }); }} />
+              <NumberInput id={ids.repsMin} value={texts.repsMin} error={errors.repsMin && repsErrorId} label={t('pro.repsMin')} onText={(v) => setText('repsMin', v)} />
+              <span aria-hidden>–</span>
+              <NumberInput id={ids.repsMax} value={texts.repsMax} error={errors.repsMax && repsErrorId} label={t('pro.repsMax')} onText={(v) => setText('repsMax', v)} />
             </div>
           </Field>
         )}
-        <Field label={t('pro.rest')} htmlFor={`${uid}-rest`}>
-          <Input id={`${uid}-rest`} type="number" inputMode="numeric" min={0} max={600} step={15} value={d.restSec} onChange={(e) => setD({ restSec: num(e.target.value, 0, 600) })} />
+        {fields.includes('hold') && (
+          <Field label={t('pro.hold')} htmlFor={ids.hold} error={message('hold')}>
+            <NumberInput id={ids.hold} value={texts.hold} error={errorId('hold')} onText={(v) => setText('hold', v)} />
+          </Field>
+        )}
+        <Field label={t('pro.rest')} htmlFor={ids.rest} error={message('rest')}>
+          <NumberInput id={ids.rest} value={texts.rest} error={errorId('rest')} onText={(v) => setText('rest', v)} />
         </Field>
         <Field label={t('pro.tempo')} hint={t('pro.tempoHint')} htmlFor={`${uid}-t`}>
           <Input
@@ -127,6 +183,11 @@ function ItemEditor({ item, onChange }: { item: ProgramItem; onChange: (i: Progr
       <Field label={t('pro.note')} htmlFor={`${uid}-n`}>
         <Textarea id={`${uid}-n`} value={item.note ?? ''} maxLength={1000} rows={2} onChange={(e) => onChange({ ...item, note: e.target.value || undefined })} />
       </Field>
+      <div className={css.editorActions}>
+        <Button variant="secondary" icon="check" onClick={validate}>
+          {t('pro.validate')}
+        </Button>
+      </div>
     </div>
   );
 }
@@ -139,6 +200,12 @@ export default function ProEditorPage() {
   const [draft, setDraft] = useState<Program | null>(null);
   const [tab, setTab] = useState<Key>('A');
   const [open, setOpen] = useState<number | null>(null);
+  // Éditeur ouvert par un ajout (curseur placé dans « Séries ») plutôt que par un appui sur l'exercice.
+  const [justAdded, setJustAdded] = useState(false);
+  const toggle = (i: number | null) => {
+    setOpen(i);
+    setJustAdded(false);
+  };
   const [picking, setPicking] = useState(false);
   const [sharing, setSharing] = useState(false);
   const [filters, setFilters] = useState<ExerciseFilters>({});
@@ -183,12 +250,16 @@ export default function ProEditorPage() {
     const [it] = items.splice(from, 1);
     items.splice(to, 0, it!);
     setItems(items);
-    setOpen(null);
+    toggle(null);
   };
   const addExercise = (ex: Exercise) => {
     const variant = [...ex.variants].sort((a, b) => a.rank - b.rank)[0]!;
     const level = ex.levels[0]!;
     setItems([...session.items, { exerciseId: ex.id, variantId: variant.id, level: level.level, dosage: level.dosage, reason: { kind: 'manual', ref: 'practitioner' } }]);
+    // Ses paramètres s'ouvrent aussitôt ; refermés sans valider, il garde le dosage de son niveau 1.
+    setPicking(false);
+    setOpen(session.items.length);
+    setJustAdded(true);
   };
   const addSession = () => {
     const next = SESSION_KEYS.find((k) => !draft.sessions.some((s) => s.key === k));
@@ -263,7 +334,7 @@ export default function ProEditorPage() {
 
       <div className={css.tabs} role="tablist" aria-label={t('pro.sessions')}>
         {draft.sessions.map((s) => (
-          <button key={s.key} role="tab" type="button" aria-selected={s.key === session.key} onClick={() => { setTab(s.key); setOpen(null); }}>
+          <button key={s.key} role="tab" type="button" aria-selected={s.key === session.key} onClick={() => { setTab(s.key); toggle(null); }}>
             {t('program.session', { key: s.key })} <span className={css.tabCount}>{s.items.length}</span>
           </button>
         ))}
@@ -314,7 +385,7 @@ export default function ProEditorPage() {
                   <span className={css.grip} aria-hidden>
                     ⋮⋮
                   </span>
-                  <button type="button" className={css.itemTitle} aria-expanded={open === i} onClick={() => setOpen(open === i ? null : i)}>
+                  <button type="button" className={css.itemTitle} aria-expanded={open === i} onClick={() => toggle(open === i ? null : i)}>
                     <strong>
                       {i + 1}. {ex ? l(ex.name) : item.exerciseId}
                     </strong>
@@ -323,10 +394,17 @@ export default function ProEditorPage() {
                   <div className={css.itemActions}>
                     <Button size="small" variant="ghost" iconOnly icon="up" label={t('pro.moveUp')} disabled={i === 0} onClick={() => move(i, i - 1)} />
                     <Button size="small" variant="ghost" iconOnly icon="down" label={t('pro.moveDown')} disabled={i === session.items.length - 1} onClick={() => move(i, i + 1)} />
-                    <Button size="small" variant="ghost" iconOnly icon="trash" label={t('common.delete')} onClick={() => { setItems(session.items.filter((_, k) => k !== i)); setOpen(null); }} />
+                    <Button size="small" variant="ghost" iconOnly icon="trash" label={t('common.delete')} onClick={() => { setItems(session.items.filter((_, k) => k !== i)); toggle(null); }} />
                   </div>
                 </div>
-                {open === i && ex && <ItemEditor item={item} onChange={(next) => setItems(session.items.map((x, k) => (k === i ? next : x)))} />}
+                {open === i && ex && (
+                  <ItemEditor
+                    item={item}
+                    focusFirst={justAdded}
+                    onChange={(next) => setItems(session.items.map((x, k) => (k === i ? next : x)))}
+                    onDone={() => toggle(null)}
+                  />
+                )}
               </li>
             );
           })}

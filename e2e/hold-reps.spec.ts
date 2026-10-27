@@ -15,7 +15,7 @@ async function shortFootSession(page: Page) {
   const dialog = page.getByRole('dialog');
   await dialog.getByRole('searchbox').fill('pied court');
   await dialog.getByRole('button', { name: 'Ajouter' }).first().click();
-  await dialog.getByRole('button', { name: 'Fermer' }).click();
+  await expect(dialog).toBeHidden();
   await page.getByRole('button', { name: 'Générer le lien' }).click();
   const link = await page.getByRole('textbox', { name: 'Lien de partage' }).inputValue();
   await page.goto(link.replace(/^https?:\/\/[^/]+/, ''));

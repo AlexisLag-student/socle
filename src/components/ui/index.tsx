@@ -215,7 +215,8 @@ export function Segmented<T extends string | number>({
 
 // --- Champs -------------------------------------------------------------------------
 
-export function Field({ label, hint, children, htmlFor }: { label: ReactNode; hint?: ReactNode; children: ReactNode; htmlFor?: string }) {
+/** `error` : message affiché sous le champ, avec l'id `${htmlFor}-error` (à relier par `aria-describedby`). */
+export function Field({ label, hint, error, children, htmlFor }: { label: ReactNode; hint?: ReactNode; error?: ReactNode; children: ReactNode; htmlFor?: string }) {
   return (
     <div className={css.field}>
       <label className={css.label} htmlFor={htmlFor}>
@@ -223,6 +224,11 @@ export function Field({ label, hint, children, htmlFor }: { label: ReactNode; hi
       </label>
       {children}
       {hint && <span className={css.hint}>{hint}</span>}
+      {error && (
+        <span className={css.fieldError} id={htmlFor && `${htmlFor}-error`}>
+          {error}
+        </span>
+      )}
     </div>
   );
 }

@@ -12,9 +12,11 @@ test('le lien d’un praticien s’ouvre sur un autre appareil (contexte vierge)
   const dialog = page.getByRole('dialog');
   await dialog.getByRole('searchbox').fill('squat espagnol');
   await dialog.getByRole('button', { name: 'Ajouter' }).first().click();
+  // L'ajout referme le sélecteur et ouvre les paramètres de l'exercice.
+  await expect(dialog).toBeHidden();
+  await page.getByRole('button', { name: 'Ajouter un exercice' }).click();
   await dialog.getByRole('searchbox').fill('step');
   await dialog.getByRole('button', { name: 'Ajouter' }).first().click();
-  await dialog.getByRole('button', { name: 'Fermer' }).click();
   await expect(page.locator('ol li')).toHaveCount(2);
 
   // Ajuster le dosage du premier exercice
@@ -55,7 +57,7 @@ test('un lien praticien 5 séances / 1 h s’ouvre et garde la fréquence et la 
     const dialog = page.getByRole('dialog');
     await dialog.getByRole('searchbox').fill(search);
     await dialog.getByRole('button', { name: 'Ajouter' }).first().click();
-    await dialog.getByRole('button', { name: 'Fermer' }).click();
+    await expect(dialog).toBeHidden();
   };
   await addExercise('squat espagnol');
   // Récapitulatif de durée, repos compris.

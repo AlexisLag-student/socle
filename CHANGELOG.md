@@ -12,11 +12,15 @@ Les évolutions s’ajoutent au fur et à mesure dans la section « À venir »,
 
 - Séance guidée : les exercices en répétitions maintenues (pied court, renforcement des orteils, mobilité de cheville genou au mur) enchaînent désormais toutes les répétitions prévues : maintien, court repos de 5 s, répétition suivante, jusqu’au bout de la série. Auparavant, la série s’arrêtait après le premier maintien.
 - Ces exercices affichent maintenant le nombre de répétitions avec la durée de maintien (par exemple « 3 × 10 × 5 s par côté »), et la durée estimée de la séance en tient compte.
+- Mode praticien : un exercice ajouté ouvre aussitôt ses paramètres, le curseur dans « Séries ». Chaque valeur (séries, répétitions, maintien, repos) s’efface et se retape librement au clavier ; les répétitions sont modifiables aussi pour les exercices maintenus.
+- « Valider » referme les paramètres et signale, sous le champ concerné, une valeur vide, à 0 ou hors limites. Les valeurs saisies passent telles quelles dans le lien envoyé au patient.
 
 ### English
 
 - Guided session: exercises made of held reps (short foot, toe strengthening, knee-to-wall ankle mobility) now go through every planned rep: hold, a short 5-second rest, next rep, until the set is done. Previously, the set ended after the first hold.
 - These exercises now show the number of reps along with the hold time (for example “3 × 10 × 5 s per side”), and the estimated session length takes them into account.
+- Practitioner mode: an added exercise now opens its settings straight away, with the cursor in “Sets”. Every value (sets, reps, hold, rest) can be cleared and retyped freely; reps can now be edited for held exercises too.
+- “Confirm” closes the settings and points out, under the field concerned, a value that is empty, 0 or out of range. The values you enter go unchanged into the link sent to the patient.
 
 ## [0.7.0] — 2026-10-24
 
