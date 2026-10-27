@@ -13,17 +13,20 @@ import type { Feedback } from '@/domain/ids';
 import type { ProgramItem, SessionEntry, SessionLog, SetLog } from '@/domain/user';
 import { applyFeedback, decideAndApply, newLog, saveLog } from '@/db/repo';
 import { availableLevels, equipmentSet, pickVariant } from '@/engine/availability';
-import { restBetweenExercises } from '@/engine/duration';
+import { REP_REST_SEC, restBetweenExercises } from '@/engine/duration';
 import { beep, keepScreenOn, tempoPhases, vibrate } from '@/lib/device';
 import { formatClock, useCountdown } from '@/lib/useCountdown';
 import { formatDosage, formatDuration } from '@/features/exercise/format';
 import { useLocalized } from '@/i18n/useLocalized';
 import { tempoPosition, useTempoClock, type TempoClock } from './tempoClock';
-import { afterFeedback, afterWork, clampElapsed, clampReps, cycleSeconds, quotaReached, repQuota, repsDone } from './flow';
+import { afterFeedback, afterHold, afterWork, clampElapsed, clampReps, cycleSeconds, quotaReached, repQuota, repsDone } from './flow';
 import css from './session.module.css';
 
-/** work → (rest → work)… → feedback → between (repos avant l'exercice suivant) → work. */
-type Stage = 'work' | 'rest' | 'feedback' | 'between';
+/**
+ * work → (rest → work)… → feedback → between (repos avant l'exercice suivant) → work.
+ * Répétitions maintenues : work → (repRest → work)… jusqu'au quota, puis comme une série.
+ */
+type Stage = 'work' | 'repRest' | 'rest' | 'feedback' | 'between';
 
 /**
  * Rythme d'une répétition : consigne de la phase en cours, secondes restantes en très grand,
@@ -130,6 +133,8 @@ function GuidedSession() {
   const [idx, setIdx] = useState(0);
   const [setNo, setSetNo] = useState(0);
   const [side, setSide] = useState<1 | 2>(1);
+  /** Répétition maintenue en cours (0 à quota − 1), dosage « répétitions × maintien ». */
+  const [rep, setRep] = useState(0);
   const [stage, setStage] = useState<Stage>('work');
   const [finished, setFinished] = useState(false);
   const [showMap, setShowMap] = useState(false);
@@ -175,6 +180,8 @@ function GuidedSession() {
   const entry = log?.entries[idx];
   const isReps = !!item && !item.dosage.holdSec;
   const quota = item ? repQuota(item.dosage) : undefined;
+  /** Quota de répétitions maintenues (pied court 10 × 5 s) ; absent pour un maintien unique. */
+  const holdQuota = item?.dosage.holdSec ? quota : undefined;
   const nextItem: ProgramItem | undefined = items[idx + 1];
   const nextEx = nextItem ? exerciseById.get(nextItem.exerciseId) : undefined;
 
@@ -217,8 +224,10 @@ function GuidedSession() {
       signalEnd();
       if (stage === 'rest') setStage('work');
       else if (stage === 'between') advance();
-      // Maintien : le minuteur s'arrête à la durée prévue, la série (ou le côté) est validée.
-      else if (stage === 'work' && item?.dosage.holdSec) workDone({}, true);
+      else if (stage === 'repRest') startHold();
+      // Maintien : le minuteur s'arrête à la durée prévue ; répétition suivante après un court repos,
+      // ou série (côté) validée après la dernière.
+      else if (stage === 'work' && item?.dosage.holdSec) holdDone();
     },
     (left) => {
       if (prefs.tempoSound && left <= 3 && left > 0) beep('tick');
@@ -247,6 +256,22 @@ function GuidedSession() {
     timer.start(sec);
   }
 
+  /** Fin d'un maintien : repos entre répétitions, ou série (côté) terminée après la dernière. */
+  function holdDone() {
+    const next = afterHold(rep, holdQuota);
+    if (next.kind === 'repRest') {
+      setRep(next.nextRep);
+      setStage('repRest');
+      startRest(REP_REST_SEC);
+    } else workDone(holdQuota ? { reps: holdQuota } : {}, true);
+  }
+
+  /** Repos entre répétitions écoulé ou passé : le maintien suivant démarre seul. */
+  function startHold() {
+    setStage('work');
+    timer.start(item!.dosage.holdSec!);
+  }
+
   /**
    * Série (ou côté) terminée : côté 2, repos entre séries ou retour sur l'exercice.
    * `bySide` : les côtés s'enchaînent séparément (maintien par côté, rythme affiché).
@@ -254,6 +279,7 @@ function GuidedSession() {
   function workDone(patch: Partial<SetLog>, bySide: boolean) {
     if (!item) return;
     const next = afterWork(item.dosage, setNo, side, bySide);
+    setRep(0);
     if (next.kind === 'side') {
       setSide(2);
       if (!item.dosage.holdSec) setAwaitingSide(true);
@@ -343,6 +369,7 @@ function GuidedSession() {
     timer.stop();
     setSetNo(0);
     setSide(1);
+    setRep(0);
     setStage('work');
     setShowMap(false);
     setTempoOn(false);
@@ -438,8 +465,11 @@ function GuidedSession() {
 
   // Annonces pour les lecteurs d'écran : au changement d'étape et 10 s avant la fin d'un repos, jamais à chaque seconde.
   const rest = formatDuration(restTotal, t);
+  const holdRep = holdQuota ? { n: rep + 1, total: holdQuota } : undefined;
   const announce =
-    stage === 'rest' || stage === 'between'
+    stage === 'repRest' && holdRep
+      ? t('session.announce.restRep', { rest: formatDuration(REP_REST_SEC, t), ...holdRep })
+      : stage === 'rest' || stage === 'between'
       ? tenLeft
         ? t('session.announce.tenLeft')
         : stage === 'between' && nextEx
@@ -453,6 +483,7 @@ function GuidedSession() {
               n: setNo + 1,
               total: d.sets,
               side: d.perSide && (d.holdSec || tempoOn) ? t('session.announce.sidePart', { n: side }) : '',
+              rep: holdRep ? t('session.announce.repPart', holdRep) : '',
             });
   const announcer = (
     <p className="visually-hidden" aria-live="polite" aria-atomic="true">
@@ -573,12 +604,14 @@ function GuidedSession() {
       <Card featured as="section" className={css.action}>
         <div className={css.actionInner}>
           {stage === 'rest' && <RestCard remaining={timer.remaining} total={restTotal} next={t('session.nextSet', { n: setNo + 1, total: d.sets })} />}
+          {stage === 'repRest' && holdRep && <RestCard remaining={timer.remaining} total={restTotal} next={t('session.nextRep', holdRep)} />}
 
           {stage === 'work' && d.holdSec && (
             <>
               <span className="kicker">
                 {t('session.set', { n: setNo + 1, total: d.sets })}
                 {d.perSide ? ` · ${t('session.side', { n: side })}` : ''}
+                {holdRep ? ` · ${t('session.holdRep', holdRep)}` : ''}
               </span>
               <p className={css.clock}>{formatClock(holdStarted ? timer.remaining : d.holdSec)}</p>
               <p className={css.sub}>{t('session.hold')}</p>
@@ -739,6 +772,13 @@ function GuidedSession() {
               >
                 {t('session.skipRest')}
               </Button>
+            </>
+          )}
+          {stage === 'repRest' && (
+            <>
+              {timer.running && <Button variant="secondary" icon="pause" iconOnly label={t('session.pause')} onClick={timer.pause} />}
+              {timer.paused && <Button variant="secondary" icon="play" iconOnly label={t('session.resume')} onClick={timer.resume} />}
+              <Button onClick={startHold}>{t('session.skipRest')}</Button>
             </>
           )}
           {stage === 'work' && d.holdSec && (

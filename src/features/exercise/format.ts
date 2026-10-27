@@ -9,15 +9,16 @@ export function formatDuration(sec: number, t: TFunction): string {
   return s ? t('format.minSec', { m, s: String(s).padStart(2, '0') }) : t('common.minutes', { count: m });
 }
 
+/** Travail d'une série : répétitions (« 12–15 »), maintien (« 30 s ») ou répétitions maintenues (« 10 × 5 s »). */
+export function formatWork(d: Dosage, t: TFunction): string {
+  const reps = d.reps ? (d.reps[0] === d.reps[1] ? String(d.reps[0]) : `${d.reps[0]}–${d.reps[1]}`) : '';
+  if (!d.holdSec) return reps;
+  const hold = formatDuration(d.holdSec, t);
+  return reps ? `${reps} × ${hold}` : hold;
+}
+
 export function formatVolume(d: Dosage, t: TFunction): string {
-  const work = d.holdSec
-    ? formatDuration(d.holdSec, t)
-    : d.reps
-      ? d.reps[0] === d.reps[1]
-        ? String(d.reps[0])
-        : `${d.reps[0]}–${d.reps[1]}`
-      : '';
-  return `${d.sets} × ${work}${d.perSide ? ` ${t('common.perSide')}` : ''}`;
+  return `${d.sets} × ${formatWork(d, t)}${d.perSide ? ` ${t('common.perSide')}` : ''}`;
 }
 
 export function formatDosage(d: Dosage, t: TFunction, l: (x: L | undefined) => string): string[] {

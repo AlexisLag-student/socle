@@ -29,7 +29,7 @@ import { useActiveProgram, useExerciseStates, usePrograms, useProfile } from '@/
 import { usePrefs } from '@/app/prefs';
 import { addItemToProgram } from '@/db/repo';
 import { equipmentSet, pickVariant, shownVariant } from '@/engine/availability';
-import { formatDosage, formatDuration } from '@/features/exercise/format';
+import { formatDosage, formatDuration, formatWork } from '@/features/exercise/format';
 import { useLocalized } from '@/i18n/useLocalized';
 import type { Dosage, Exercise, L } from '@/domain/schema';
 import { SESSION_KEYS, type Program } from '@/domain/user';
@@ -105,7 +105,7 @@ function AddDialog({ ex, open, onClose }: { ex: Exercise; open: boolean; onClose
 
 /** Valeurs du bloc de dosage (séries, tempo ou repos, fréquence) pour un niveau donné. */
 function dosageItems(d: Dosage, t: TFunction, l: (x: L | undefined) => string) {
-  const work = d.holdSec ? formatDuration(d.holdSec, t) : d.reps ? (d.reps[0] === d.reps[1] ? `${d.reps[0]}` : `${d.reps[0]}–${d.reps[1]}`) : '';
+  const work = formatWork(d, t);
   const rest = { label: t('exercise.dose.rest'), value: formatDuration(d.restSec, t) };
   return [
     { label: t('exercise.dose.sets'), value: `${d.sets} × ${work}` },

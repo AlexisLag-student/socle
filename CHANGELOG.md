@@ -10,7 +10,13 @@ Les évolutions s’ajoutent au fur et à mesure dans la section « À venir »,
 
 ### Français
 
+- Séance guidée : les exercices en répétitions maintenues (pied court, renforcement des orteils, mobilité de cheville genou au mur) enchaînent désormais toutes les répétitions prévues : maintien, court repos de 5 s, répétition suivante, jusqu’au bout de la série. Auparavant, la série s’arrêtait après le premier maintien.
+- Ces exercices affichent maintenant le nombre de répétitions avec la durée de maintien (par exemple « 3 × 10 × 5 s par côté »), et la durée estimée de la séance en tient compte.
+
 ### English
+
+- Guided session: exercises made of held reps (short foot, toe strengthening, knee-to-wall ankle mobility) now go through every planned rep: hold, a short 5-second rest, next rep, until the set is done. Previously, the set ended after the first hold.
+- These exercises now show the number of reps along with the hold time (for example “3 × 10 × 5 s per side”), and the estimated session length takes them into account.
 
 ## [0.7.0] — 2026-10-24
 

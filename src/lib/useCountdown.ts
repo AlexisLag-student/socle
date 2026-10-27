@@ -27,6 +27,9 @@ export function useCountdown(onDone: () => void, onTick?: (remaining: number) =>
         tickRef.current?.(left);
       }
       if (n >= endAt) {
+        // Une seule fin par décompte : un tick suivant, avant que React ne retire l'intervalle,
+        // relancerait `onDone` avec l'état déjà avancé (ex. démarrer seul le côté 2).
+        clearInterval(id);
         setEndAt(null);
         lastSec.current = null;
         doneRef.current();

@@ -10,6 +10,11 @@ export const BETWEEN_REST_MIN_SEC = 60;
 export const BETWEEN_REST_MAX_SEC = 120;
 /** Durée par répétition quand aucun tempo n'est précisé. */
 const DEFAULT_REP_SEC = 3;
+/**
+ * Repos entre deux répétitions maintenues, pour un dosage « répétitions × maintien »
+ * (pied court 10 × 5 s : maintien 5 s, repos 5 s, répétition suivante). Distinct du repos entre séries.
+ */
+export const REP_REST_SEC = 5;
 
 export function repSeconds(tempo?: string): number {
   if (!tempo) return DEFAULT_REP_SEC;
@@ -20,7 +25,11 @@ export function repSeconds(tempo?: string): number {
 /** Durée de travail d'une série (les deux côtés si `perSide`). */
 export function setWorkSeconds(d: Dosage): number {
   const sides = d.perSide ? 2 : 1;
-  if (d.holdSec) return d.holdSec * sides;
+  // Maintien : une seule durée, ou le quota de répétitions maintenues séparées par un court repos.
+  if (d.holdSec) {
+    const reps = d.reps ? d.reps[1] : 1;
+    return (reps * d.holdSec + (reps - 1) * REP_REST_SEC) * sides;
+  }
   const reps = d.reps ? (d.reps[0] + d.reps[1]) / 2 : 10;
   return reps * repSeconds(d.tempo) * sides;
 }
